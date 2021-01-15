@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "node-terminal",
+            "name": "Create JavaScript Debug Terminal",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "noDebug": true
+        }
+    ]
+}
