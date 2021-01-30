@@ -1,5 +1,5 @@
-const _PORT_ADDRESS = 3000;
-
+const _PORT_ADDRESS = 2400;
+const _READ_BLOCK_COUNT = 1;
 
 
 
