@@ -12,3 +12,13 @@ export const updateTime = (time) => dispatch => {
 
     dispatch({type:'UPDATE_TIME',time: time});
 }
+
+export const updateTrxInfo = (data) => dispatch => {
+    dispatch({type:'UPDATE_TRX',trxInfo: data} );
+}
+
+export const updateBlkInfo = (data) => dispatch => {
+    dispatch({type:'UPDATE_BLK',blockInfo: data} );
+}
+
+

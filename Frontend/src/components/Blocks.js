@@ -1,28 +1,37 @@
 import React ,{Component,useState} from 'react'; 
 import { connect } from 'react-redux';
-import {fetchBlocks,updateTime} from '../actions/blocks';
+import {fetchBlocks,updateTime,updateTrxInfo,updateBlkInfo} from '../actions/blocks';
 
 class Blocks extends Component {
     componentDidMount(){
-        this.props.socket.on("FromAPI", data => {
-            this.props.updateTime(data.time);
+        this.props.socket.on("UPDATE_BLK", data => {
+            this.updateState(data);
+         });
+
+         this.props.socket.on("UPDATE_TRX", data => {
+             this.updateTrxState(data);
          });
     }
 
-    updateState(){
-        this.props.fetchBlocks();
-        console.log(this.props);
+    updateState(data){
+        this.props.updateBlkInfo(data);
     }
 
+    updateTrxState(data){
+        this.props.updateTrxInfo(data);
+     }
+    
+
     render() {
-        console.log(this.props);
-        this.props.socket.on()
+        
         return(
             <div>
                 <p>Time is : {this.props.time}</p>
                 <button onClick={()=> this.updateState()}>Inc</button>
-                <p>Last Block Read : {this.props.blockInfo.lastBlockRead}</p>
                 <p>Last Block Mined : {this.props.blockInfo.lastBlock}</p>
+                <p>Last Block Read : {this.props.blockInfo.lastBlockRead}</p>
+                <p>current Block Trx Count : {this.props.trxInfo.trxCount}</p>
+                <p>current Block Trx Read : {this.props.trxInfo.trxRead}</p>
             </div>
          );
     }
@@ -31,10 +40,11 @@ class Blocks extends Component {
 
 const mapStateToProps = state => {
     const blockInfo = state.blockInfo;
+    const trxInfo = state.trxInfo;
     const time = state.time;
-    return {blockInfo,time};
+    return {blockInfo,time,trxInfo};
 }
 
-const componentConnector = connect(mapStateToProps,{fetchBlocks,updateTime});
+const componentConnector = connect(mapStateToProps,{fetchBlocks,updateTime,updateTrxInfo,updateBlkInfo});
 
 export default componentConnector(Blocks);

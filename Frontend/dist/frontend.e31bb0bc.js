@@ -33317,7 +33317,7 @@ exports.URL_GET_LAST_BLOCK = URL_GET_LAST_BLOCK;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateTime = exports.fetchBlocks = void 0;
+exports.updateBlkInfo = exports.updateTrxInfo = exports.updateTime = exports.fetchBlocks = void 0;
 
 var _types = require("./types");
 
@@ -33350,6 +33350,28 @@ var updateTime = function updateTime(time) {
 };
 
 exports.updateTime = updateTime;
+
+var updateTrxInfo = function updateTrxInfo(data) {
+  return function (dispatch) {
+    dispatch({
+      type: 'UPDATE_TRX',
+      trxInfo: data
+    });
+  };
+};
+
+exports.updateTrxInfo = updateTrxInfo;
+
+var updateBlkInfo = function updateBlkInfo(data) {
+  return function (dispatch) {
+    dispatch({
+      type: 'UPDATE_BLK',
+      blockInfo: data
+    });
+  };
+};
+
+exports.updateBlkInfo = updateBlkInfo;
 },{"./types":"src/actions/types.js","../../config":"config.js"}],"src/components/Blocks.js":[function(require,module,exports) {
 "use strict";
 
@@ -33406,28 +33428,33 @@ var Blocks = /*#__PURE__*/function (_Component) {
     value: function componentDidMount() {
       var _this = this;
 
-      this.props.socket.on("FromAPI", function (data) {
-        _this.props.updateTime(data.time);
+      this.props.socket.on("UPDATE_BLK", function (data) {
+        _this.updateState(data);
+      });
+      this.props.socket.on("UPDATE_TRX", function (data) {
+        _this.updateTrxState(data);
       });
     }
   }, {
     key: "updateState",
-    value: function updateState() {
-      this.props.fetchBlocks();
-      console.log(this.props);
+    value: function updateState(data) {
+      this.props.updateBlkInfo(data);
+    }
+  }, {
+    key: "updateTrxState",
+    value: function updateTrxState(data) {
+      this.props.updateTrxInfo(data);
     }
   }, {
     key: "render",
     value: function render() {
       var _this2 = this;
 
-      console.log(this.props);
-      this.props.socket.on();
       return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("p", null, "Time is : ", this.props.time), /*#__PURE__*/_react.default.createElement("button", {
         onClick: function onClick() {
           return _this2.updateState();
         }
-      }, "Inc"), /*#__PURE__*/_react.default.createElement("p", null, "Last Block Read : ", this.props.blockInfo.lastBlockRead), /*#__PURE__*/_react.default.createElement("p", null, "Last Block Mined : ", this.props.blockInfo.lastBlock));
+      }, "Inc"), /*#__PURE__*/_react.default.createElement("p", null, "Last Block Mined : ", this.props.blockInfo.lastBlock), /*#__PURE__*/_react.default.createElement("p", null, "Last Block Read : ", this.props.blockInfo.lastBlockRead), /*#__PURE__*/_react.default.createElement("p", null, "current Block Trx Count : ", this.props.trxInfo.trxCount), /*#__PURE__*/_react.default.createElement("p", null, "current Block Trx Read : ", this.props.trxInfo.trxRead));
     }
   }]);
 
@@ -33436,16 +33463,20 @@ var Blocks = /*#__PURE__*/function (_Component) {
 
 var mapStateToProps = function mapStateToProps(state) {
   var blockInfo = state.blockInfo;
+  var trxInfo = state.trxInfo;
   var time = state.time;
   return {
     blockInfo: blockInfo,
-    time: time
+    time: time,
+    trxInfo: trxInfo
   };
 };
 
 var componentConnector = (0, _reactRedux.connect)(mapStateToProps, {
   fetchBlocks: _blocks.fetchBlocks,
-  updateTime: _blocks.updateTime
+  updateTime: _blocks.updateTime,
+  updateTrxInfo: _blocks.updateTrxInfo,
+  updateBlkInfo: _blocks.updateBlkInfo
 });
 
 var _default = componentConnector(Blocks);
@@ -42191,6 +42222,10 @@ var DEFAULT_BLOCK = {
     lastBlockRead: 0,
     lastBlock: 999
   },
+  trxInfo: {
+    trxCount: 0,
+    trxRead: 0
+  },
   time: '0000-00-00 00:00:00.000'
 };
 
@@ -42202,13 +42237,21 @@ var blockReducer = function blockReducer() {
 
   console.log('blockreducer', state);
 
-  if (action.type == 'FETCH_LAST_BLOCK_SUCCESS') {
+  if (action.type == 'UPDATE_BLK') {
     console.log('action', action);
     newState.blockInfo = _objectSpread({}, action.blockInfo);
+    newState.trxInfo = _objectSpread({}, DEFAULT_BLOCK.trxInfo);
   }
 
   if (action.type == 'UPDATE_TIME') {
     newState.time = action.time;
+  }
+
+  console.log('action.type', action.type);
+
+  if (action.type == 'UPDATE_TRX') {
+    console.log('action.trxInfo', action.trxInfo);
+    newState.trxInfo = _objectSpread({}, action.trxInfo);
   }
 
   return newState;
@@ -42292,7 +42335,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "6389" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "35545" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -42469,4 +42512,4 @@ function hmrAcceptRun(bundle, id) {
   }
 }
 },{}]},{},["../../../../Users/remesh/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.js"], null)
-//# sourceMappingURL=/frontEnd.e31bb0bc.js.map
+//# sourceMappingURL=/frontend.e31bb0bc.js.map

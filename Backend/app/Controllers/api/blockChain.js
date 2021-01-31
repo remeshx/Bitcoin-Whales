@@ -48,23 +48,30 @@ class Blockchain {
             }
     }
 
-    static async checkForNewblocks() {
+    static async checkForNewblocks(socket) {
 
         let blockCount  =  await getLastBlock();
         global.transactions=[];
 
         console.log('blockCount',blockCount);
-        let ourheight   = 182010;//global.settings['BitcoinNode_LastBlockHeightRead'];
+        //let ourheight   = 182010;//global.settings['BitcoinNode_LastBlockHeightRead'];
+        //let ourheight   = 183010;//
+        let ourheight   = global.settings['BitcoinNode_LastBlockHeightRead'];
         let readHeight  =  ourheight;
         let coinBaseReward = 0;
+        let coinBaseAddress = '';
+        let coinBaseAddressId = 0;
         while(ourheight<blockCount) {
             readHeight ++;
+            blockCount  =  await getLastBlock();
+            socket.emit("UPDATE_BLK", {lastBlock: blockCount, lastBlockRead: readHeight});
+            
             const block = await getBlockByHeight(readHeight);
             console.log('block',block);
             let txcounter=0;
             let txs = block.result.tx;
             const BlockReward = this.getCoinBaseRewardByBlockHeight(readHeight);
-        
+            
             console.log('BlockReward',BlockReward);
             let fee = 0;
             let fees = 0;
@@ -72,7 +79,7 @@ class Blockchain {
             let minFee = 999;
             for (const tx of txs) {
                 //if (txcounter<10)  {
-                    
+                socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 });    
                 console.log(`================== ${txcounter}/${txs.length} Start transaction analysis` , tx.txid);
                 const vinDetails =[];
                 const addresses ={};
@@ -85,29 +92,85 @@ class Blockchain {
                 console.log('vinDetails:',vinDetails);
                 
                 for (const vout of tx.vout) {
+                    const address = await this.getAddressFromVOUT(vout);   
                     if (txcounter==0 && vout.value>0) {
                         console.log('coinBaseReward',vout.value);
                         coinBaseReward = vout.value;
+                        coinBaseAddress = address;
+
                     }
-                    if (vout.value && vout.value>0) {
-                        address = await this.increaseWallet(vout,tx,vinDetails,totalPayment,readHeight);
-                        addresses[]
+                    if (vout.value && vout.value>0) {                        
+                        //addressId = await this.increaseWallet(vout,tx,vinDetails,totalPayment,readHeight);
+                        if (!addresses[address]) addresses[address] = {increased:0 , decreased:0};
+                        addresses[address].increased = parseFloat(
+                                    parseFloat(addresses[address].increased) +
+                                    parseFloat(vout.value)
+                                ).toFixed(8);
                     }
                 };
 
                 for (const vinDetail of vinDetails) {
                     if (vinDetail.vinValue>0) {
-                        const decValue = vinDetail.vinValue * -1;
-                        const addressId = await BlockChainModel.increaseWallet(vinDetail.vinAddress, decValue);
-                        console.log('addressId',addressId);
-                        await BlockChainModel.saveAddress(addressId,readHeight,);
-                        totalPayment.decreased = parseFloat(parseFloat(totalPayment.decreased) + vinDetail.vinValue).toFixed(8);
+                        if (!addresses[vinDetail.vinAddress]) addresses[vinDetail.vinAddress] = {increased:0 , decreased:0};
+                        addresses[vinDetail.vinAddress].decreased = parseFloat(
+                                    parseFloat(addresses[vinDetail.vinAddress].decreased) +
+                                    parseFloat(vinDetail.vinValue)
+                                ).toFixed(8);
                         
-                        console.log(`totalPayment -  ${vinDetail.vinValue} = ` +  totalPayment.decreased);
-                        console.log('VIN doeas not exists in output');
-                        console.log(`Decrease wallet ${vinDetail.vinAddress} => ${decValue}`);
+                        
+                        // const addressId = await BlockChainModel.increaseWallet(vinDetail.vinAddress, decValue);
+                        // console.log('addressId',addressId);
+                        // await BlockChainModel.saveAddress(addressId,readHeight,);
+                        // totalPayment.decreased = parseFloat(parseFloat(totalPayment.decreased) + vinDetail.vinValue).toFixed(8);
+                        
+                        // console.log(`totalPayment -  ${vinDetail.vinValue} = ` +  totalPayment.decreased);
+                        // console.log('VIN doeas not exists in output');
+                        // console.log(`Decrease wallet ${vinDetail.vinAddress} => ${decValue}`);
                     }
                 };
+
+                console.log('addresses',addresses);
+
+
+                var addressesKeys = [];
+                for (var i in addresses) {
+                    if (addresses.hasOwnProperty(i)) {
+                        addressesKeys.push(i);
+                    }
+                }
+                
+                let addressId=0;
+                let decAmount=0;
+                for await (const address of addressesKeys) {     
+                    let amount = parseFloat(
+                        parseFloat(addresses[address].increased) -
+                        parseFloat(addresses[address].decreased)
+                    ).toFixed(8);
+                    
+                    addressId =0 ;
+                    if (amount>0) {
+                        console.log(`increase Wallet  ${amount} =>` +  address);
+                        addressId = await BlockChainModel.increaseWallet(address,amount);
+                        console.log(`increase Wallet addressId =>` +  addressId);
+                        
+                        totalPayment.increased =  parseFloat(
+                            parseFloat(totalPayment.increased) +
+                            parseFloat(amount)
+                        ).toFixed(8);
+                    } else {
+                        console.log(`decrease Wallet  ${amount} =>` +  address);
+                        amount = Math.abs(amount);
+                        addressId = await BlockChainModel.decreaseWallet(address,amount);
+
+                        totalPayment.decreased =parseFloat(
+                            parseFloat(totalPayment.decreased) +
+                            parseFloat(amount)
+                        ).toFixed(8);
+                    }                      
+                    if (coinBaseAddress==address) coinBaseAddressId = addressId;
+                    await BlockChainModel.saveAddress(addressId,readHeight);
+                }
+
 
                 if (txcounter>0) {
                     console.log('totalPayment.increased',totalPayment.increased);
@@ -116,9 +179,12 @@ class Blockchain {
                                 parseFloat(totalPayment.increased) -
                                 parseFloat(totalPayment.decreased)
                             ).toFixed(8);
+
+                    fee = Math.abs(fee);        
                     fees = parseFloat(parseFloat(fees) + fee).toFixed(8);
                     if (fee>maxFee) maxFee = fee;
                     if (fee<minFee) minFee = fee;
+                    console.log('fee', fee);
                     console.log('fees', fees);
                 }
                 txcounter++;
@@ -127,7 +193,7 @@ class Blockchain {
                 
             };
 
-            const remain = parseFloat(coinBaseReward - BlockReward + parseFloat(fees)).toFixed(8);
+            const remain = parseFloat(coinBaseReward - BlockReward - parseFloat(fees)).toFixed(8);
             console.log('remain',parseFloat(remain));
             if ( parseFloat(remain) !==0) {
                 const msg =`Error balances coinBaseReward : ${coinBaseReward} ,BlockReward: ${BlockReward}, fees: ${fees}`;
@@ -138,9 +204,8 @@ class Blockchain {
             console.log(msg);
 
             console.log(`${readHeight},${block.result.hash},${txs.length},${fees}`);
-            await BlockChainModel.SaveBlock(readHeight,block.result.time,block.result.hash,txs.length,fees,maxFee,minFee);  
-            return block;
-            break;
+            await BlockChainModel.SaveBlock(readHeight,block.result.time,block.result.hash,txs.length,fees,maxFee,minFee,coinBaseAddressId);  
+            
         }
         
     }
