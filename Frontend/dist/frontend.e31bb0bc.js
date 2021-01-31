@@ -33317,7 +33317,7 @@ exports.URL_GET_LAST_BLOCK = URL_GET_LAST_BLOCK;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.updateTime = exports.fetchBlocks = void 0;
 
 var _types = require("./types");
 
@@ -33338,8 +33338,18 @@ var fetchBlocks = function fetchBlocks() {
   };
 };
 
-var _default = fetchBlocks;
-exports.default = _default;
+exports.fetchBlocks = fetchBlocks;
+
+var updateTime = function updateTime(time) {
+  return function (dispatch) {
+    dispatch({
+      type: 'UPDATE_TIME',
+      time: time
+    });
+  };
+};
+
+exports.updateTime = updateTime;
 },{"./types":"src/actions/types.js","../../config":"config.js"}],"src/components/Blocks.js":[function(require,module,exports) {
 "use strict";
 
@@ -33352,9 +33362,7 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _reactRedux = require("react-redux");
 
-var _blocks = _interopRequireDefault(require("../actions/blocks"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _blocks = require("../actions/blocks");
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
@@ -33382,34 +33390,25 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 var Blocks = /*#__PURE__*/function (_Component) {
   _inherits(Blocks, _Component);
 
   var _super = _createSuper(Blocks);
 
   function Blocks() {
-    var _this;
-
     _classCallCheck(this, Blocks);
 
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _super.call.apply(_super, [this].concat(args));
-
-    _defineProperty(_assertThisInitialized(_this), "state", {
-      lastBlockHeight: _this.props.initblock
-    });
-
-    return _this;
+    return _super.apply(this, arguments);
   }
 
   _createClass(Blocks, [{
     key: "componentDidMount",
-    value: function componentDidMount() {//this.updateState();
+    value: function componentDidMount() {
+      var _this = this;
+
+      this.props.socket.on("FromAPI", function (data) {
+        _this.props.updateTime(data.time);
+      });
     }
   }, {
     key: "updateState",
@@ -33423,7 +33422,8 @@ var Blocks = /*#__PURE__*/function (_Component) {
       var _this2 = this;
 
       console.log(this.props);
-      return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("button", {
+      this.props.socket.on();
+      return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("p", null, "Time is : ", this.props.time), /*#__PURE__*/_react.default.createElement("button", {
         onClick: function onClick() {
           return _this2.updateState();
         }
@@ -33436,13 +33436,16 @@ var Blocks = /*#__PURE__*/function (_Component) {
 
 var mapStateToProps = function mapStateToProps(state) {
   var blockInfo = state.blockInfo;
+  var time = state.time;
   return {
-    blockInfo: blockInfo
+    blockInfo: blockInfo,
+    time: time
   };
 };
 
 var componentConnector = (0, _reactRedux.connect)(mapStateToProps, {
-  fetchBlocks: _blocks.default
+  fetchBlocks: _blocks.fetchBlocks,
+  updateTime: _blocks.updateTime
 });
 
 var _default = componentConnector(Blocks);
@@ -42167,103 +42170,7 @@ Object.defineProperty(exports, "Manager", {
     return manager_2.Manager;
   }
 });
-},{"./url":"node_modules/socket.io-client/build/url.js","./manager":"node_modules/socket.io-client/build/manager.js","./socket":"node_modules/socket.io-client/build/socket.js","debug":"node_modules/socket.io-client/node_modules/debug/src/browser.js","socket.io-parser":"node_modules/socket.io-parser/dist/index.js"}],"src/socket.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _react = _interopRequireWildcard(require("react"));
-
-var _socket = _interopRequireDefault(require("socket.io-client"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var ENDPOINT = 'http://localhost:3231';
-
-var Socket = /*#__PURE__*/function (_Component) {
-  _inherits(Socket, _Component);
-
-  var _super = _createSuper(Socket);
-
-  function Socket() {
-    var _this;
-
-    _classCallCheck(this, Socket);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _super.call.apply(_super, [this].concat(args));
-
-    _defineProperty(_assertThisInitialized(_this), "state", {
-      time: '-'
-    });
-
-    return _this;
-  }
-
-  _createClass(Socket, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      //Very simply connect to the socket
-      var socket = (0, _socket.default)(ENDPOINT); //Listen for data on the "outgoing data" namespace and supply a callback for what to do when we get one. In this case, we set a state variable
-
-      socket.on("FromAPI", function (data) {
-        console.log('data', data.time);
-
-        _this2.setState({
-          time: data.time
-        });
-      });
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      var response = this.state.response;
-      return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("p", null, "time is : ", this.state.time));
-    }
-  }]);
-
-  return Socket;
-}(_react.Component);
-
-var _default = Socket;
-exports.default = _default;
-},{"react":"node_modules/react/index.js","socket.io-client":"node_modules/socket.io-client/build/index.js"}],"src/reducers/blocks.js":[function(require,module,exports) {
+},{"./url":"node_modules/socket.io-client/build/url.js","./manager":"node_modules/socket.io-client/build/manager.js","./socket":"node_modules/socket.io-client/build/socket.js","debug":"node_modules/socket.io-client/node_modules/debug/src/browser.js","socket.io-parser":"node_modules/socket.io-parser/dist/index.js"}],"src/reducers/blocks.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -42283,7 +42190,8 @@ var DEFAULT_BLOCK = {
   blockInfo: {
     lastBlockRead: 0,
     lastBlock: 999
-  }
+  },
+  time: '0000-00-00 00:00:00.000'
 };
 
 var blockReducer = function blockReducer() {
@@ -42297,6 +42205,10 @@ var blockReducer = function blockReducer() {
   if (action.type == 'FETCH_LAST_BLOCK_SUCCESS') {
     console.log('action', action);
     newState.blockInfo = _objectSpread({}, action.blockInfo);
+  }
+
+  if (action.type == 'UPDATE_TIME') {
+    newState.time = action.time;
   }
 
   return newState;
@@ -42337,19 +42249,22 @@ var _reactDom = require("react-dom");
 
 var _Blocks = _interopRequireDefault(require("./src/components/Blocks"));
 
-var _socket = _interopRequireDefault(require("./src/socket"));
+var _socket = _interopRequireDefault(require("socket.io-client"));
 
 var _reducers = _interopRequireDefault(require("./src/reducers"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var initBlock = 50;
+var ENDPOINT = 'http://localhost:3231';
 var composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || _redux.compose;
 var store = (0, _redux.createStore)(_reducers.default, composeEnhancer((0, _redux.applyMiddleware)(_reduxThunk.default)));
+var socket = (0, _socket.default)(ENDPOINT);
 (0, _reactDom.render)( /*#__PURE__*/_react.default.createElement(_reactRedux.Provider, {
   store: store
-}, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h2", null, "This is Header"), /*#__PURE__*/_react.default.createElement(_socket.default, null), /*#__PURE__*/_react.default.createElement(_Blocks.default, null))), document.getElementById('root'));
-},{"react":"node_modules/react/index.js","redux":"node_modules/redux/es/redux.js","react-redux":"node_modules/react-redux/es/index.js","redux-thunk":"node_modules/redux-thunk/es/index.js","react-dom":"node_modules/react-dom/index.js","./src/components/Blocks":"src/components/Blocks.js","./src/socket":"src/socket.js","./src/reducers":"src/reducers/index.js"}],"../../../../Users/remesh/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+}, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h2", null, "This is Header"), /*#__PURE__*/_react.default.createElement(_Blocks.default, {
+  socket: socket
+}))), document.getElementById('root'));
+},{"react":"node_modules/react/index.js","redux":"node_modules/redux/es/redux.js","react-redux":"node_modules/react-redux/es/index.js","redux-thunk":"node_modules/redux-thunk/es/index.js","react-dom":"node_modules/react-dom/index.js","./src/components/Blocks":"src/components/Blocks.js","socket.io-client":"node_modules/socket.io-client/build/index.js","./src/reducers":"src/reducers/index.js"}],"../../../../Users/remesh/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -42377,7 +42292,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "7663" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "6389" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

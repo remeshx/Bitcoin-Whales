@@ -26,7 +26,10 @@ CREATE INDEX TxIdOut_txid_idx ON TxIdOut(txid);
 CREATE TABLE block_details(
     id SERIAL PRIMARY KEY,
     block_height INT,
+    block_time TIMESTAMP,
     block_hash character(100),
     tx_count INT,
-    block_fee NUMERIC(322,8)
+    block_fee NUMERIC(322,8),
+    max_fee NUMERIC(322,8),
+    min_fee NUMERIC(322,8),
 );

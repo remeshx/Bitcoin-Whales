@@ -2,7 +2,7 @@ import React ,{Component} from 'react';
 import socketIOClient from "socket.io-client";
 
 const ENDPOINT = 'http://localhost:3231';
-class Socket extends Component {
+class Socket {
     state = { time: '-' }
 
     componentDidMount(){
@@ -12,8 +12,7 @@ class Socket extends Component {
          socket.on("FromAPI", data => {
             console.log('data',data.time);
              this.setState({time: data.time})
-         });
-         
+         });         
     }
 
     render() {
@@ -24,7 +23,6 @@ class Socket extends Component {
             </div>
          );
     }
-
 }
 
 export default Socket;
