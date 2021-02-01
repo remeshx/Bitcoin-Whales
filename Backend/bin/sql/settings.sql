@@ -16,4 +16,4 @@ INSERT INTO settings (varCategory,varName,varValue,lastUpdate) VALUES
 
         
 INSERT INTO settings (varCategory,varName,varValue,lastUpdate) VALUES 
-        ('BitcoinNode','trxRead','2',CURRENT_TIMESTAMP);
+        ('BitcoinNode','trxRead','0',CURRENT_TIMESTAMP);
