@@ -1,5 +1,5 @@
 const {getBlockByHeight,gettransaction,deriveaddresses,getLastBlock} = require('../../helpers/btcnode');
-const BlockChainModel = require('../../Models/blockChain');
+const BlockChainModel = require('../../Models/blockchain');
 
 class Blockchain {
 
