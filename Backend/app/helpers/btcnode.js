@@ -82,7 +82,7 @@ function gettransaction(txid) {
 
 function deriveaddresses(hex,type) {
     //drive the address base on the type and hex input of vout in a transaction if there are not any address listed in the vout
-    console.log('deriveaddresses' + hex + ' - ' +type);
+    //console.log('deriveaddresses' + hex + ' - ' +type);
     return new Promise((resolve,reject)=>{
         let pubkey = '';
         let desc = ''
@@ -90,19 +90,22 @@ function deriveaddresses(hex,type) {
             case 'pubkey': {
                 pubkey = hex.substring(2, hex.length-2);
                 desc = `pk(${pubkey})`;
-                console.log('desc111',desc);
+                //console.log('desc111',desc);
                 break;}
-            default : console.log('error type : ' + type);
+            default : {
+                console.log('error type : ' + type);
+                throw error('error type : ' + type);
+            }
         }
-        console.log('desc',desc);
+        //console.log('desc',desc);
         callNode('getdescriptorinfo',[desc])
         .then(response => {
-            console.log('deriveaddresses',response);
-            console.log('descriptor',response.result.descriptor);
+            //console.log('deriveaddresses',response);
+            //console.log('descriptor',response.result.descriptor);
             
             callNode('deriveaddresses',[response.result.descriptor])
             .then(response => {
-                console.log('Address:',response.result[0]);
+                //console.log('Address:',response.result[0]);
             
                 resolve(response.result[0]);
             })

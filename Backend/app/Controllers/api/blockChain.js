@@ -77,21 +77,22 @@ class Blockchain {
             let fees = 0;
             let maxFee = 0;
             let minFee = 999;
-            for (const tx of txs) {
+            for await (const tx of txs) {
                 //if (txcounter<10)  {
                 socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 });    
                 //console.log(`================== ${txcounter}/${txs.length} Start transaction analysis` , tx.txid);
+                console.log(`================== ${txcounter}/${txs.length} TRX ` , tx.txid);
                 const vinDetails =[];
                 const addresses ={};
                 const totalPayment = {increased : 0, decreased :0}
                 if (txcounter>0) {
-                    for (const vin of tx.vin) {
+                    for await (const vin of tx.vin) {
                         await this.getVInDetails(vin.txid,vin.vout,vinDetails);
                     };
                 } 
                 //console.log('vinDetails:',vinDetails);
                 
-                for (const vout of tx.vout) {
+                for await (const vout of tx.vout) {
                     const address = await this.getAddressFromVOUT(vout);   
                     if (txcounter==0 && vout.value>0) {
                         //console.log('coinBaseReward',vout.value);
