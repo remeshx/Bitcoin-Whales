@@ -31,6 +31,21 @@ class settingModel {
             });
         })
     }
+
+    static updateCurrentBlock(readHeight) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `update settings set varValue=$1 where varCategory='BitcoinNode' and varName='LastBlockHeightRead';`,
+            [readHeight],
+            (error,response)=>{
+                if (error) {
+                    console.log('error',error);
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
 }
 
 module.exports = settingModel;

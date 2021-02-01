@@ -93,6 +93,8 @@ class BlockChainModel {
             });
         })
     }
+
+    
 }
 
 module.exports = BlockChainModel;

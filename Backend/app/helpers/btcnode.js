@@ -27,7 +27,7 @@ function getBlockHash(blockHeight) {
     return new Promise((resolve,reject)=>{
         callNode('getblockhash',[blockHeight])
         .then(response => {
-            console.log('response',response);
+            //console.log('response',response);
             resolve(response);
         })
         .catch(error => reject(error));

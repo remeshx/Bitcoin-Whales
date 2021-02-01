@@ -1,5 +1,6 @@
 const {getBlockByHeight,gettransaction,deriveaddresses,getLastBlock} = require('../../helpers/btcnode');
 const BlockChainModel = require('../../Models/blockchain');
+const SettingModel = require('../../Models/settings');
 
 class Blockchain {
 
@@ -61,9 +62,11 @@ class Blockchain {
         let coinBaseReward = 0;
         let coinBaseAddress = '';
         let coinBaseAddressId = 0;
-        while(ourheight<blockCount) {
+        while(readHeight<blockCount) {
             readHeight ++;
-            blockCount  =  await getLastBlock();
+            //blockCount  =  await getLastBlock();
+            SettingModel.updateCurrentBlock(readHeight);
+            global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
             socket.emit("UPDATE_BLK", {lastBlock: blockCount, lastBlockRead: readHeight});
             
             const block = await getBlockByHeight(readHeight);
