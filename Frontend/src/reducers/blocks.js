@@ -17,9 +17,9 @@ const DEFAULT_BLOCK = {
 export const blockReducer = (state = DEFAULT_BLOCK, action) => {
     const newState= {...state};
     
-    console.log('blockreducer', state);
+    //console.log('blockreducer', state);
     if (action.type=='UPDATE_BLK') {
-        console.log('action',action);
+        //console.log('action',action);
          newState.blockInfo = {...action.blockInfo}
          newState.trxInfo = {...DEFAULT_BLOCK.trxInfo}
     }
@@ -30,7 +30,7 @@ export const blockReducer = (state = DEFAULT_BLOCK, action) => {
 
     console.log('action.type', action.type);
     if (action.type=='UPDATE_TRX') {
-        console.log('action.trxInfo', action.trxInfo);
+        //console.log('action.trxInfo', action.trxInfo);
         newState.trxInfo = {...action.trxInfo}
     }
 

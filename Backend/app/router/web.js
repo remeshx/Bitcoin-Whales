@@ -17,10 +17,8 @@ router.get('/setting', (req,res, next)=> {
 });
 
 router.get('/blockchain/LastBlockHeightRead', (req,res, next)=> {
-    Blockchain.getLastBlock(res.io).then(str=>{
-        
-        res.json(str);
-    })
+    Blockchain.getLastBlock(res.io).then();
+    res.json(str);
 });
 
 router.get('/blockchain/checkForNewblocks', (req,res, next)=> {

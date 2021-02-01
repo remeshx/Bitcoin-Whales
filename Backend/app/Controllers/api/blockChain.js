@@ -67,12 +67,12 @@ class Blockchain {
             socket.emit("UPDATE_BLK", {lastBlock: blockCount, lastBlockRead: readHeight});
             
             const block = await getBlockByHeight(readHeight);
-            console.log('block',block);
+            console.log('readHeight',readHeight);
             let txcounter=0;
             let txs = block.result.tx;
             const BlockReward = this.getCoinBaseRewardByBlockHeight(readHeight);
             
-            console.log('BlockReward',BlockReward);
+            //console.log('BlockReward',BlockReward);
             let fee = 0;
             let fees = 0;
             let maxFee = 0;
@@ -80,7 +80,7 @@ class Blockchain {
             for (const tx of txs) {
                 //if (txcounter<10)  {
                 socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 });    
-                console.log(`================== ${txcounter}/${txs.length} Start transaction analysis` , tx.txid);
+                //console.log(`================== ${txcounter}/${txs.length} Start transaction analysis` , tx.txid);
                 const vinDetails =[];
                 const addresses ={};
                 const totalPayment = {increased : 0, decreased :0}
@@ -89,12 +89,12 @@ class Blockchain {
                         await this.getVInDetails(vin.txid,vin.vout,vinDetails);
                     };
                 } 
-                console.log('vinDetails:',vinDetails);
+                //console.log('vinDetails:',vinDetails);
                 
                 for (const vout of tx.vout) {
                     const address = await this.getAddressFromVOUT(vout);   
                     if (txcounter==0 && vout.value>0) {
-                        console.log('coinBaseReward',vout.value);
+                        //console.log('coinBaseReward',vout.value);
                         coinBaseReward = vout.value;
                         coinBaseAddress = address;
 
@@ -129,7 +129,7 @@ class Blockchain {
                     }
                 };
 
-                console.log('addresses',addresses);
+                //console.log('addresses',addresses);
 
 
                 var addressesKeys = [];
@@ -149,16 +149,16 @@ class Blockchain {
                     
                     addressId =0 ;
                     if (amount>0) {
-                        console.log(`increase Wallet  ${amount} =>` +  address);
+                        //console.log(`increase Wallet  ${amount} =>` +  address);
                         addressId = await BlockChainModel.increaseWallet(address,amount);
-                        console.log(`increase Wallet addressId =>` +  addressId);
+                        //console.log(`increase Wallet addressId =>` +  addressId);
                         
                         totalPayment.increased =  parseFloat(
                             parseFloat(totalPayment.increased) +
                             parseFloat(amount)
                         ).toFixed(8);
                     } else {
-                        console.log(`decrease Wallet  ${amount} =>` +  address);
+                        //console.log(`decrease Wallet  ${amount} =>` +  address);
                         amount = Math.abs(amount);
                         addressId = await BlockChainModel.decreaseWallet(address,amount);
 
@@ -173,8 +173,8 @@ class Blockchain {
 
 
                 if (txcounter>0) {
-                    console.log('totalPayment.increased',totalPayment.increased);
-                    console.log('totalPayment.decreased',totalPayment.decreased);
+                    //console.log('totalPayment.increased',totalPayment.increased);
+                    //console.log('totalPayment.decreased',totalPayment.decreased);
                     fee =  parseFloat(
                                 parseFloat(totalPayment.increased) -
                                 parseFloat(totalPayment.decreased)
@@ -184,8 +184,8 @@ class Blockchain {
                     fees = parseFloat(parseFloat(fees) + fee).toFixed(8);
                     if (fee>maxFee) maxFee = fee;
                     if (fee<minFee) minFee = fee;
-                    console.log('fee', fee);
-                    console.log('fees', fees);
+                    //console.log('fee', fee);
+                    //console.log('fees', fees);
                 }
                 txcounter++;
                 //}
@@ -194,16 +194,16 @@ class Blockchain {
             };
 
             const remain = parseFloat(coinBaseReward - BlockReward - parseFloat(fees)).toFixed(8);
-            console.log('remain',parseFloat(remain));
+            //console.log('remain',parseFloat(remain));
             if ( parseFloat(remain) !==0) {
                 const msg =`Error balances coinBaseReward : ${coinBaseReward} ,BlockReward: ${BlockReward}, fees: ${fees}`;
                 console.log(msg);
-               // throw error(msg);
+                throw error(msg);
             }
             const msg =`balances coinBaseReward : ${coinBaseReward} ,BlockReward: ${BlockReward}, fees: ${fees}`;
-            console.log(msg);
+            //console.log(msg);
 
-            console.log(`${readHeight},${block.result.hash},${txs.length},${fees}`);
+            //console.log(`${readHeight},${block.result.hash},${txs.length},${fees}`);
             await BlockChainModel.SaveBlock(readHeight,block.result.time,block.result.hash,txs.length,fees,maxFee,minFee,coinBaseAddressId);  
             
         }
@@ -267,25 +267,25 @@ class Blockchain {
 
     static async getAddressFromVOUT(vout)
     {
-        console.log(`getAddressFromVOUT`);
+        //console.log(`getAddressFromVOUT`);
         let address = ''; 
         let hex='';
         let type='';
         if (vout.scriptPubKey.addresses) 
         {           
             if (vout.scriptPubKey.addresses.length>1) {
-                console.log('tx ', tx);
-                console.log('addresse ', vout.scriptPubKey.addresses);
+                //console.log('tx ', tx);
+                //console.log('addresse ', vout.scriptPubKey.addresses);
                 throw new Error('ERROR : TOO MANY ADDRESSESS ' + tx.txid);
             }
             address = vout.scriptPubKey.addresses[0];
-            console.log(`address exists =>`, address);
+            //console.log(`address exists =>`, address);
         } else {
-            console.log('no address ');
+            //console.log('no address ');
             hex=vout.scriptPubKey.hex;
             type=vout.scriptPubKey.type;
             address = await deriveaddresses(hex,type );          
-            console.log(`address derived =>`, address);  
+            //console.log(`address derived =>`, address);  
         }
         
         return address;

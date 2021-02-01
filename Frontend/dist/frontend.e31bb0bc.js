@@ -42233,12 +42233,11 @@ var blockReducer = function blockReducer() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_BLOCK;
   var action = arguments.length > 1 ? arguments[1] : undefined;
 
-  var newState = _objectSpread({}, state);
+  var newState = _objectSpread({}, state); //console.log('blockreducer', state);
 
-  console.log('blockreducer', state);
 
   if (action.type == 'UPDATE_BLK') {
-    console.log('action', action);
+    //console.log('action',action);
     newState.blockInfo = _objectSpread({}, action.blockInfo);
     newState.trxInfo = _objectSpread({}, DEFAULT_BLOCK.trxInfo);
   }
@@ -42250,7 +42249,7 @@ var blockReducer = function blockReducer() {
   console.log('action.type', action.type);
 
   if (action.type == 'UPDATE_TRX') {
-    console.log('action.trxInfo', action.trxInfo);
+    //console.log('action.trxInfo', action.trxInfo);
     newState.trxInfo = _objectSpread({}, action.trxInfo);
   }
 
@@ -42298,7 +42297,7 @@ var _reducers = _interopRequireDefault(require("./src/reducers"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var ENDPOINT = 'http://localhost:3231';
+var ENDPOINT = 'http://136.243.88.216:3231';
 var composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || _redux.compose;
 var store = (0, _redux.createStore)(_reducers.default, composeEnhancer((0, _redux.applyMiddleware)(_reduxThunk.default)));
 var socket = (0, _socket.default)(ENDPOINT);

@@ -19,7 +19,7 @@ class BlockChainModel {
                     console.log('error',error);
                     reject(error);
                 }
-                console.log('addressId',addressId);
+                //console.log('addressId',addressId);
                 resolve(addressId);
             });
         })
