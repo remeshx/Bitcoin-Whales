@@ -238,10 +238,10 @@ class Blockchain {
             //console.log(`${readHeight},${block.result.hash},${txs.length},${fees}`);
             await BlockChainModel.SaveBlock(readHeight,block.result.time,block.result.hash,txs.length,fees,maxFee,minFee,coinBaseAddressId);  
             SettingModel.updateCurrentBlock(readHeight);
-            SettingModel.updateTrxRead(0);
+            SettingModel.updateTrxRead(-1);
             global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
-            global.settings['BitcoinNode_trxRead'] = 0;
-            trxRead = 0;
+            global.settings['BitcoinNode_trxRead'] = -1;
+            trxRead = -1;
         }
         
     }
