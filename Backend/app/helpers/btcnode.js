@@ -72,7 +72,7 @@ function gettransaction(txid) {
         callNode('getrawtransaction',[txid,true])
         .then(response => {
             //console.log('response',response);
-            console.log('getrawtransaction : ',txid);
+            //console.log('getrawtransaction : ',txid);
             global.transactions.push({id:txid,transactionDetails : response});
             resolve(response);
         })
@@ -92,20 +92,31 @@ function deriveaddresses(hex,type) {
                 desc = `pk(${pubkey})`;
                 //console.log('desc111',desc);
                 break;}
+            case 'nonstandard': {
+                //pubkey = hex.substring(2, hex.length-2);
+                
+                console.log('error Addrress : ' + type);
+                resolve( 'errorAddress');
+                
+                //console.log('desc111',desc);
+                break;}
             default : {
                 console.log('error type : ' + type);
                 throw error('error type : ' + type);
             }
         }
+        if (type=='nonstandard') {
+            resolve('errorAddress');
+        }
         //console.log('desc',desc);
         callNode('getdescriptorinfo',[desc])
         .then(response => {
-            //console.log('deriveaddresses',response);
-            //console.log('descriptor',response.result.descriptor);
+            // console.log('deriveaddresses',response);
+            // console.log('descriptor',response.result.descriptor);
             
             callNode('deriveaddresses',[response.result.descriptor])
             .then(response => {
-                //console.log('Address:',response.result[0]);
+                //console.log('Address:',response);
             
                 resolve(response.result[0]);
             })

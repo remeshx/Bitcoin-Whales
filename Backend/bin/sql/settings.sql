@@ -12,3 +12,8 @@ INSERT INTO settings (varCategory,varName,varValue,lastUpdate) VALUES
         ('BitcoinNode','USERNAME','root',CURRENT_TIMESTAMP),
         ('BitcoinNode','PASSWORD','HSsdxYdihe',CURRENT_TIMESTAMP),
         ('BitcoinNode','LastBlockHeightRead','0',CURRENT_TIMESTAMP );
+
+
+        
+INSERT INTO settings (varCategory,varName,varValue,lastUpdate) VALUES 
+        ('BitcoinNode','trxRead','2',CURRENT_TIMESTAMP);

@@ -23,7 +23,7 @@ router.get('/blockchain/LastBlockHeightRead', (req,res, next)=> {
 
 router.get('/blockchain/checkForNewblocks', (req,res, next)=> {
     Blockchain.checkForNewblocks(res.io).then(str=>{
-        res.json({msg: 'done'});
+        res.json({msg: str});
     })
 });
 
