@@ -52,7 +52,7 @@ class Blockchain {
     static async checkForNewblocks(socket) {
 
         let blockCount  =  await getLastBlock();
-        global.transactions=[];
+        
 
         console.log('blockCount',blockCount);
         //let ourheight   = 182010;//global.settings['BitcoinNode_LastBlockHeightRead'];
@@ -62,8 +62,23 @@ class Blockchain {
         let coinBaseReward = 0;
         let coinBaseAddress = '';
         let coinBaseAddressId = 0;
+        let fee = 0;
+        let fees = 0;
+        let maxFee = 0;
+        let minFee = 999;
+        let txcounter = 0;
+        let txs = null;
+        let vinDetails =[];
+        let addresses ={};
+        let totalPayment = {increased : 0, decreased :0};
+        let address = '';
+        let addressesKeys = [];
+        let amount =0;
+        let addressId=0;
+        let decAmount=0;
         while(readHeight<blockCount) {
             readHeight ++;
+            global.transactions=[];
             //blockCount  =  await getLastBlock();
             SettingModel.updateCurrentBlock(readHeight);
             global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
@@ -71,23 +86,23 @@ class Blockchain {
             
             const block = await getBlockByHeight(readHeight);
             console.log('readHeight',readHeight);
-            let txcounter=0;
-            let txs = block.result.tx;
+            txcounter=0;
+            txs = block.result.tx;
             const BlockReward = this.getCoinBaseRewardByBlockHeight(readHeight);
             
             //console.log('BlockReward',BlockReward);
-            let fee = 0;
-            let fees = 0;
-            let maxFee = 0;
-            let minFee = 999;
+            fee = 0;
+            fees = 0;
+            maxFee = 0;
+            minFee = 999;
             for await (const tx of txs) {
                 //if (txcounter<10)  {
                 socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 });    
                 //console.log(`================== ${txcounter}/${txs.length} Start transaction analysis` , tx.txid);
                 console.log(`================== ${txcounter}/${txs.length} TRX ` , tx.txid);
-                const vinDetails =[];
-                const addresses ={};
-                const totalPayment = {increased : 0, decreased :0}
+                vinDetails =[];
+                addresses ={};
+                totalPayment = {increased : 0, decreased :0}
                 if (txcounter>0) {
                     for await (const vin of tx.vin) {
                         await this.getVInDetails(vin.txid,vin.vout,vinDetails);
@@ -96,7 +111,7 @@ class Blockchain {
                 //console.log('vinDetails:',vinDetails);
                 
                 for await (const vout of tx.vout) {
-                    const address = await this.getAddressFromVOUT(vout);   
+                    address = await this.getAddressFromVOUT(vout);   
                     if (txcounter==0 && vout.value>0) {
                         //console.log('coinBaseReward',vout.value);
                         coinBaseReward = vout.value;
@@ -136,17 +151,17 @@ class Blockchain {
                 //console.log('addresses',addresses);
 
 
-                var addressesKeys = [];
+                addressesKeys = [];
                 for (var i in addresses) {
                     if (addresses.hasOwnProperty(i)) {
                         addressesKeys.push(i);
                     }
                 }
                 
-                let addressId=0;
-                let decAmount=0;
+                addressId=0;
+                decAmount=0;
                 for await (const address of addressesKeys) {     
-                    let amount = parseFloat(
+                    amount = parseFloat(
                         parseFloat(addresses[address].increased) -
                         parseFloat(addresses[address].decreased)
                     ).toFixed(8);
@@ -196,7 +211,7 @@ class Blockchain {
 
                 
             };
-
+            if (minFee==999) minFee=0;
             const remain = parseFloat(coinBaseReward - BlockReward - parseFloat(fees)).toFixed(8);
             //console.log('remain',parseFloat(remain));
             if ( parseFloat(remain) !==0) {
