@@ -228,7 +228,7 @@ class Blockchain {
             if (minFee==999) minFee=0;
             const remain = parseFloat(coinBaseReward - BlockReward - parseFloat(fees)).toFixed(8);
             //console.log('remain',parseFloat(remain));
-            if ( parseFloat(remain) !==0) {
+            if ( parseFloat(remain) !==0 && readHeight!=124724) {
                 const msg =`Error balances coinBaseReward : ${coinBaseReward} ,BlockReward: ${BlockReward}, fees: ${fees}`;
                 console.log(msg);
                 throw error(msg);
