@@ -31,8 +31,15 @@ CREATE TABLE block_details(
     tx_count INT,
     block_fee NUMERIC(322,8),
     max_fee NUMERIC(322,8),
-    min_fee NUMERIC(322,8),
-    reward_address_id INT    
+    min_fee NUMERIC(322,8) 
 );
 
 
+CREATE TABLE block_rewards (
+    id SERIAL PRIMARY KEY,
+    block_height INT,
+    block_reward_total NUMERIC(322,8),
+    reward_address_id INT,
+    reg_time TIMESTAMP DEFAULT NOW(),
+    reward_time INT 
+)

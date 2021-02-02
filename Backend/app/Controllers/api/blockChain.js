@@ -56,12 +56,12 @@ class Blockchain {
 
         console.log('blockCount',blockCount);
         //let ourheight   = 182010;//global.settings['BitcoinNode_LastBlockHeightRead'];
-        //let ourheight   = 71035;//
+        //let ourheight   = 79763;//
         let ourheight   = global.settings['BitcoinNode_LastBlockHeightRead'];
         let trxRead = global.settings['BitcoinNode_trxRead'];
         let readHeight  =  ourheight;
         let coinBaseReward = 0;
-        let coinBaseAddress = '';
+        let coinBaseAddress = {};
         let coinBaseAddressId = 0;
         let fee = 0;
         let fees = 0;
@@ -77,11 +77,13 @@ class Blockchain {
         let amount =0;
         let addressId=0;
         let decAmount=0;
+        let coinBaseAddressesKeys= [];
         while(readHeight<blockCount) {
             readHeight ++;
             global.transactions=[];
             //blockCount  =  await getLastBlock();
-            
+            coinBaseReward=0;
+            coinBaseAddress = {};
             socket.emit("UPDATE_BLK", {lastBlock: blockCount, lastBlockRead: readHeight});
             const block = await getBlockByHeight(readHeight);
             console.log('readHeight',readHeight);
@@ -117,9 +119,8 @@ class Blockchain {
                    }  
                     if (txcounter==0 && vout.value>0) {
                         //console.log('coinBaseReward',vout.value);
-                        coinBaseReward = vout.value;
-                        coinBaseAddress = address;
-
+                        coinBaseReward += vout.value;
+                        coinBaseAddress[address] = {id:0, reward : vout.value};
                     }
                     if (vout.value && vout.value>0) {                        
                         //addressId = await this.increaseWallet(vout,tx,vinDetails,totalPayment,readHeight);
@@ -191,8 +192,8 @@ class Blockchain {
                             parseFloat(totalPayment.decreased) +
                             parseFloat(amount)
                         ).toFixed(8);
-                    }                      
-                    if (coinBaseAddress==address) coinBaseAddressId = addressId;
+                    }          
+                    if (coinBaseAddress[address] !== undefined) coinBaseAddress[address].id = addressId;
 
                     if (txcounter>trxRead)
                         await BlockChainModel.saveAddress(addressId,readHeight);
@@ -236,7 +237,17 @@ class Blockchain {
             //console.log(msg);
 
             //console.log(`${readHeight},${block.result.hash},${txs.length},${fees}`);
-            await BlockChainModel.SaveBlock(readHeight,block.result.time,block.result.hash,txs.length,fees,maxFee,minFee,coinBaseAddressId);  
+            coinBaseAddressesKeys = [];
+            for (var i in coinBaseAddress) {
+                if (coinBaseAddress.hasOwnProperty(i)) {
+                    coinBaseAddressesKeys.push(i);
+                }
+            }
+            for await (const address of coinBaseAddressesKeys) {  
+                await BlockChainModel.SaveReward(readHeight,coinBaseAddress[address].reward,coinBaseAddress[address].id,block.result.time);
+            }
+
+            await BlockChainModel.SaveBlock(readHeight,block.result.time,block.result.hash,txs.length,fees,maxFee,minFee);  
             SettingModel.updateCurrentBlock(readHeight);
             SettingModel.updateTrxRead(-1);
             global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;

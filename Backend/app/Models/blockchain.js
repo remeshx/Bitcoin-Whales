@@ -62,12 +62,29 @@ class BlockChainModel {
         })
     }
 
-    static SaveBlock(height,blockTime,blockHash,txCount,fee,maxFee,minFee,rewardAddress) {
+    static SaveBlock(height,blockTime,blockHash,txCount,fee,maxFee,minFee) {
         return new Promise((resolve,reject)=> {
             db.query(
-                `INSERT INTO block_details ( block_height,block_time, block_hash,tx_count,block_fee,max_fee,min_fee,reward_address_id) 
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`,
-            [height,blockTime,blockHash,txCount,fee,maxFee,minFee,rewardAddress],
+                `INSERT INTO block_details ( block_height,block_time, block_hash,tx_count,block_fee,max_fee,min_fee) 
+                    VALUES ($1, $2, $3, $4, $5, $6, $7);`,
+            [height,blockTime,blockHash,txCount,fee,maxFee,minFee],
+            (error,response)=>{
+                if (error) {
+                    console.log('error',error);
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
+    static SaveReward(height,reward,rewardAddress,rewardTime) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `INSERT INTO block_rewards 
+                    (block_height,block_reward_total, reward_address_id, reward_time) 
+                    VALUES ($1, $2, $3, $4);`,
+            [height,reward,rewardAddress,rewardTime],
             (error,response)=>{
                 if (error) {
                     console.log('error',error);
