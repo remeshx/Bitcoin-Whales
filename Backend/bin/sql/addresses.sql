@@ -6,6 +6,7 @@ CREATE TABLE addresses (
     deposits        NUMERIC(32,8) DEFAULT 0,
     withdrawals        NUMERIC(32,8) DEFAULT 0
 );
+CREATE INDEX addressid ON addresses(id);
 
 
 CREATE TABLE address_blocks (
@@ -42,4 +43,24 @@ CREATE TABLE block_rewards (
     reward_address_id INT,
     reg_time TIMESTAMP DEFAULT NOW(),
     reward_time INT 
-)
+);
+
+CREATE TABLE transactions (
+    id          SERIAL PRIMARY KEY,
+    blockid     INT,
+    txid        character(100),
+    txseq       SMALLINT
+);
+CREATE INDEX transactionsid ON transactions(txid);
+
+
+CREATE TABLE adresses_input  (
+    id          SERIAL PRIMARY KEY,
+    addressid     INT,
+    txid          INT,
+    vout          INT,
+    amount        NUMERIC(322,8),
+    FOREIGN KEY (txid) REFERENCES transactions(id),
+    FOREIGN KEY (addressid) REFERENCES addresses(id)
+);
+CREATE INDEX adresses_input_txid_idx ON adresses_input(txid);

@@ -56,7 +56,7 @@ class Blockchain {
 
         console.log('blockCount',blockCount);
         //let ourheight   = 182010;//global.settings['BitcoinNode_LastBlockHeightRead'];
-        //let ourheight   = 79763;//
+        //let ourheight   = 0;//
         let ourheight   = global.settings['BitcoinNode_LastBlockHeightRead'];
         let trxRead = global.settings['BitcoinNode_trxRead'];
         let readHeight  =  ourheight;
@@ -71,6 +71,7 @@ class Blockchain {
         let txs = null;
         let vinDetails =[];
         let addresses ={};
+        let vouts ={};
         let totalPayment = {increased : 0, decreased :0};
         let address = '';
         let addressesKeys = [];
@@ -78,6 +79,10 @@ class Blockchain {
         let addressId=0;
         let decAmount=0;
         let coinBaseAddressesKeys= [];
+        let transactionId=0;
+        let voutCounter=0;
+        let voutQuery='';
+
         while(readHeight<blockCount) {
             readHeight ++;
             global.transactions=[];
@@ -88,6 +93,7 @@ class Blockchain {
             const block = await getBlockByHeight(readHeight);
             console.log('readHeight',readHeight);
             txcounter=0;
+            transactionId=0;
             txs = block.result.tx;
             const BlockReward = this.getCoinBaseRewardByBlockHeight(readHeight);
             
@@ -99,11 +105,15 @@ class Blockchain {
             minFee = 999;
             for await (const tx of txs) {
                 //if (txcounter<10)  {
+                if (txcounter>trxRead) transactionId = await BlockChainModel.saveTransaction(readHeight,tx.txid,txcounter);
+                
                 socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 });    
                 //console.log(`================== ${txcounter}/${txs.length} Start transaction analysis` , tx.txid);
                 console.log(`===== ${txcounter}/${txs.length} TRX ` , tx.txid);
                 vinDetails =[];
                 addresses ={};
+                vouts ={};
+                voutQuery='';
                 totalPayment = {increased : 0, decreased :0}
                 if (txcounter>0) {
                     for await (const vin of tx.vin) {
@@ -112,7 +122,8 @@ class Blockchain {
                 } 
                 //console.log('vinDetails:',vinDetails);
                 
-                for await (const vout of tx.vout) {
+                voutCounter =0;
+                for await (const vout of tx.vout) {                    
                     address = await this.getAddressFromVOUT(vout); 
                     if (address=='errorAddress') {
                         console.log('error TRX',tx.txid);
@@ -130,6 +141,9 @@ class Blockchain {
                                     parseFloat(vout.value)
                                 ).toFixed(8);
                     }
+                    if (!vouts[address]) vouts[address] = [];
+                    vouts[address].push({id: voutCounter, value: vout.value});
+                    voutCounter++;
                 };
 
                 for (const vinDetail of vinDetails) {
@@ -195,15 +209,26 @@ class Blockchain {
                     }          
                     if (coinBaseAddress[address] !== undefined) coinBaseAddress[address].id = addressId;
 
-                    if (txcounter>trxRead)
-                        await BlockChainModel.saveAddress(addressId,readHeight);
-                    else  {
+                    // console.log('address',address);
+                    // console.log('vouts',vouts);
+                    if (txcounter>trxRead) {
+                        if (addresses[address].increased>0)
+                        for await(var voutdet of vouts[address]){
+                            //console.log('voutdet',voutdet);
+                            voutQuery += `,(${addressId},${transactionId},${voutdet.id},${voutdet.value})`;   
+                        }
+                    } else  {
                         console.log('Skip trx', tx.txid);
                         console.log('Skipping details', `${txcounter}>${trxRead}`);
                     }
+
                 }
-                if (txcounter>trxRead)
+
+                if (txcounter>trxRead) {
                     SettingModel.updateTrxRead(txcounter);
+                    voutQuery = voutQuery.replace(/(^,)|(,$)/g, "");
+                    await BlockChainModel.saveAddresses(voutQuery);   
+                }
 
                 if (txcounter>0) {
                     //console.log('totalPayment.increased',totalPayment.increased);
@@ -268,7 +293,18 @@ class Blockchain {
         return blockReward;       
     }
 
-    static async getVInDetails(txid,vout,vinDetails){        
+    static async getVInDetails(txid,vout,vinDetails){     
+       let txkey = await BlockChainModel.getTransactionKey(txid); 
+       let addDetail = await BlockChainModel.getAddressKey(txkey,vout); 
+       let address =  await BlockChainModel.getAddressFromKey(addDetail.id); 
+       vinDetails.push({
+            vinAddress : address,
+            vinValue : addDetail.amount
+        });
+        
+       return true;
+
+        /*
        let tx = await gettransaction(txid);
        const address = await this.getAddressFromVOUT(tx.result.vout[vout]);
        if (address=='errorAddress') {
@@ -295,6 +331,7 @@ class Blockchain {
        await BlockChainModel.logTransactionSend(txid,vout,address);
 
        return true;
+       */
     }
 
     

@@ -23,7 +23,7 @@ function getLastBlock() {
 
 
 function getBlockHash(blockHeight) {
-    console.log('getBlockHash : ',blockHeight);
+    //console.log('getBlockHash : ',blockHeight);
     return new Promise((resolve,reject)=>{
         callNode('getblockhash',[blockHeight])
         .then(response => {

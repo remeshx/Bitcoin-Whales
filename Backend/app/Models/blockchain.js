@@ -95,12 +95,12 @@ class BlockChainModel {
         })
     }
 
-    static saveAddress(address,height) {
+    static saveAddress(addressId,transactionId,vout,amount) {
         return new Promise((resolve,reject)=> {
             db.query(
-                `INSERT INTO address_blocks ( address_id, block_height) 
-                    VALUES ($1, $2);`,
-            [address,height],
+                `INSERT INTO adresses_input ( address_id, txid, vout, amount) 
+                    VALUES ($1, $2, $2, $3 ,$4);`,
+            [addressId,transactionId,vout,amount],
             (error,response)=>{
                 if (error) {
                     console.log('error',error);
@@ -110,6 +110,85 @@ class BlockChainModel {
             });
         })
     }
+
+    static saveAddresses(values) {
+        return new Promise((resolve,reject)=> {
+            //console.log('values',values);
+            db.query(
+                `INSERT INTO adresses_input ( addressid, txid, vout, amount) 
+                    VALUES ${values}`,
+            [],
+            (error,response)=>{
+                if (error) {
+                    console.log('error',error);
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
+
+    static saveTransaction(height,txid,txseq) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `INSERT INTO transactions ( blockid, txid, txseq) 
+                    VALUES ($1, $2,$3) RETURNING id;`,
+            [height,txid,txseq],
+            (error,response)=>{
+                if (error) {
+                    console.log('error',error);
+                    reject(error);
+                }
+                const transactionId = response.rows[0].id;
+                resolve(transactionId);
+            });
+        })
+    }
+
+
+    static getTransactionKey(txid){
+        return new Promise((resolve,reject) => {
+            db.query(`SELECT id
+            FROM transactions
+            WHERE txid = $1`,
+                [txid],
+                (error,response)=>{
+                    if (error) reject(error);
+                    if (response.rows.length === 0) return reject(new Error('ERROR, No transaction found ' + txid));
+                    resolve(response.rows[0].id);
+                })
+        });
+    }
+
+    static getAddressKey(txKey){
+        return new Promise((resolve,reject) => {
+            db.query(`SELECT addressid
+            FROM adresses_input
+            WHERE txid = $1`,
+                [txKey],
+                (error,response)=>{
+                    if (error) reject(error);
+                    if (response.rows.length === 0) return reject(new Error('ERROR, No addressid found ' + txKey));
+                    resolve(response.rows[0].addressid);
+                })
+        });
+    }
+
+    static getAddressFromKey(addKey){
+        return new Promise((resolve,reject) => {
+            db.query(`SELECT btc_address
+            FROM addresses
+            WHERE id = $1`,
+                [addKey],
+                (error,response)=>{
+                    if (error) reject(error);
+                    if (response.rows.length === 0) return reject(new Error('ERROR, No btc_address found ' + addKey));
+                    resolve(response.rows[0].btc_address);
+                })
+        });
+    }
+
 
     
 }
