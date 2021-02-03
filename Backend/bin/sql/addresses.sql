@@ -54,7 +54,7 @@ CREATE TABLE transactions (
 CREATE INDEX transactionsid ON transactions(txid);
 
 
-CREATE TABLE adresses_input  (
+CREATE TABLE addresses_input  (
     id          SERIAL PRIMARY KEY,
     addressid     INT,
     txid          INT,
@@ -63,4 +63,4 @@ CREATE TABLE adresses_input  (
     FOREIGN KEY (txid) REFERENCES transactions(id),
     FOREIGN KEY (addressid) REFERENCES addresses(id)
 );
-CREATE INDEX adresses_input_txid_idx ON adresses_input(txid);
+CREATE INDEX adresses_input_txid_idx ON addresses_input(txid);

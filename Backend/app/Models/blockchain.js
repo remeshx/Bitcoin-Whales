@@ -98,7 +98,7 @@ class BlockChainModel {
     static saveAddress(addressId,transactionId,vout,amount) {
         return new Promise((resolve,reject)=> {
             db.query(
-                `INSERT INTO adresses_input ( address_id, txid, vout, amount) 
+                `INSERT INTO addresses_input ( address_id, txid, vout, amount) 
                     VALUES ($1, $2, $2, $3 ,$4);`,
             [addressId,transactionId,vout,amount],
             (error,response)=>{
@@ -115,7 +115,7 @@ class BlockChainModel {
         return new Promise((resolve,reject)=> {
             //console.log('values',values);
             db.query(
-                `INSERT INTO adresses_input ( addressid, txid, vout, amount) 
+                `INSERT INTO addresses_input ( addressid, txid, vout, amount) 
                     VALUES ${values}`,
             [],
             (error,response)=>{
@@ -161,12 +161,12 @@ class BlockChainModel {
         });
     }
 
-    static getAddressKey(txKey){
+    static getAddressKey(txKey,vout){
         return new Promise((resolve,reject) => {
             db.query(`SELECT addressid,amount
-            FROM adresses_input
-            WHERE txid = $1`,
-                [txKey],
+            FROM addresses_input
+            WHERE txid = $1 and vout=$2`,
+                [txKey,vout],
                 (error,response)=>{
                     if (error) reject(error);
                     if (response.rows.length === 0) return reject(new Error('ERROR, No addressid found ' + txKey));

@@ -121,6 +121,7 @@ class Blockchain {
                     };
                 } 
                 //console.log('vinDetails:',vinDetails);
+                //console.log('tx.vout:',tx.vout);
                 
                 voutCounter =0;
                 for await (const vout of tx.vout) {                    
@@ -209,12 +210,12 @@ class Blockchain {
                     }          
                     if (coinBaseAddress[address] !== undefined) coinBaseAddress[address].id = addressId;
 
-                     console.log('address',address);
-                     console.log('vouts',vouts);
+                     //console.log('address',address);
+                     //console.log('vouts',vouts);
                     if (txcounter>trxRead) {
                         if (addresses[address].increased>0)
                         for await(var voutdet of vouts[address]){
-                            console.log('voutdet',voutdet);
+                            //console.log('voutdet',voutdet);
                             voutQuery += `,(${addressId},${transactionId},${voutdet.id},${voutdet.value})`;   
                         }
                     } else  {
@@ -294,16 +295,16 @@ class Blockchain {
     }
 
     static async getVInDetails(txid,vout,vinDetails){ 
-        console.log('txid',txid);    
-        console.log('vout',vout);    
+        // console.log('txid',txid);    
+        // console.log('vout',vout);    
        let txkey = await BlockChainModel.getTransactionKey(txid); 
        
-       console.log('txkey',txkey);    
+       //console.log('txkey',txkey);    
        let addDetail = await BlockChainModel.getAddressKey(txkey,vout); 
        
-       console.log('addDetail',addDetail);    
+       //console.log('addDetail',addDetail);    
        let address =  await BlockChainModel.getAddressFromKey(addDetail.id); 
-       
+       //console.log('address',address);    
        vinDetails.push({
             vinAddress : address,
             vinValue : addDetail.amount
