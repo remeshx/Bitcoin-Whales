@@ -56,7 +56,7 @@ class Blockchain {
 
         console.log('blockCount',blockCount);
         //let ourheight   = 182010;//global.settings['BitcoinNode_LastBlockHeightRead'];
-        //let ourheight   = 0;//
+        //let ourheight   = 169;
         let ourheight   = global.settings['BitcoinNode_LastBlockHeightRead'];
         let trxRead = global.settings['BitcoinNode_trxRead'];
         let readHeight  =  ourheight;
@@ -209,12 +209,12 @@ class Blockchain {
                     }          
                     if (coinBaseAddress[address] !== undefined) coinBaseAddress[address].id = addressId;
 
-                    // console.log('address',address);
-                    // console.log('vouts',vouts);
+                     console.log('address',address);
+                     console.log('vouts',vouts);
                     if (txcounter>trxRead) {
                         if (addresses[address].increased>0)
                         for await(var voutdet of vouts[address]){
-                            //console.log('voutdet',voutdet);
+                            console.log('voutdet',voutdet);
                             voutQuery += `,(${addressId},${transactionId},${voutdet.id},${voutdet.value})`;   
                         }
                     } else  {
@@ -293,10 +293,17 @@ class Blockchain {
         return blockReward;       
     }
 
-    static async getVInDetails(txid,vout,vinDetails){     
+    static async getVInDetails(txid,vout,vinDetails){ 
+        console.log('txid',txid);    
+        console.log('vout',vout);    
        let txkey = await BlockChainModel.getTransactionKey(txid); 
+       
+       console.log('txkey',txkey);    
        let addDetail = await BlockChainModel.getAddressKey(txkey,vout); 
+       
+       console.log('addDetail',addDetail);    
        let address =  await BlockChainModel.getAddressFromKey(addDetail.id); 
+       
        vinDetails.push({
             vinAddress : address,
             vinValue : addDetail.amount

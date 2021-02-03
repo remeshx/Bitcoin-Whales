@@ -163,14 +163,14 @@ class BlockChainModel {
 
     static getAddressKey(txKey){
         return new Promise((resolve,reject) => {
-            db.query(`SELECT addressid
+            db.query(`SELECT addressid,amount
             FROM adresses_input
             WHERE txid = $1`,
                 [txKey],
                 (error,response)=>{
                     if (error) reject(error);
                     if (response.rows.length === 0) return reject(new Error('ERROR, No addressid found ' + txKey));
-                    resolve(response.rows[0].addressid);
+                    resolve({id: response.rows[0].addressid, amount : response.rows[0].amount} );
                 })
         });
     }
