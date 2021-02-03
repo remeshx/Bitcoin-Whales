@@ -23,7 +23,7 @@ const socket = socketIOClient(ENDPOINT);
 render(
     <Provider store={store}>
     <div>
-        <h2>This is Header</h2>
+        <h2>Analyzing blockchain ...</h2>
         <Blocks socket={socket}/>  
     </div>
     </Provider>,

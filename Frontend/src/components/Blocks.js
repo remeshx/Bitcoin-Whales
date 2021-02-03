@@ -26,8 +26,6 @@ class Blocks extends Component {
         
         return(
             <div>
-                <p>Time is : {this.props.time}</p>
-                <button onClick={()=> this.updateState()}>Inc</button>
                 <p>Last Block Mined : {this.props.blockInfo.lastBlock}</p>
                 <p>Last Block Read : {this.props.blockInfo.lastBlockRead}</p>
                 <p>current Block Trx Count : {this.props.trxInfo.trxCount}</p>
