@@ -56,9 +56,11 @@ class Blockchain {
 
         console.log('blockCount',blockCount);
         //let ourheight   = 182010;//global.settings['BitcoinNode_LastBlockHeightRead'];
-        //let ourheight   = 169;
+        
         let ourheight   = global.settings['BitcoinNode_LastBlockHeightRead'];
+        ourheight   = 125679;
         let trxRead = global.settings['BitcoinNode_trxRead'];
+        trxRead = 45;
         let readHeight  =  ourheight;
         let coinBaseReward = 0;
         let coinBaseAddress = {};
@@ -215,22 +217,21 @@ class Blockchain {
                     if (txcounter>trxRead) {
                         if (addresses[address].increased>0)
                         for await(var voutdet of vouts[address]){
-                            //console.log('voutdet',voutdet);
                             voutQuery += `,(${addressId},${transactionId},${voutdet.id},${voutdet.value})`;   
                         }
                     } else  {
                         console.log('Skip trx', tx.txid);
                         console.log('Skipping details', `${txcounter}>${trxRead}`);
                     }
-
                 }
 
                 if (txcounter>trxRead) {
-                    SettingModel.updateTrxRead(txcounter);
                     voutQuery = voutQuery.replace(/(^,)|(,$)/g, "");
-                    await BlockChainModel.saveAddresses(voutQuery);   
+                    if (voutQuery!='')
+                        await BlockChainModel.saveAddresses(voutQuery);
+                    SettingModel.updateTrxRead(txcounter);
                 }
-
+               
                 if (txcounter>0) {
                     //console.log('totalPayment.increased',totalPayment.increased);
                     //console.log('totalPayment.decreased',totalPayment.decreased);
