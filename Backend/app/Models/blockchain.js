@@ -154,9 +154,10 @@ class BlockChainModel {
             WHERE txid = $1`,
                 [txid],
                 (error,response)=>{
-                    if (error) reject(error);
+                    if (error) resolve('');
                     if (response.rows.length === 0) resolve('');
-                    resolve(response.rows[0].id);
+                    if (response.rows[0].id)  resolve(response.rows[0].id);
+                    else resolve('');
                 })
         });
     }
@@ -168,9 +169,10 @@ class BlockChainModel {
             WHERE txid = $1 and vout=$2`,
                 [txKey,vout],
                 (error,response)=>{
-                    if (error) reject(error);
+                    if (error) resolve('');
                     if (response.rows.length === 0) resolve('');
-                    resolve({id: response.rows[0].addressid, amount : response.rows[0].amount} );
+                    if (response.rows[0].addressid) resolve({id: response.rows[0].addressid, amount : response.rows[0].amount} );
+                    else resolve('');
                 })
         });
     }
@@ -182,9 +184,10 @@ class BlockChainModel {
             WHERE id = $1`,
                 [addKey],
                 (error,response)=>{
-                    if (error) reject(error);
+                    if (error) resolve('');
                     if (response.rows.length === 0) resolve('');
-                    resolve(response.rows[0].btc_address);
+                    if (response.rows[0].btc_address) resolve(response.rows[0].btc_address);
+                    else resolve('');
                 })
         });
     }
