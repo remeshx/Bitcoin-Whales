@@ -58,9 +58,9 @@ class Blockchain {
         //let ourheight   = 182010;//global.settings['BitcoinNode_LastBlockHeightRead'];
         
         let ourheight   = global.settings['BitcoinNode_LastBlockHeightRead'];
-        ourheight   = 125679;
+        //ourheight   = 125679;
         let trxRead = global.settings['BitcoinNode_trxRead'];
-        trxRead = 45;
+        //trxRead = 45;
         let readHeight  =  ourheight;
         let coinBaseReward = 0;
         let coinBaseAddress = {};
