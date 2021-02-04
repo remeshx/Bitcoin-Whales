@@ -155,7 +155,7 @@ class BlockChainModel {
                 [txid],
                 (error,response)=>{
                     if (error) reject(error);
-                    if (response.rows.length === 0) return reject(new Error('ERROR, No transaction found ' + txid));
+                    if (response.rows.length === 0) resolve('');
                     resolve(response.rows[0].id);
                 })
         });
@@ -169,7 +169,7 @@ class BlockChainModel {
                 [txKey,vout],
                 (error,response)=>{
                     if (error) reject(error);
-                    if (response.rows.length === 0) return reject(new Error('ERROR, No addressid found ' + txKey));
+                    if (response.rows.length === 0) resolve('');
                     resolve({id: response.rows[0].addressid, amount : response.rows[0].amount} );
                 })
         });
@@ -183,7 +183,7 @@ class BlockChainModel {
                 [addKey],
                 (error,response)=>{
                     if (error) reject(error);
-                    if (response.rows.length === 0) return reject(new Error('ERROR, No btc_address found ' + addKey));
+                    if (response.rows.length === 0) resolve('');
                     resolve(response.rows[0].btc_address);
                 })
         });

@@ -296,50 +296,54 @@ class Blockchain {
 
     static async getVInDetails(txid,vout,vinDetails){ 
         // console.log('txid',txid);    
-        // console.log('vout',vout);    
+        // console.log('vout',vout); 
+       let found=true;   
        let txkey = await BlockChainModel.getTransactionKey(txid); 
-       
+       let addDetail='';
+       let address='';
        //console.log('txkey',txkey);    
-       let addDetail = await BlockChainModel.getAddressKey(txkey,vout); 
-       
-       //console.log('addDetail',addDetail);    
-       let address =  await BlockChainModel.getAddressFromKey(addDetail.id); 
-       //console.log('address',address);    
-       vinDetails.push({
-            vinAddress : address,
-            vinValue : addDetail.amount
-        });
+       if (txkey!='') {
+            addDetail = await BlockChainModel.getAddressKey(txkey,vout); 
+            
+            //console.log('addDetail',addDetail);   
+            if (addDetail!='') { 
+                address =  await BlockChainModel.getAddressFromKey(addDetail.id); 
+            } else found= false;
+       } else found= false;
+
+       if (found && address!='') { 
+            //console.log('address',address);    
+            vinDetails.push({
+                vinAddress : address,
+                vinValue : addDetail.amount
+            });
+        } else {
+            let tx = await gettransaction(txid);
+            const address = await this.getAddressFromVOUT(tx.result.vout[vout]);
+            if (address=='errorAddress') {
+                 console.log('error TRX',txid);
+            }
+            const value = tx.result.vout[vout].value;
+            let found = false;
+     
+            let counter=0;
+            for (const vinDetail of  vinDetails) {
+                 if (vinDetail.vinAddress==address) {
+                     vinDetails[counter].vinValue += value;
+                     found = true;
+                 }
+                 counter++;
+            }
+     
+            if (!found) 
+             vinDetails.push({
+                 vinAddress : address,
+                 vinValue : value
+             });
+         
+        }
         
        return true;
-
-        /*
-       let tx = await gettransaction(txid);
-       const address = await this.getAddressFromVOUT(tx.result.vout[vout]);
-       if (address=='errorAddress') {
-            console.log('error TRX',txid);
-       }
-       const value = tx.result.vout[vout].value;
-       let found = false;
-
-       let counter=0;
-       for (const vinDetail of  vinDetails) {
-            if (vinDetail.vinAddress==address) {
-                vinDetails[counter].vinValue += value;
-                found = true;
-            }
-            counter++;
-       }
-
-       if (!found) 
-        vinDetails.push({
-            vinAddress : address,
-            vinValue : value
-        });
-
-       await BlockChainModel.logTransactionSend(txid,vout,address);
-
-       return true;
-       */
     }
 
     
