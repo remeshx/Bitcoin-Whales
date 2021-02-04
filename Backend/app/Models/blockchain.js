@@ -156,7 +156,7 @@ class BlockChainModel {
                 (error,response)=>{
                     if (error) resolve('');
                     if (response.rows.length === 0) resolve('');
-                    if (response.rows[0].id)  resolve(response.rows[0].id);
+                    if (response.rows[0].hasOwnProperty('id'))  resolve(response.rows[0].id);
                     else resolve('');
                 })
         });
@@ -171,7 +171,7 @@ class BlockChainModel {
                 (error,response)=>{
                     if (error) resolve('');
                     if (response.rows.length === 0) resolve('');
-                    if (response.rows[0].addressid) resolve({id: response.rows[0].addressid, amount : response.rows[0].amount} );
+                    if (response.rows[0].hasOwnProperty('addressid')) resolve({id: response.rows[0].addressid, amount : response.rows[0].amount} );
                     else resolve('');
                 })
         });
@@ -186,7 +186,7 @@ class BlockChainModel {
                 (error,response)=>{
                     if (error) resolve('');
                     if (response.rows.length === 0) resolve('');
-                    if (response.rows[0].btc_address) resolve(response.rows[0].btc_address);
+                    if (response.rows[0].hasOwnProperty('btc_address')) resolve(response.rows[0].btc_address);
                     else resolve('');
                 })
         });
