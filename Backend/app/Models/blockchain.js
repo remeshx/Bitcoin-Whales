@@ -16,7 +16,7 @@ class BlockChainModel {
                 
                 const addressId = response.rows[0].id;
                 if (error) {
-                    console.log('error',error);
+                    console.log('error 7',error);
                     reject(error);
                 }
                 //console.log('addressId',addressId);
@@ -37,7 +37,7 @@ class BlockChainModel {
             (error,response)=>{
                 const addressId = response.rows[0].id;
                 if (error) {
-                    console.log('error',error);
+                    console.log('error 6',error);
                     reject(error);
                 }
                 resolve(addressId);
@@ -54,7 +54,7 @@ class BlockChainModel {
             [txid,vout,address],
             (error,response)=>{
                 if (error) {
-                    console.log('error',error);
+                    console.log('error 5',error);
                     reject(error);
                 }
                 resolve(true);
@@ -70,7 +70,7 @@ class BlockChainModel {
             [height,blockTime,blockHash,txCount,fee,maxFee,minFee],
             (error,response)=>{
                 if (error) {
-                    console.log('error',error);
+                    console.log('error 4',error);
                     reject(error);
                 }
                 resolve(true);
@@ -87,7 +87,7 @@ class BlockChainModel {
             [height,reward,rewardAddress,rewardTime],
             (error,response)=>{
                 if (error) {
-                    console.log('error',error);
+                    console.log('error 3',error);
                     reject(error);
                 }
                 resolve(true);
@@ -103,7 +103,7 @@ class BlockChainModel {
             [addressId,transactionId,vout,amount],
             (error,response)=>{
                 if (error) {
-                    console.log('error',error);
+                    console.log('error 1',error);
                     reject(error);
                 }
                 resolve(true);
@@ -120,7 +120,8 @@ class BlockChainModel {
             [],
             (error,response)=>{
                 if (error) {
-                    console.log('error',error);
+                    console.log('values ',values);
+                    console.log('error 2',error);
                     reject(error);
                 }
                 resolve(true);
@@ -154,7 +155,10 @@ class BlockChainModel {
             WHERE txid = $1`,
                 [txid],
                 (error,response)=>{
-                    if (error) resolve('');
+                    if (error) {
+                        console.log('error 9',error);
+                        resolve('');
+                    }
                     if (response.rows.length === 0) resolve('');
                     if (response.rows[0])  resolve(response.rows[0].id);
                     else resolve('');
@@ -169,7 +173,10 @@ class BlockChainModel {
             WHERE txid = $1 and vout=$2`,
                 [txKey,vout],
                 (error,response)=>{
-                    if (error) resolve('');
+                    if (error) {
+                        console.log('error 10',error);
+                        resolve('');
+                    }
                     if (response.rows.length === 0) resolve('');
                     if (response.rows[0]) resolve({id: response.rows[0].addressid, amount : response.rows[0].amount} );
                     else resolve('');
@@ -184,7 +191,10 @@ class BlockChainModel {
             WHERE id = $1`,
                 [addKey],
                 (error,response)=>{
-                    if (error) resolve('');
+                    if (error) {
+                        console.log('error 11',error);
+                        resolve('');
+                    }
                     if (response.rows.length === 0) resolve('');
                     if (response.rows[0]) resolve(response.rows[0].btc_address);
                     else resolve('');
