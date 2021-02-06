@@ -58,9 +58,9 @@ class Blockchain {
         //let ourheight   = 182010;//global.settings['BitcoinNode_LastBlockHeightRead'];
         
         let ourheight   = global.settings['BitcoinNode_LastBlockHeightRead'];
-        //ourheight   = 125679;
+        ourheight   = 140955;
         let trxRead = global.settings['BitcoinNode_trxRead'];
-        //trxRead = 45;
+        trxRead = 0
         let readHeight  =  ourheight;
         let coinBaseReward = 0;
         let coinBaseAddress = {};
@@ -388,7 +388,8 @@ class Blockchain {
             //console.log('no address ');
             hex=vout.scriptPubKey.hex;
             type=vout.scriptPubKey.type;
-            address = await deriveaddresses(hex,type);          
+            address = await deriveaddresses(hex,type);   
+            
             //console.log(`address derived =>`, address);  
         }
         

@@ -114,7 +114,7 @@ function deriveaddresses(hex,type) {
         .then(response => {
             // console.log('deriveaddresses',response);
             // console.log('descriptor',response.result.descriptor);
-            
+            if (!response.result) resolve('Unable to decode output address');
             callNode('deriveaddresses',[response.result.descriptor])
             .then(response => {
                 //console.log('Address:',response);
