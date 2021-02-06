@@ -319,28 +319,31 @@ class Blockchain {
                 vinValue : addDetail.amount
             });
         } else {
+            console.log('gettransaction txid :',txid);
             let tx = await gettransaction(txid);
-            const address = await this.getAddressFromVOUT(tx.result.vout[vout]);
-            if (address=='errorAddress') {
-                 console.log('error TRX',txid);
+            if (tx) {
+                const address = await this.getAddressFromVOUT(tx.result.vout[vout]);
+                if (address=='errorAddress') {
+                    console.log('error TRX',txid);
+                }
+                const value = tx.result.vout[vout].value;
+                let found = false;
+        
+                let counter=0;
+                for (const vinDetail of  vinDetails) {
+                    if (vinDetail.vinAddress==address) {
+                        vinDetails[counter].vinValue += value;
+                        found = true;
+                    }
+                    counter++;
+                }
             }
-            const value = tx.result.vout[vout].value;
-            let found = false;
-     
-            let counter=0;
-            for (const vinDetail of  vinDetails) {
-                 if (vinDetail.vinAddress==address) {
-                     vinDetails[counter].vinValue += value;
-                     found = true;
-                 }
-                 counter++;
-            }
-     
             if (!found) 
              vinDetails.push({
                  vinAddress : address,
                  vinValue : value
              });
+
          
         }
         

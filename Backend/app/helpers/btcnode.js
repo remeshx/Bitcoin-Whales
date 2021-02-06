@@ -73,6 +73,7 @@ function gettransaction(txid) {
         .then(response => {
             //console.log('response',response);
             //console.log('getrawtransaction : ',txid);
+            if (response)
             global.transactions.push({id:txid,transactionDetails : response});
             resolve(response);
         })
