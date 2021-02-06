@@ -302,6 +302,7 @@ class Blockchain {
        let txkey = await BlockChainModel.getTransactionKey(txid); 
        let addDetail='';
        let address='';
+       let value=0;
        //console.log('txkey',txkey);    
        if (txkey!='') {
             addDetail = await BlockChainModel.getAddressKey(txkey,vout); 
@@ -326,7 +327,7 @@ class Blockchain {
                 if (address=='errorAddress') {
                     console.log('error TRX',txid);
                 }
-                const value = tx.result.vout[vout].value;
+                value = tx.result.vout[vout].value;
                 let found = false;
         
                 let counter=0;
