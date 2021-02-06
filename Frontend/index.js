@@ -9,7 +9,7 @@ import appReducer from './src/reducers';
 
 
 
-const ENDPOINT = 'http://136.243.88.216:3231';
+const ENDPOINT = 'http://136.243.88.216:4331';
 
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
