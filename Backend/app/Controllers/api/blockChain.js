@@ -84,6 +84,7 @@ class Blockchain {
         let transactionId=0;
         let voutCounter=0;
         let voutQuery='';
+        let skipBalance= false;
 
         while(readHeight<blockCount) {
             readHeight ++;
@@ -105,6 +106,7 @@ class Blockchain {
             fees = 0;
             maxFee = 0;
             minFee = 999;
+        
             for await (const tx of txs) {
                 //if (txcounter<10)  {
                 if (txcounter>trxRead) transactionId = await BlockChainModel.saveTransaction(readHeight,tx.txid,txcounter);
@@ -255,10 +257,18 @@ class Blockchain {
             if (minFee==999) minFee=0;
             const remain = parseFloat(coinBaseReward - BlockReward - parseFloat(fees)).toFixed(8);
             //console.log('remain',parseFloat(remain));
-            if ( parseFloat(remain) !==0 && readHeight!=124724) {
-                const msg =`Error balances coinBaseReward : ${coinBaseReward} ,BlockReward: ${BlockReward}, fees: ${fees}`;
-                console.log(msg);
-                throw error(msg);
+            skipBalance=false;
+            if (readHeight==124724) skipBalance=true;
+            if (readHeight>=162705 && readHeight<=169899) skipBalance=true;
+            if (readHeight>=180324 && readHeight<=249185) skipBalance=true;
+             if ( parseFloat(remain) !==0) {
+                if (skipBalance) {
+                    console.log('$$$$$ Skipped, Error Block Balance : ',readHeight);
+                } else {
+                    const msg =`Error balances coinBaseReward : ${coinBaseReward} ,BlockReward: ${BlockReward}, fees: ${fees}`;
+                    console.log(msg);
+                    throw error(msg);
+                }
             }
             const msg =`balances coinBaseReward : ${coinBaseReward} ,BlockReward: ${BlockReward}, fees: ${fees}`;
             //console.log(msg);
