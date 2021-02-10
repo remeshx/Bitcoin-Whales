@@ -184,6 +184,7 @@ class BlockChainModel {
         });
     }
 
+
     static getAddressFromKey(addKey){
         return new Promise((resolve,reject) => {
             db.query(`SELECT btc_address
@@ -202,6 +203,40 @@ class BlockChainModel {
         });
     }
 
+
+
+    static saveInputs(values) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `INSERT INTO inputs ( blockheight ,txid,vouttxid, vout) 
+                    VALUES ${values}`,
+            [],
+            (error,response)=>{
+                if (error) {
+                    console.log('error',error);
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
+
+    static saveOutputs(values) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `INSERT INTO outputs ( blockheight ,txid, outaddress, vout, amount) 
+                    VALUES ${values}`,
+            [],
+            (error,response)=>{
+                if (error) {
+                    console.log('error',error);
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
 
     
 }

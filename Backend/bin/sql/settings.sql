@@ -8,7 +8,7 @@ CREATE TABLE settings (
 );
 
 INSERT INTO settings (varCategory,varName,varValue,lastUpdate) VALUES 
-        ('BitcoinNode','IPPORT','localhost:8332',CURRENT_TIMESTAMP),
+        ('BitcoinNode','IPPORT','136.243.88.216:8332',CURRENT_TIMESTAMP),
         ('BitcoinNode','USERNAME','root',CURRENT_TIMESTAMP),
         ('BitcoinNode','PASSWORD','HSsdxYdihe',CURRENT_TIMESTAMP),
         ('BitcoinNode','LastBlockHeightRead','0',CURRENT_TIMESTAMP );

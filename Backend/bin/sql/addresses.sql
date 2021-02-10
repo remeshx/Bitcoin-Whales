@@ -64,3 +64,23 @@ CREATE TABLE addresses_input  (
     FOREIGN KEY (addressid) REFERENCES addresses(id)
 );
 CREATE INDEX adresses_input_txid_idx ON addresses_input(txid);
+
+
+CREATE TABLE inputs  (
+    id          SERIAL PRIMARY KEY,
+    blockheight INT,
+    txid          INT,
+    vouttxid      character(100),
+    vout          INT,
+    amount        NUMERIC(322,8) Default 0
+);
+
+CREATE TABLE outputs  (
+    id          SERIAL PRIMARY KEY,
+    blockheight INT,
+    txid          INT,
+    outaddress        character(100),
+    vout          INT,
+    amount        NUMERIC(322,8)
+);
+CREATE INDEX outputs_txid ON outputs(txid);
