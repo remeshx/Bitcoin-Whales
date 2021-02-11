@@ -530,7 +530,7 @@ class Blockchain {
         return addressId;
     }
 
-    static async getAddressFromVOUT(vout)
+    static async getAddressFromVOUT(vout,blockheight=0)
     {
         //console.log(`getAddressFromVOUT`);
         let address = ''; 
@@ -540,7 +540,8 @@ class Blockchain {
         {           
             if (vout.scriptPubKey.addresses.length>1) {
                 //console.log('tx ', tx);
-                //console.log('addresse ', vout.scriptPubKey.addresses);
+                if (blockheight==164467) return 'errorAddress';
+                console.log('addresse ', vout.scriptPubKey.addresses);
                 throw new Error('ERROR : TOO MANY ADDRESSESS ' + tx.txid);
             }
             address = vout.scriptPubKey.addresses[0];
