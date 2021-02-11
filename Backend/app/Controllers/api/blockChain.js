@@ -129,7 +129,7 @@ class Blockchain {
                 
                 voutCounter =0;
                 for await (const vout of tx.vout) {                    
-                    address = await this.getAddressFromVOUT(vout); 
+                    address = await this.getAddressFromVOUT(vout,readHeight); 
                     if (address=='errorAddress') {
                         console.log('error TRX',tx.txid);
                    }  
@@ -384,7 +384,7 @@ class Blockchain {
                 for await (const vout of tx.vout) {        
                     //console.log('vout',vout);            
                     if (vout.value>0)
-                      address = await this.getAddressFromVOUT(vout); 
+                      address = await this.getAddressFromVOUT(vout,readHeight); 
                     else address=='errorAddress';
 
                     if (address=='errorAddress') {
@@ -543,7 +543,7 @@ class Blockchain {
                 if (blockheight==164467) return 'errorAddress';
                 console.log('addresse ', vout.scriptPubKey.addresses);
                 throw new Error('ERROR : TOO MANY ADDRESSESS ' + tx.txid);
-            }
+            } 
             address = vout.scriptPubKey.addresses[0];
             //console.log(`address exists =>`, address);
         } else {
