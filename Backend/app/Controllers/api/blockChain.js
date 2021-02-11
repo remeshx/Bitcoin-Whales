@@ -306,7 +306,7 @@ class Blockchain {
         //let ourheight   = 182010;//global.settings['BitcoinNode_LastBlockHeightRead'];
         
         let ourheight   = global.settings['BitcoinNode_LastBlockHeightRead'];
-        //ourheight   = 0;
+        ourheight   = 165223;
         let trxRead = global.settings['BitcoinNode_trxRead'];
         //trxRead = -1;
         let readHeight  =  ourheight;
@@ -542,6 +542,7 @@ class Blockchain {
         {           
             if (vout.scriptPubKey.addresses.length>1) {
                 //console.log('tx ', tx);
+                return 'errorAddress';
                 if (blockheight==164467) return 'errorAddress';
                 console.log('addresse ', vout.scriptPubKey.addresses);
                 throw new Error('ERROR : TOO MANY ADDRESSESS ' + tx.txid);
