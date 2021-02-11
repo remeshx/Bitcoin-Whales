@@ -345,13 +345,14 @@ class Blockchain {
             coinBaseReward=0;
             coinBaseAddress = {};
             socket.emit("UPDATE_BLK", {lastBlock: blockCount, lastBlockRead: readHeight});
+                
             const block = await getBlockByHeight(readHeight);
             
             txcounter=0;
             transactionId=0;
             txs = block.result.tx;
             const BlockReward = this.getCoinBaseRewardByBlockHeight(readHeight);
-            
+            socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :0 });
             //console.log('BlockReward',BlockReward);
             //return block;
             fee = 0;
@@ -363,7 +364,7 @@ class Blockchain {
                 //if (txcounter<10)  {
                 if (txcounter>trxRead) transactionId = await BlockChainModel.saveTransaction(readHeight,tx.txid,txcounter);
                 
-                socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 });    
+               
                 //console.log(`================== ${txcounter}/${txs.length} Start transaction analysis` , tx.txid);
                 //console.log(`===== ${txcounter}/${txs.length} TRX ` , tx.txid);
                 vinDetails =[];
@@ -400,7 +401,7 @@ class Blockchain {
                 };
 
 
-                if (vinQueryCount>500 || voutQueryCount>500) {
+                if (vinQueryCount>1000 || voutQueryCount>1000) {
                     console.log(`write blocks inputs ${vinQueryCount}, outputs ${voutQueryCount}`); 
                     vinQuery = vinQuery.replace(/(^,)|(,$)/g, "");
                     if (vinQuery!='')
@@ -414,6 +415,7 @@ class Blockchain {
                     voutQuery = '';
                     voutQueryCount =0;                    
                     SettingModel.updateTrxRead(txcounter);
+                    socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 });    
                 }
 
                 
