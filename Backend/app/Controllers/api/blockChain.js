@@ -443,6 +443,7 @@ class Blockchain {
             global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
             global.settings['BitcoinNode_trxRead'] = -1;
             trxRead = -1;
+            socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 }); 
         }
         
     }

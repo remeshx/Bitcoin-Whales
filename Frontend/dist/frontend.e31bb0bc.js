@@ -33448,13 +33448,7 @@ var Blocks = /*#__PURE__*/function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this2 = this;
-
-      return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("p", null, "Time is : ", this.props.time), /*#__PURE__*/_react.default.createElement("button", {
-        onClick: function onClick() {
-          return _this2.updateState();
-        }
-      }, "Inc"), /*#__PURE__*/_react.default.createElement("p", null, "Last Block Mined : ", this.props.blockInfo.lastBlock), /*#__PURE__*/_react.default.createElement("p", null, "Last Block Read : ", this.props.blockInfo.lastBlockRead), /*#__PURE__*/_react.default.createElement("p", null, "current Block Trx Count : ", this.props.trxInfo.trxCount), /*#__PURE__*/_react.default.createElement("p", null, "current Block Trx Read : ", this.props.trxInfo.trxRead));
+      return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("p", null, "Last Block Mined : ", this.props.blockInfo.lastBlock), /*#__PURE__*/_react.default.createElement("p", null, "Last Block Read : ", this.props.blockInfo.lastBlockRead), /*#__PURE__*/_react.default.createElement("p", null, "current Block Trx Count : ", this.props.trxInfo.trxCount), /*#__PURE__*/_react.default.createElement("p", null, "current Block Trx Read : ", this.props.trxInfo.trxRead));
     }
   }]);
 
@@ -42297,13 +42291,13 @@ var _reducers = _interopRequireDefault(require("./src/reducers"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var ENDPOINT = 'http://136.243.88.216:3231';
+var ENDPOINT = 'http://136.243.88.216:4331';
 var composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || _redux.compose;
 var store = (0, _redux.createStore)(_reducers.default, composeEnhancer((0, _redux.applyMiddleware)(_reduxThunk.default)));
 var socket = (0, _socket.default)(ENDPOINT);
 (0, _reactDom.render)( /*#__PURE__*/_react.default.createElement(_reactRedux.Provider, {
   store: store
-}, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h2", null, "This is Header"), /*#__PURE__*/_react.default.createElement(_Blocks.default, {
+}, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h2", null, "Analyzing blockchain ..."), /*#__PURE__*/_react.default.createElement(_Blocks.default, {
   socket: socket
 }))), document.getElementById('root'));
 },{"react":"node_modules/react/index.js","redux":"node_modules/redux/es/redux.js","react-redux":"node_modules/react-redux/es/index.js","redux-thunk":"node_modules/redux-thunk/es/index.js","react-dom":"node_modules/react-dom/index.js","./src/components/Blocks":"src/components/Blocks.js","socket.io-client":"node_modules/socket.io-client/build/index.js","./src/reducers":"src/reducers/index.js"}],"../../../../Users/remesh/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
@@ -42334,7 +42328,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "35545" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "16737" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -42511,4 +42505,4 @@ function hmrAcceptRun(bundle, id) {
   }
 }
 },{}]},{},["../../../../Users/remesh/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.js"], null)
-//# sourceMappingURL=/frontend.e31bb0bc.js.map
+//# sourceMappingURL=/Frontend.e31bb0bc.js.map
