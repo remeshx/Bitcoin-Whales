@@ -69,7 +69,7 @@ CREATE INDEX adresses_input_txid_idx ON addresses_input(txid);
 CREATE TABLE inputs  (
     id          SERIAL PRIMARY KEY,
     blockheight INT,
-    txid          INT,
+    txid          character(100),
     vouttxid      character(100),
     vout          INT,
     amount        NUMERIC(322,8) Default 0
@@ -78,9 +78,9 @@ CREATE TABLE inputs  (
 CREATE TABLE outputs  (
     id          SERIAL PRIMARY KEY,
     blockheight INT,
-    txid          INT,
+    txid          character(100),
     outaddress        character(100),
     vout          INT,
     amount        NUMERIC(322,8)
 );
-CREATE INDEX outputs_txid ON outputs(txid);
+

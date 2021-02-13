@@ -362,7 +362,7 @@ class Blockchain {
         
             for await (const tx of txs) {
                 //if (txcounter<10)  {
-                if (txcounter>trxRead) transactionId = await BlockChainModel.saveTransaction(readHeight,tx.txid,txcounter);
+                //if (txcounter>trxRead) transactionId = await BlockChainModel.saveTransaction(readHeight,tx.txid,txcounter);
                 
                
                 //console.log(`================== ${txcounter}/${txs.length} Start transaction analysis` , tx.txid);
@@ -377,7 +377,7 @@ class Blockchain {
                     for await (const vin of tx.vin) {
                         vinQueryCount++;
                         if (txcounter>trxRead) 
-                            vinQuery = vinQuery + `,(${readHeight},${transactionId},'${vin.txid}',${vin.vout})`;
+                            vinQuery = vinQuery + `,(${readHeight},'${tx.txid}','${vin.txid}',${vin.vout})`;
                     };
                 } 
                 
@@ -395,7 +395,7 @@ class Blockchain {
 
                   // BlockChainModel.saveOutputs(transactionId,address,voutCounter,vout.value);
                   if (txcounter>trxRead)
-                    voutQuery = voutQuery + `,(${readHeight},${transactionId},'${address}',${voutCounter},${vout.value})`;
+                    voutQuery = voutQuery + `,(${readHeight},'${tx.txid}','${address}',${voutCounter},${vout.value})`;
                   voutQueryCount++;
                   voutCounter++;
                 };
@@ -423,17 +423,21 @@ class Blockchain {
             };
 
             
-            console.log('write blocks input ',voutQueryCount); 
-            vinQuery = vinQuery.replace(/(^,)|(,$)/g, "");
-            if (vinQuery!='')
+            
+            if (vinQuery!='') {
+                vinQuery = vinQuery.replace(/(^,)|(,$)/g, "");
                 await BlockChainModel.saveInputs(vinQuery);
+                console.log('write blocks input ',voutQueryCount); 
+            }
             vinQuery='';
             vinQueryCount=0;
             
-            console.log('write blocks output ',voutQueryCount); 
-            voutQuery = voutQuery.replace(/(^,)|(,$)/g, "");
-            if (voutQuery!='')
+            
+            if (voutQuery!='') {
+                voutQuery = voutQuery.replace(/(^,)|(,$)/g, "");
                 await BlockChainModel.saveOutputs(voutQuery);
+                console.log('write blocks output ',voutQueryCount); 
+            }
             voutQuery = '';
             voutQueryCount =0;
             
