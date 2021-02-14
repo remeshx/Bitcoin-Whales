@@ -101,6 +101,14 @@ function deriveaddresses(hex,type) {
                 
                 //console.log('desc111',desc);
                 break;}
+            case 'nulldata': {
+                //pubkey = hex.substring(2, hex.length-2);
+                
+                console.log('error Addrress : ' + type);
+                resolve( 'errorAddress');
+                
+                //console.log('desc111',desc);
+                break;}
             default : {
                 console.log('error type : ' + type);
                 throw error('error type : ' + type);
