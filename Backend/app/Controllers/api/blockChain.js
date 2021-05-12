@@ -336,6 +336,8 @@ class Blockchain {
         let skipBalance= false;
         let vinQueryCount =0;
         let voutQueryCount =0;
+        let vtxidx='';
+        let txidx='';
 
         while(readHeight<blockCount) {
             readHeight ++;
@@ -377,6 +379,7 @@ class Blockchain {
                     for await (const vin of tx.vin) {
                         vinQueryCount++;
                         vtxidx = vin.txid.substring(0,3);
+                        console.log(`vtxidx ${txidx}`); 
                         if (txcounter>trxRead) 
                             vinQuery = vinQuery + `,(${readHeight},'${tx.txid}','${vtxidx}','${vin.txid}',${vin.vout})`;
                     };
@@ -396,6 +399,7 @@ class Blockchain {
 
                   // BlockChainModel.saveOutputs(transactionId,address,voutCounter,vout.value);
                   txidx = tx.txid.substring(0,3);
+                  console.log(`txidx ${txidx}`); 
                   if (txcounter>trxRead) 
                     voutQuery = voutQuery + `,(${readHeight},'${txidx}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
                   voutQueryCount++;
