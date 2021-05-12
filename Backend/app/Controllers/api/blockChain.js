@@ -376,8 +376,9 @@ class Blockchain {
                 if (txcounter>0) {
                     for await (const vin of tx.vin) {
                         vinQueryCount++;
+                        vtxidx = vin.txid.substring(0,3);
                         if (txcounter>trxRead) 
-                            vinQuery = vinQuery + `,(${readHeight},'${tx.txid}','${vin.txid}',${vin.vout})`;
+                            vinQuery = vinQuery + `,(${readHeight},'${tx.txid}','${vtxidx}','${vin.txid}',${vin.vout})`;
                     };
                 } 
                 
@@ -394,8 +395,9 @@ class Blockchain {
                    }  
 
                   // BlockChainModel.saveOutputs(transactionId,address,voutCounter,vout.value);
-                  if (txcounter>trxRead)
-                    voutQuery = voutQuery + `,(${readHeight},'${tx.txid}','${address}',${voutCounter},${vout.value})`;
+                  txidx = tx.txid.substring(0,3);
+                  if (txcounter>trxRead) 
+                    voutQuery = voutQuery + `,(${readHeight},'${txidx}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
                   voutQueryCount++;
                   voutCounter++;
                 };
