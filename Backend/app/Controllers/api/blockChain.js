@@ -306,9 +306,9 @@ class Blockchain {
         //let ourheight   = 182010;//global.settings['BitcoinNode_LastBlockHeightRead'];
         
         let ourheight   = global.settings['BitcoinNode_LastBlockHeightRead'];
-        //ourheight   = 165223;
+        ourheight   = 683097;
         let trxRead = global.settings['BitcoinNode_trxRead'];
-        //trxRead = -1;
+        trxRead = -1;
         let readHeight  =  ourheight;
         let coinBaseReward = 0;
         let coinBaseAddress = {};
@@ -331,14 +331,21 @@ class Blockchain {
         let coinBaseAddressesKeys= [];
         let transactionId=0;
         let voutCounter=0;
-        let voutQuery='';
-        let vinQuery='';
+        let voutQuery=[];
+        let vinQuery=[];
+        
+        let voutQueryKeys=[];
+        let vinQueryKeys=[];
+
         let skipBalance= false;
-        let vinQueryCount =0;
-        let voutQueryCount =0;
+        let vinQueryCount =[];
+        let voutQueryCount =[];
         let vtxidx='';
         let txidx='';
-
+        let vtxidx_='';
+        let txidx_='';
+        let record=false;
+        let sql='';
         while(readHeight<blockCount) {
             readHeight ++;
             console.log('readHeight',readHeight);
@@ -377,11 +384,18 @@ class Blockchain {
                 //BlockChainModel.saveInputs(transactionId,vin.vout);
                 if (txcounter>0) {
                     for await (const vin of tx.vin) {
-                        vinQueryCount++;
-                        vtxidx = vin.txid.substring(0,3);
-                        //console.log(`vtxidx ${txidx}`); 
-                        if (txcounter>trxRead) 
-                            vinQuery = vinQuery + `,(${readHeight},'${tx.txid}','${vtxidx}','${vin.txid}',${vin.vout})`;
+                        
+                        vtxidx_ =  vin.txid.substring(0,3);
+                        vtxidx = 'a' + vtxidx_;
+                        if (!vinQueryCount[vtxidx]) vinQueryCount[vtxidx]=1;
+                        else vinQueryCount[vtxidx]+1;
+                        if (txcounter>trxRead) {
+                            sql =  `,(${readHeight},'${tx.txid}','${vtxidx_}','${vin.txid}',${vin.vout})`;
+                            if (!vinQuery[vtxidx]) vinQuery[vtxidx] = sql;
+                            else vinQuery[vtxidx] = vinQuery[vtxidx] + sql;
+                            vinQueryKeys.push(vtxidx);
+                        }
+                        if (vinQueryCount[vtxidx]>1000) record = true;
                     };
                 } 
                 
@@ -398,30 +412,38 @@ class Blockchain {
                    }  
 
                   // BlockChainModel.saveOutputs(transactionId,address,voutCounter,vout.value);
-                  txidx = tx.txid.substring(0,3);
+                  txidx_ = tx.txid.substring(0,3);
+                  txidx = 'a' + txidx_;
                   //console.log(`txidx ${txidx}`); 
-                  if (txcounter>trxRead) 
-                    voutQuery = voutQuery + `,(${readHeight},'${txidx}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
-                  voutQueryCount++;
+                  if (!voutQueryCount[txidx]) voutQueryCount[txidx]=1;
+                  else voutQueryCount[txidx]+1;
+
+                  if (txcounter>trxRead) {
+                    sql =  `,(${readHeight},'${txidx_}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
+                    if (!voutQuery[txidx]) voutQuery[txidx] = sql;
+                    else voutQuery[txidx] = voutQuery[txidx] + sql;
+                    //voutQuery[txidx] = voutQuery[txidx]+sql ?? sql;
+                    //voutQuery[txidx] = voutQuery[txidx] + `,(${readHeight},'${txidx}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
+                    //console.log('out',sql);
+                    voutQueryKeys.push(txidx);
+                }
+                    
                   voutCounter++;
+                  if (voutQueryCount[txidx]>1000) record = true;
                 };
 
 
-                if (vinQueryCount>1000 || voutQueryCount>1000) {
-                    console.log(`write blocks inputs ${vinQueryCount}, outputs ${voutQueryCount}`); 
-                    vinQuery = vinQuery.replace(/(^,)|(,$)/g, "");
-                    if (vinQuery!='')
-                        await BlockChainModel.saveInputs(vinQuery);
-                    vinQuery='';
-                    vinQueryCount=0;                    
-               
-                    voutQuery = voutQuery.replace(/(^,)|(,$)/g, "");
-                    if (voutQuery!='')
-                        await BlockChainModel.saveOutputs(voutQuery);
-                    voutQuery = '';
-                    voutQueryCount =0;                    
+
+        
+                if (record) {
+                    await this.saveTransaction(vinQuery,voutQuery,vinQueryCount,voutQueryCount,vinQueryKeys,voutQueryKeys);
+                    record=false;                                            
                     SettingModel.updateTrxRead(txcounter);
-                    socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 });    
+                    socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 }); 
+                    vinQuery=[];
+                    voutQuery=[];
+                    vinQueryCount=[];
+                    voutQueryCount=[];
                 }
 
                 
@@ -429,23 +451,22 @@ class Blockchain {
             };
 
             
-            
-            if (vinQuery!='') {
-                vinQuery = vinQuery.replace(/(^,)|(,$)/g, "");
-                await BlockChainModel.saveInputs(vinQuery);
-                console.log('write blocks input ',voutQueryCount); 
-            }
-            vinQuery='';
-            vinQueryCount=0;
-            
-            
-            if (voutQuery!='') {
-                voutQuery = voutQuery.replace(/(^,)|(,$)/g, "");
-                await BlockChainModel.saveOutputs(voutQuery);
-                console.log('write blocks output ',voutQueryCount); 
-            }
-            voutQuery = '';
-            voutQueryCount =0;
+            // console.info('vinQuery',vinQuery);
+            // console.info('voutQuery',voutQuery);
+            // console.info('vinQueryCount',vinQueryCount);
+            // console.info('voutQueryCount',voutQueryCount);
+            // console.info('vinQueryKeys',vinQueryKeys);
+            // console.info('voutQueryKeys',voutQueryKeys);
+            await this.saveTransaction(vinQuery,voutQuery,vinQueryCount,voutQueryCount,vinQueryKeys,voutQueryKeys);
+            record=false;                                            
+            SettingModel.updateTrxRead(txcounter);
+            socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 }); 
+            vinQuery=[];
+            voutQuery=[];
+            vinQueryCount=[];
+            vinQueryCount=[];
+            vinQueryKeys=[];
+            voutQueryKeys=[];
             
             await BlockChainModel.SaveBlock(readHeight,block.result.time,block.result.hash,txs.length,fees,maxFee,minFee);  
             SettingModel.updateCurrentBlock(readHeight);
@@ -456,6 +477,31 @@ class Blockchain {
             socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 }); 
         }
         
+    }
+
+    static async saveTransaction(vinQuery,voutQuery,vinQueryCount,voutQueryCount,vinQueryKeys,voutQueryKeys) {
+        let sql='';
+        //console.log('saveTransaction');
+        
+         for await (var key of vinQueryKeys) { 
+           // console.log('VIN');
+            if (!key) continue;
+            sql = vinQuery[key];
+            sql = sql.replace(/(^,)|(,$)/g, "");
+            key =  key.substring(1,4);
+            if (sql!='')
+                await BlockChainModel.saveInputs(sql,key); 
+                        
+          }
+
+          for await (var key of voutQueryKeys) { 
+            if (!key) continue;
+            sql = voutQuery[key];
+            sql = sql.replace(/(^,)|(,$)/g, "");
+            key =  key.substring(1,4);
+            if (sql!='')
+                await BlockChainModel.saveOutputs(sql,key); 
+          }
     }
 
     static getCoinBaseRewardByBlockHeight(blockHeight){

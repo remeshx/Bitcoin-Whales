@@ -205,10 +205,10 @@ class BlockChainModel {
 
 
 
-    static saveInputs(values) {
+    static saveInputs(values,key) {
         return new Promise((resolve,reject)=> {
             db.query(
-                `INSERT INTO inputs ( blockheight ,txid, vouttxidx, vouttxid, vout) 
+                `INSERT INTO inputs_${key} ( blockheight ,txid, vouttxidx, vouttxid, vout) 
                     VALUES ${values}`,
             [],
             (error,response)=>{
@@ -222,10 +222,10 @@ class BlockChainModel {
     }
 
 
-    static saveOutputs(values) {
+    static saveOutputs(values,key) {
         return new Promise((resolve,reject)=> {
             db.query(
-                `INSERT INTO outputs ( blockheight , txidx, txid, outaddress, vout, amount) 
+                `INSERT INTO outputs_${key} ( blockheight , txidx, txid, outaddress, vout, amount) 
                     VALUES ${values}`,
             [],
             (error,response)=>{
