@@ -349,6 +349,18 @@ class Blockchain {
         while(readHeight<blockCount) {
             readHeight ++;
             console.log('readHeight',readHeight);
+
+
+            if ((readHeight % 1000)==0){
+                await this.saveAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys);
+                vinQueryCount =[];
+                voutQueryCount =[];
+                voutQuery=[];
+                vinQuery=[];
+                voutQueryKeys=[];
+                vinQueryKeys=[];
+            }
+
             global.transactions=[];
             //blockCount  =  await getLastBlock();
             coinBaseReward=0;
@@ -511,7 +523,7 @@ class Blockchain {
         
     }
 
-    static async saveTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys) {
+    static async saveAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys) {
         let sql='';
         //console.log('saveTransaction');
         
