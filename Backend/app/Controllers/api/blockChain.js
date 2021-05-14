@@ -401,8 +401,8 @@ class Blockchain {
                        
                         if (vinQueryCount[txidx]>1000 || (txcounter==trxRead)) {
                             this.saveInputTransaction(vinQuery[vtxidx],vtxidx_);
-                            console.log('Write Inputs' + vtxidx_);
-                            console.log('sql' + vinQuery[vtxidx]);
+                            //console.log('Write Inputs' + vtxidx_);
+                            //console.log('sql' + vinQuery[vtxidx]);
                             vinQuery[vtxidx] ='';
                             vinQueryCount[vtxidx]=0;
                           }   
@@ -437,8 +437,8 @@ class Blockchain {
                   
                   if ((voutQueryCount[txidx]>1000) || (txcounter==trxRead)) {
                     this.saveOutputTransaction(voutQuery[txidx],txidx_);
-                    console.log('Write outputs' + txidx_);
-                    console.log('sql' + voutQuery[txidx]);
+                    //console.log('Write outputs' + txidx_);
+                    //console.log('sql' + voutQuery[txidx]);
                     voutQuery[txidx] ='';
                     voutQueryCount[txidx]=0;
                   }   
@@ -490,8 +490,8 @@ class Blockchain {
             socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 }); 
         }
 
-        await this.saveTransaction(vinQuery,voutQuery,vinQueryCount,voutQueryCount,vinQueryKeys,voutQueryKeys);
-        record=false;    
+        // await this.saveTransaction(vinQuery,voutQuery,vinQueryCount,voutQueryCount,vinQueryKeys,voutQueryKeys);
+        // record=false;    
         
     }
 
