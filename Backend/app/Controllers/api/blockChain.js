@@ -392,6 +392,7 @@ class Blockchain {
                             
                             if (!vinQueryCount.hasOwnProperty(vtxidx))  vinQueryCount[vtxidx]=1;
                             else vinQueryCount[vtxidx]++;
+
                             //console.log('vtxidx:' + vtxidx + ' > ' + vinQueryCount[vtxidx]);
                             sql =  `,(${readHeight},'${tx.txid}','${vtxidx_}','${vin.txid}',${vin.vout})`;
                             if (!vinQuery.hasOwnProperty(vtxidx)) vinQuery[vtxidx] = sql;
@@ -399,7 +400,7 @@ class Blockchain {
                             vinQueryKeys.push(vtxidx);
                         //}
                        
-                        if (vinQueryCount[txidx]>1000 || (txcounter==trxRead)) {
+                        if (vinQueryCount[txidx]>1000) {
                             this.saveInputTransaction(vinQuery[vtxidx],vtxidx_);
                             //console.log('Write Inputs' + vtxidx_);
                             //console.log('sql' + vinQuery[vtxidx]);
@@ -432,10 +433,11 @@ class Blockchain {
                     //console.log('txidx:' + txidx + ' > ' + voutQueryCount[txidx]);
                     sql =  `,(${readHeight},'${txidx_}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
                     if (!voutQuery.hasOwnProperty(txidx)) voutQuery[txidx] = sql;
-                    else voutQuery[txidx] = voutQuery[txidx] + sql;                 
+                    else voutQuery[txidx] = voutQuery[txidx] + sql;     
+                    voutQueryKeys.push(txidx);            
                   //}
                   
-                  if ((voutQueryCount[txidx]>1000) || (txcounter==trxRead)) {
+                  if ((voutQueryCount[txidx]>1000)) {
                     this.saveOutputTransaction(voutQuery[txidx],txidx_);
                     //console.log('Write outputs' + txidx_);
                     //console.log('sql' + voutQuery[txidx]);
@@ -490,12 +492,12 @@ class Blockchain {
             socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 }); 
         }
 
-        // await this.saveTransaction(vinQuery,voutQuery,vinQueryCount,voutQueryCount,vinQueryKeys,voutQueryKeys);
-        // record=false;    
+        await this.saveTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys);
+        record=false;    
         
     }
 
-    static async saveTransaction(vinQuery,voutQuery,vinQueryCount,voutQueryCount,vinQueryKeys,voutQueryKeys) {
+    static async saveTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys) {
         let sql='';
         //console.log('saveTransaction');
         
