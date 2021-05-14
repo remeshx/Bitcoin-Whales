@@ -4,7 +4,7 @@
   "description": "Finding Bitcoin wallets with high amount of coins",
   "main": "index.js",
   "scripts": {
-    "start": "node ./index.js",
+    "start": "node --max-old-space-size=20048 ./index.js",
     "configure": "cmd /C \"\"C:\\Program Files\\Git\\bin\\bash.exe\" -c \"C:/-PROJECTS/NodeProjects/BitcoinWales/Backend/bin/configure_db.sh\"\""
   },
   "author": "",
