@@ -351,7 +351,7 @@ class Blockchain {
             console.log('readHeight',readHeight);
 
 
-            if ((readHeight % 1000)==0){
+            if ((readHeight % 5000)==0){
                 await this.saveAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys);
                 vinQueryCount =[];
                 voutQueryCount =[];
@@ -402,14 +402,14 @@ class Blockchain {
                         
                         sql =  `,(${readHeight},'${tx.txid}','${vtxidx_}','${vin.txid}',${vin.vout})`;
 
-                        if (typeof vinQuery[txidx] !== 'undefined' && vinQuery[txidx] !== null)
+                        if (typeof vinQuery[vtxidx] !== 'undefined' && vinQuery[vtxidx] !== null)
                         {
                             vinQuery[vtxidx] = vinQuery[vtxidx] + sql;
                         } else {
                             vinQuery[vtxidx] = sql;
                         }
 
-                        if (typeof vinQueryCount[txidx] !== 'undefined' && vinQueryCount[txidx] !== null)
+                        if (typeof vinQueryCount[vtxidx] !== 'undefined' && vinQueryCount[vtxidx] !== null)
                         {
                             vinQueryCount[vtxidx]++;
                         } else {
