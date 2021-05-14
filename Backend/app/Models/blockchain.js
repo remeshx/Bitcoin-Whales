@@ -214,6 +214,9 @@ class BlockChainModel {
             (error,response)=>{
                 if (error) {
                     console.log('error',error);
+                    
+                    console.log('values',values);
+                    console.log('key',key);
                     reject(error);
                 }
                 resolve(true);
@@ -231,6 +234,9 @@ class BlockChainModel {
             (error,response)=>{
                 if (error) {
                     console.log('error',error);
+                    console.log('values',values);
+                    console.log('key',key);
+                    
                     reject(error);
                 }
                 resolve(true);
