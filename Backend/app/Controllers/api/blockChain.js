@@ -552,7 +552,7 @@ class Blockchain {
           if (i>5000) console.info('voutQueryKeys##:',voutQueryKeys);
     }
 
-    static async saveInputTransaction(vinQuery,key) {
+    static async saveInputTransaction(vinQuery,key,soket) {
         let sql=''
         sql = vinQuery;
         sql = sql.replace(/(^,)|(,$)/g, "");
@@ -562,7 +562,7 @@ class Blockchain {
     }
 
 
-    static async saveOutputTransaction(voutQuery,key) {
+    static async saveOutputTransaction(voutQuery,key,soket) {
         let sql=''
         sql = voutQuery;
         sql = sql.replace(/(^,)|(,$)/g, "");
