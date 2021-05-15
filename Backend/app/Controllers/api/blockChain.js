@@ -420,7 +420,7 @@ class Blockchain {
                         
                         
                             
-                        if (vinQueryCount[txidx]>1000) {
+                        if (vinQueryCount[txidx]>4000) {
                             await this.saveInputTransaction(vinQuery[vtxidx],vtxidx_,socket);
                             vinQuery[vtxidx] = null;
                             vinQueryCount[vtxidx]= null;
@@ -461,7 +461,7 @@ class Blockchain {
                               
                   
                   
-                  if ((voutQueryCount[txidx]>1000)) {
+                  if ((voutQueryCount[txidx]>4000)) {
                     await this.saveOutputTransaction(voutQuery[txidx],txidx_,socket);
                     voutQuery[txidx] =null;
                     voutQueryCount[txidx]= null;
