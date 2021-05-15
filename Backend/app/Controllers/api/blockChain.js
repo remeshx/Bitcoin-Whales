@@ -421,7 +421,7 @@ class Blockchain {
                         
                             
                         if (vinQueryCount[txidx]>1000) {
-                            await this.saveInputTransaction(vinQuery[vtxidx],vtxidx_,soket);
+                            await this.saveInputTransaction(vinQuery[vtxidx],vtxidx_,socket);
                             vinQuery[vtxidx] = null;
                             vinQueryCount[vtxidx]= null;
                             vinQueryKeys.pop(vtxidx);
@@ -462,7 +462,7 @@ class Blockchain {
                   
                   
                   if ((voutQueryCount[txidx]>1000)) {
-                    await this.saveOutputTransaction(voutQuery[txidx],txidx_,soket);
+                    await this.saveOutputTransaction(voutQuery[txidx],txidx_,socket);
                     voutQuery[txidx] =null;
                     voutQueryCount[txidx]= null;
                     voutQueryKeys.pop(txidx);
@@ -552,7 +552,7 @@ class Blockchain {
           if (i>5000) console.info('voutQueryKeys##:',voutQueryKeys);
     }
 
-    static async saveInputTransaction(vinQuery,key,soket) {
+    static async saveInputTransaction(vinQuery,key,socket) {
         let sql=''
         sql = vinQuery;
         sql = sql.replace(/(^,)|(,$)/g, "");
@@ -562,7 +562,7 @@ class Blockchain {
     }
 
 
-    static async saveOutputTransaction(voutQuery,key,soket) {
+    static async saveOutputTransaction(voutQuery,key,socket) {
         let sql=''
         sql = voutQuery;
         sql = sql.replace(/(^,)|(,$)/g, "");
