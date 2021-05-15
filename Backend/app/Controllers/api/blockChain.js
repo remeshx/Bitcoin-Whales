@@ -555,6 +555,7 @@ class Blockchain {
             if (sql!='')
                 await BlockChainModel.saveOutputs(sql,key); 
           }
+          if (i>5000) console.info('voutQueryKeys##:',voutQueryKeys);
     }
 
     static async saveInputTransaction(vinQuery,key) {
