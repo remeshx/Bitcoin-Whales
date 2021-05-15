@@ -408,28 +408,29 @@ class Blockchain {
                         //sql =  `,(${readHeight},'${tx.txid}','${vtxidx_}','${vin.txid}',${vin.vout})`;
                         sql =  `${readHeight},${tx.txid},${vtxidx_},${vin.txid},${vin.vout}` + "\n";
 
-                        // if (typeof vinQuery[vtxidx] !== 'undefined' && vinQuery[vtxidx] !== null)
-                        // {
-                        //     vinQuery[vtxidx] = vinQuery[vtxidx] + sql;
-                        //     vinQueryCount[vtxidx]++;
-                        // } else {
-                        //     vinQuery[vtxidx] = sql;
-                        //     vinQueryKeys.push(vtxidx);
-                        //     vinQueryCount[vtxidx]=1;
-                        // }
+                        if (typeof vinQuery[vtxidx] !== 'undefined' && vinQuery[vtxidx] !== null)
+                        {
+                            vinQuery[vtxidx] = vinQuery[vtxidx] + sql;
+                            vinQueryCount[vtxidx]++;
+                        } else {
+                            vinQuery[vtxidx] = sql;
+                            vinQueryKeys.push(vtxidx);
+                            vinQueryCount[vtxidx]=1;
+                        }
 
-                        this.writeout(fs,'inputs',sql,vtxidx);
+                        
                         //console.log('vtxidx:' + vtxidx + ' > ' + vinQueryCount[vtxidx]);
             
                         
                         
                             
-                        // if (vinQueryCount[txidx]>4000) {
-                        //     await this.saveInputTransaction(vinQuery[vtxidx],vtxidx_,socket);
-                        //     vinQuery[vtxidx] = null;
-                        //     vinQueryCount[vtxidx]= null;
-                        //     vinQueryKeys.pop(vtxidx);
-                        // }   
+                        if (vinQueryCount[vtxidx]>1000) {
+                            //await this.saveInputTransaction(vinQuery[vtxidx],vtxidx_,socket);
+                            this.writeout(fs,'inputs',vinQuery[vtxidx],vtxidx);
+                            vinQuery[vtxidx] = null;
+                            vinQueryCount[vtxidx]= null;
+                            vinQueryKeys.pop(vtxidx);
+                        }   
                     };
                 } 
                 
@@ -451,27 +452,28 @@ class Blockchain {
                     //sql =  `,(${readHeight},'${txidx_}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
                     sql =  `${readHeight},${txidx_},${tx.txid},${address},${voutCounter},${vout.value}` + "\n";
                     
-                    // if (typeof voutQuery[txidx] !== 'undefined' && voutQuery[txidx] !== null)
-                    // {
-                    //     voutQuery[txidx] = voutQuery[txidx] + sql;    
-                    //     voutQueryCount[txidx]++;   
-                    // } else {
-                    //     voutQuery[txidx] = sql;
-                    //     voutQueryKeys.push(txidx);  
-                    //     voutQueryCount[txidx]=1;
-                    // }
+                    if (typeof voutQuery[txidx] !== 'undefined' && voutQuery[txidx] !== null)
+                    {
+                        voutQuery[txidx] = voutQuery[txidx] + sql;    
+                        voutQueryCount[txidx]++;   
+                    } else {
+                        voutQuery[txidx] = sql;
+                        voutQueryKeys.push(txidx);  
+                        voutQueryCount[txidx]=1;
+                    }
 
                     //console.log('txidx:' + txidx + ' > ' + voutQueryCount[txidx]);
-                    this.writeout(fs,'outputs',sql,txidx);
+                   
                               
                   
                   
-                //   if ((voutQueryCount[txidx]>4000)) {
-                //     await this.saveOutputTransaction(voutQuery[txidx],txidx_,socket);
-                //     voutQuery[txidx] =null;
-                //     voutQueryCount[txidx]= null;
-                //     voutQueryKeys.pop(txidx);
-                //   }   
+                  if ((voutQueryCount[txidx]>4000)) {
+                    //await this.saveOutputTransaction(voutQuery[txidx],txidx_,socket);
+                    this.writeout(fs,'outputs',voutQuery[txidx],txidx);
+                    voutQuery[txidx] =null;
+                    voutQueryCount[txidx]= null;
+                    voutQueryKeys.pop(txidx);
+                  }   
                     
                   voutCounter++;
                   
