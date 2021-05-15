@@ -351,17 +351,17 @@ class Blockchain {
             console.log('readHeight',readHeight);
 
 
-            // if ((readHeight % 1000)==0){
-            //     await this.saveAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket);
-            //     vinQueryCount =[];
-            //     voutQueryCount =[];
-            //     voutQuery=[];
-            //     vinQuery=[];
-            //     voutQueryKeys=[];
-            //     vinQueryKeys=[];
-            //     await SettingModel.updateCurrentBlock(readHeight);
-            //     await SettingModel.updateTrxRead(-1);
-            // }
+            if ((readHeight % 10000)==0){
+                await this.saveAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket);
+                vinQueryCount =[];
+                voutQueryCount =[];
+                voutQuery=[];
+                vinQuery=[];
+                voutQueryKeys=[];
+                vinQueryKeys=[];
+                await SettingModel.updateCurrentBlock(readHeight);
+                await SettingModel.updateTrxRead(-1);
+            }
 
             global.transactions=[];
             //blockCount  =  await getLastBlock();
@@ -420,12 +420,12 @@ class Blockchain {
                         
                         
                             
-                        if (vinQueryCount[txidx]>4000) {
-                            await this.saveInputTransaction(vinQuery[vtxidx],vtxidx_,socket);
-                            vinQuery[vtxidx] = null;
-                            vinQueryCount[vtxidx]= null;
-                            vinQueryKeys.pop(vtxidx);
-                        }   
+                        // if (vinQueryCount[txidx]>4000) {
+                        //     await this.saveInputTransaction(vinQuery[vtxidx],vtxidx_,socket);
+                        //     vinQuery[vtxidx] = null;
+                        //     vinQueryCount[vtxidx]= null;
+                        //     vinQueryKeys.pop(vtxidx);
+                        // }   
                     };
                 } 
                 
@@ -461,12 +461,12 @@ class Blockchain {
                               
                   
                   
-                  if ((voutQueryCount[txidx]>4000)) {
-                    await this.saveOutputTransaction(voutQuery[txidx],txidx_,socket);
-                    voutQuery[txidx] =null;
-                    voutQueryCount[txidx]= null;
-                    voutQueryKeys.pop(txidx);
-                  }   
+                //   if ((voutQueryCount[txidx]>4000)) {
+                //     await this.saveOutputTransaction(voutQuery[txidx],txidx_,socket);
+                //     voutQuery[txidx] =null;
+                //     voutQueryCount[txidx]= null;
+                //     voutQueryKeys.pop(txidx);
+                //   }   
                     
                   voutCounter++;
                   
