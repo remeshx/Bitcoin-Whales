@@ -351,17 +351,17 @@ class Blockchain {
             console.log('readHeight',readHeight);
 
 
-            if ((readHeight % 1000)==0){
-                await this.saveAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket);
-                vinQueryCount =[];
-                voutQueryCount =[];
-                voutQuery=[];
-                vinQuery=[];
-                voutQueryKeys=[];
-                vinQueryKeys=[];
-                SettingModel.updateCurrentBlock(readHeight);
-                SettingModel.updateTrxRead(-1);
-            }
+            // if ((readHeight % 1000)==0){
+            //     await this.saveAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket);
+            //     vinQueryCount =[];
+            //     voutQueryCount =[];
+            //     voutQuery=[];
+            //     vinQuery=[];
+            //     voutQueryKeys=[];
+            //     vinQueryKeys=[];
+            //     await SettingModel.updateCurrentBlock(readHeight);
+            //     await SettingModel.updateTrxRead(-1);
+            // }
 
             global.transactions=[];
             //blockCount  =  await getLastBlock();
@@ -420,11 +420,12 @@ class Blockchain {
                         
                         
                             
-                        // if (vinQueryCount[txidx]>500) {
-                        //     await this.saveInputTransaction(vinQuery[vtxidx],vtxidx_);
-                        //     vinQuery[vtxidx] ='';
-                        //     vinQueryCount[vtxidx]=0;
-                        //   }   
+                        if (vinQueryCount[txidx]>1000) {
+                            await this.saveInputTransaction(vinQuery[vtxidx],vtxidx_,soket);
+                            vinQuery[vtxidx] = null;
+                            vinQueryCount[vtxidx]= null;
+                            vinQueryKeys.pop(vtxidx);
+                        }   
                     };
                 } 
                 
@@ -460,11 +461,12 @@ class Blockchain {
                               
                   
                   
-                //   if ((voutQueryCount[txidx]>500)) {
-                //     await this.saveOutputTransaction(voutQuery[txidx],txidx_);
-                //     voutQuery[txidx] ='';
-                //     voutQueryCount[txidx]=0;
-                //   }   
+                  if ((voutQueryCount[txidx]>1000)) {
+                    await this.saveOutputTransaction(voutQuery[txidx],txidx_,soket);
+                    voutQuery[txidx] =null;
+                    voutQueryCount[txidx]= null;
+                    voutQueryKeys.pop(txidx);
+                  }   
                     
                   voutCounter++;
                   
@@ -504,7 +506,6 @@ class Blockchain {
             global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
             global.settings['BitcoinNode_trxRead'] = -1;
             trxRead = -1;
-            socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 }); 
         }
 
         await this.saveAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket);
@@ -514,8 +515,8 @@ class Blockchain {
         vinQuery=[];
         voutQueryKeys=[];
         vinQueryKeys=[];
-        SettingModel.updateCurrentBlock(readHeight);
-        SettingModel.updateTrxRead(-1);
+        await SettingModel.updateCurrentBlock(readHeight);
+        await SettingModel.updateTrxRead(-1);
         
     }
 
@@ -555,6 +556,7 @@ class Blockchain {
         let sql=''
         sql = vinQuery;
         sql = sql.replace(/(^,)|(,$)/g, "");
+        socket.emit("UPDATE_TRX", {trxCount: 'writing input trx', trxRead :key }); 
         if (sql!='')
             await BlockChainModel.saveInputs(sql,key); 
     }
@@ -564,6 +566,7 @@ class Blockchain {
         let sql=''
         sql = voutQuery;
         sql = sql.replace(/(^,)|(,$)/g, "");
+        socket.emit("UPDATE_TRX", {trxCount: 'writing output trx', trxRead :key });
         if (sql!='')
             await BlockChainModel.saveOutputs(sql,key); 
     }
