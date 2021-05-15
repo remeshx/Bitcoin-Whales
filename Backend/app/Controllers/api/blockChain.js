@@ -407,21 +407,17 @@ class Blockchain {
                         if (typeof vinQuery[vtxidx] !== 'undefined' && vinQuery[vtxidx] !== null)
                         {
                             vinQuery[vtxidx] = vinQuery[vtxidx] + sql;
-                        } else {
-                            vinQuery[vtxidx] = sql;
-                        }
-
-                        if (typeof vinQueryCount[vtxidx] !== 'undefined' && vinQueryCount[vtxidx] !== null)
-                        {
                             vinQueryCount[vtxidx]++;
                         } else {
+                            vinQuery[vtxidx] = sql;
+                            vinQueryKeys.push(vtxidx);
                             vinQueryCount[vtxidx]=1;
                         }
 
                         
                         //console.log('vtxidx:' + vtxidx + ' > ' + vinQueryCount[vtxidx]);
             
-                        vinQueryKeys.push(vtxidx);
+                        
                         
                             
                         // if (vinQueryCount[txidx]>500) {
@@ -452,19 +448,16 @@ class Blockchain {
                     if (typeof voutQuery[txidx] !== 'undefined' && voutQuery[txidx] !== null)
                     {
                         voutQuery[txidx] = voutQuery[txidx] + sql;    
+                        voutQueryCount[txidx]++;   
                     } else {
                         voutQuery[txidx] = sql;
-                    }
-
-                    if (typeof voutQueryCount[txidx] !== 'undefined' && voutQueryCount[txidx] !== null)
-                    {
-                        voutQueryCount[txidx]++;                        
-                    } else {
+                        voutQueryKeys.push(txidx);  
                         voutQueryCount[txidx]=1;
                     }
+
                     //console.log('txidx:' + txidx + ' > ' + voutQueryCount[txidx]);
                         
-                    voutQueryKeys.push(txidx);            
+                              
                   
                   
                 //   if ((voutQueryCount[txidx]>500)) {
