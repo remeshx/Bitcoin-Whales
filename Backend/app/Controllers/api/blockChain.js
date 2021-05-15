@@ -346,22 +346,25 @@ class Blockchain {
         let txidx_='';
         let record=false;
         let sql='';
+
+        var fs = require('fs')
+
         while(readHeight<blockCount) {
             readHeight ++;
             console.log('readHeight',readHeight);
 
 
-            if ((readHeight % 10000)==0){
-                await this.saveAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket);
-                vinQueryCount =[];
-                voutQueryCount =[];
-                voutQuery=[];
-                vinQuery=[];
-                voutQueryKeys=[];
-                vinQueryKeys=[];
-                await SettingModel.updateCurrentBlock(readHeight);
-                await SettingModel.updateTrxRead(-1);
-            }
+            // if ((readHeight % 10000)==0){
+            //     await this.saveAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket);
+            //     vinQueryCount =[];
+            //     voutQueryCount =[];
+            //     voutQuery=[];
+            //     vinQuery=[];
+            //     voutQueryKeys=[];
+            //     vinQueryKeys=[];
+            //     await SettingModel.updateCurrentBlock(readHeight);
+            //     await SettingModel.updateTrxRead(-1);
+            // }
 
             global.transactions=[];
             //blockCount  =  await getLastBlock();
@@ -402,19 +405,20 @@ class Blockchain {
                         vtxidx_ =  vin.txid.substring(0,3);
                         vtxidx = 'a' + vtxidx_;
                         
-                        sql =  `,(${readHeight},'${tx.txid}','${vtxidx_}','${vin.txid}',${vin.vout})`;
+                        //sql =  `,(${readHeight},'${tx.txid}','${vtxidx_}','${vin.txid}',${vin.vout})`;
+                        sql =  `${readHeight},${tx.txid},${vtxidx_},${vin.txid},${vin.vout}` + "\n";
 
-                        if (typeof vinQuery[vtxidx] !== 'undefined' && vinQuery[vtxidx] !== null)
-                        {
-                            vinQuery[vtxidx] = vinQuery[vtxidx] + sql;
-                            vinQueryCount[vtxidx]++;
-                        } else {
-                            vinQuery[vtxidx] = sql;
-                            vinQueryKeys.push(vtxidx);
-                            vinQueryCount[vtxidx]=1;
-                        }
+                        // if (typeof vinQuery[vtxidx] !== 'undefined' && vinQuery[vtxidx] !== null)
+                        // {
+                        //     vinQuery[vtxidx] = vinQuery[vtxidx] + sql;
+                        //     vinQueryCount[vtxidx]++;
+                        // } else {
+                        //     vinQuery[vtxidx] = sql;
+                        //     vinQueryKeys.push(vtxidx);
+                        //     vinQueryCount[vtxidx]=1;
+                        // }
 
-                        
+                        this.writeout(fs,'inputs',sql,vtxidx);
                         //console.log('vtxidx:' + vtxidx + ' > ' + vinQueryCount[vtxidx]);
             
                         
@@ -444,20 +448,21 @@ class Blockchain {
                     txidx_ = tx.txid.substring(0,3);
                     txidx = 'a' + txidx_;
                     
-                    sql =  `,(${readHeight},'${txidx_}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
+                    //sql =  `,(${readHeight},'${txidx_}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
+                    sql =  `${readHeight},${txidx_},${tx.txid},${address},${voutCounter},${vout.value}` + "\n";
                     
-                    if (typeof voutQuery[txidx] !== 'undefined' && voutQuery[txidx] !== null)
-                    {
-                        voutQuery[txidx] = voutQuery[txidx] + sql;    
-                        voutQueryCount[txidx]++;   
-                    } else {
-                        voutQuery[txidx] = sql;
-                        voutQueryKeys.push(txidx);  
-                        voutQueryCount[txidx]=1;
-                    }
+                    // if (typeof voutQuery[txidx] !== 'undefined' && voutQuery[txidx] !== null)
+                    // {
+                    //     voutQuery[txidx] = voutQuery[txidx] + sql;    
+                    //     voutQueryCount[txidx]++;   
+                    // } else {
+                    //     voutQuery[txidx] = sql;
+                    //     voutQueryKeys.push(txidx);  
+                    //     voutQueryCount[txidx]=1;
+                    // }
 
                     //console.log('txidx:' + txidx + ' > ' + voutQueryCount[txidx]);
-                        
+                    this.writeout(fs,'outputs',sql,txidx);
                               
                   
                   
@@ -550,6 +555,15 @@ class Blockchain {
                 await BlockChainModel.saveOutputs(sql,key); 
           }
           if (i>5000) console.info('voutQueryKeys##:',voutQueryKeys);
+    }
+
+    static async writeout(fs,type,line,key) {
+        var fs = require('fs');
+        fs.appendFile('outputs/'+ type +'_'+ key +'.csv', line, function (err) {
+            if (err) {
+              console.log('error','write error' + '> outputs/'+ type +'_'+ key +'.csv > ' + err);
+            } 
+          })
     }
 
     static async saveInputTransaction(vinQuery,key,socket) {

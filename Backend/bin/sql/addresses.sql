@@ -75,8 +75,8 @@ CREATE TABLE outputs  (
     vout          INT,
     amount        NUMERIC(322,8),
     spend       SMALLINT DEFAULT 0,
-    primary key (id, txidx)
-) partition by list(txidx);
+    primary key (id)
+) 
 
 create table outputs_aaa AS TABLE outputs;
 create table outputs_aab AS TABLE outputs;
@@ -4196,8 +4196,8 @@ CREATE TABLE inputs  (
     vout          INT,
     inaddress    character(100),
     amount        NUMERIC(322,8) Default 0,
-    primary key (id, vouttxidx)
-) partition by list(vouttxidx);
+    primary key (id)
+) 
 
 create table inputs_aaa AS TABLE inputs;
 create table inputs_aab AS TABLE inputs;
