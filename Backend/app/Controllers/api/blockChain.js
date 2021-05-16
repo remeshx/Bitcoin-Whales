@@ -355,7 +355,7 @@ class Blockchain {
             console.log('b: ',readHeight);
 
 
-            if ((readHeight % 10000)==0){
+            if ((readHeight % 1000)==0){
                 await this.writeAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket,fs);
                 vinQueryCount =[];
                 voutQueryCount =[];
