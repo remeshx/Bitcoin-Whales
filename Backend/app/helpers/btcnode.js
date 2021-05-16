@@ -138,6 +138,7 @@ function deriveaddresses(hex,type) {
 
 function callNode(method,params=[],retries =10, timout=5000) {
     const nodeurl = 'http://' + global.settings['BitcoinNode_USERNAME'] + ':' + global.settings['BitcoinNode_PASSWORD'] + '@' + global.settings['BitcoinNode_IPPORT'];
+    //let parameters = {"jsonrpc": "1.0", "id":method, "method": method, "params": null};
     let parameters = {"jsonrpc": "1.0", "id":method, "method": method, "params": params};
 
     return new Promise((resolve,reject)=>{
@@ -152,17 +153,16 @@ function callNode(method,params=[],retries =10, timout=5000) {
             return res.json()
         })        
         .catch(error => {
-            console.log('error calling Api 2');
+            console.log('error calling Api 2 : ' + retries);
             if (retries>0) {
-                await wait(timout).then(()=>{
-                        console.log('   retry Api Call >> ' + retries)
-                        resolve(await callNode(method, params, retries - 1, timout))               
-                    }
-                )
+                        return new Promise(() =>setTimeout(()=>{
+                            console.log('new call  ' + retries);
+                            resolve(callNode(method, params, retries - 1, timout))
+                        },timout))                               
             } else reject(error)
         })
         .then(response => {
-            console.log('response 1',response);
+            //console.log('response 1',response);
             resolve(response);
         }) 
         .catch(error => reject(error));            
