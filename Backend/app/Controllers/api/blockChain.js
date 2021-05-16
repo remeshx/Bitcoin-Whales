@@ -548,7 +548,7 @@ class Blockchain {
             sql = sql.replace(/(^,)|(,$)/g, "");
             //key =  key.substring(1,4);
             socket.emit("UPDATE_TRX", {trxCount: 'writing input trx', trxRead :i }); 
-            this.writeout(fs,'inputs',sql,key);
+            await this.writeout(fs,'inputs',sql,key);
             // if (sql!='')
             //     await BlockChainModel.saveInputs(sql,key); 
             
@@ -563,7 +563,7 @@ class Blockchain {
             sql = sql.replace(/(^,)|(,$)/g, "");
             //key =  key.substring(1,4);
             socket.emit("UPDATE_TRX", {trxCount: 'writing output trx', trxRead :i }); 
-            this.writeout(fs,'outputs',sql,key);
+            await this.writeout(fs,'outputs',sql,key);
             // if (sql!='')
             //     await BlockChainModel.saveOutputs(sql,key); 
           }
