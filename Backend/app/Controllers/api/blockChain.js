@@ -346,12 +346,13 @@ class Blockchain {
         let txidx_='';
         let record=false;
         let sql='';
+        let blksql='';
 
         var fs = require('fs')
 
         while(readHeight<blockCount) {
             readHeight ++;
-            console.log('readHeight',readHeight);
+            console.log('b: ',readHeight);
 
 
             if ((readHeight % 10000)==0){
@@ -362,8 +363,12 @@ class Blockchain {
                 vinQuery=[];
                 voutQueryKeys=[];
                 vinQueryKeys=[];
+                
+                blksql = blksql.replace(/(^,)|(,$)/g, "");
+                await BlockChainModel.SaveBulkBlock(blksql); 
                 await SettingModel.updateCurrentBlock(readHeight);
                 await SettingModel.updateTrxRead(-1);
+                blksql = '';
             }
 
             global.transactions=[];
@@ -508,7 +513,8 @@ class Blockchain {
                                                  
             socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 }); 
                  
-            await BlockChainModel.SaveBlock(readHeight,block.result.time,block.result.hash,txs.length,fees,maxFee,minFee);  
+            blksql = blksql + `,( ${readHeight},${block.result.time}, ${block.result.hash},${tx_count},${block_fee},${max_fee},${min_fee}) `;
+           // await BlockChainModel.SaveBlock(readHeight,block.result.time,block.result.hash,txs.length,fees,maxFee,minFee); 
             
             global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
             global.settings['BitcoinNode_trxRead'] = -1;

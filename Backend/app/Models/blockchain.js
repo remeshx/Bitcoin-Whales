@@ -78,6 +78,22 @@ class BlockChainModel {
         })
     }
 
+    static SaveBulkBlock(sql) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `INSERT INTO block_details ( block_height,block_time, block_hash,tx_count,block_fee,max_fee,min_fee) 
+                    VALUES ${sql};`,
+            [],
+            (error,response)=>{
+                if (error) {
+                    console.log('error 4',error);
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
     static SaveReward(height,reward,rewardAddress,rewardTime) {
         return new Promise((resolve,reject)=> {
             db.query(
