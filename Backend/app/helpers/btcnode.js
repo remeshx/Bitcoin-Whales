@@ -149,23 +149,16 @@ function callNode(method,params=[],retries =10, timout=5000) {
             } 
         })
         .then(res => {
-            if (res.ok) return res.json()
-
-            console.log('error calling Api 1');
-            if (retries>0) {
-                setTimeout(() => {
-                    console.log('   retry Api Call >> ' + retries);
-                    return callNode(method, params, retries - 1, timout) /* 3 */
-                }, timout) 
-            }
+            return res.json()
         })        
         .catch(error => {
             console.log('error calling Api 2');
             if (retries>0) {
-                setTimeout(() => {
-                    console.log('   retry Api Call >> ' + retries);
-                    return callNode(method, params, retries - 1, timout) /* 3 */
-                }, timout) 
+                wait(timout).then(()=>{
+                    console.log('   retry Api Call >> ' + retries)
+                    return callNode(method, params, retries - 1, timout)                
+                }
+                )
             } else reject(error)
         })
         .then(response => {
