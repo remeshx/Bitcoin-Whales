@@ -76,7 +76,7 @@ CREATE TABLE outputs  (
     amount        NUMERIC(322,8),
     spend       SMALLINT DEFAULT 0,
     primary key (id)
-) 
+) ;
 
 create table outputs_aaa AS TABLE outputs;
 create table outputs_aab AS TABLE outputs;
@@ -4197,7 +4197,7 @@ CREATE TABLE inputs  (
     inaddress    character(100),
     amount        NUMERIC(322,8) Default 0,
     primary key (id)
-) 
+) ;
 
 create table inputs_aaa AS TABLE inputs;
 create table inputs_aab AS TABLE inputs;
