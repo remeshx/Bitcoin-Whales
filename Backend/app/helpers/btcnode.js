@@ -154,15 +154,15 @@ function callNode(method,params=[],retries =10, timout=5000) {
         .catch(error => {
             console.log('error calling Api 2');
             if (retries>0) {
-                wait(timout).then(()=>{
-                    console.log('   retry Api Call >> ' + retries)
-                    return callNode(method, params, retries - 1, timout)                
-                }
+                await wait(timout).then(()=>{
+                        console.log('   retry Api Call >> ' + retries)
+                        resolve(await callNode(method, params, retries - 1, timout))               
+                    }
                 )
             } else reject(error)
         })
         .then(response => {
-            //console.log('response',response);
+            console.log('response 1',response);
             resolve(response);
         }) 
         .catch(error => reject(error));            
