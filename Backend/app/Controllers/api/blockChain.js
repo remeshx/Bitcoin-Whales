@@ -537,37 +537,31 @@ class Blockchain {
 
 
     static async writeAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket,fs) {
+        
         let sql='';
-        //console.log('saveTransaction');
          var i=0;
-         for await (var key of vinQueryKeys) { 
+         socket.emit("UPDATE_TRX", {trxCount: 'writing input trx', trxRead :i }); 
+         for  await(var key of vinQueryKeys) { 
            // console.log('VIN');
             if (!key) continue;
             i++;
             sql = vinQuery[key];
             sql = sql.replace(/(^,)|(,$)/g, "");
             //key =  key.substring(1,4);
-            socket.emit("UPDATE_TRX", {trxCount: 'writing input trx', trxRead :i }); 
+         
             await this.writeout(fs,'inputs',sql,key);
-            // if (sql!='')
-            //     await BlockChainModel.saveInputs(sql,key); 
-            
-                              
           }
 
           i=0;
+          socket.emit("UPDATE_TRX", {trxCount: 'writing output trx', trxRead :i }); 
           for await (var key of voutQueryKeys) { 
             if (!key) continue;
             i++;
             sql = voutQuery[key];
             sql = sql.replace(/(^,)|(,$)/g, "");
-            //key =  key.substring(1,4);
-            socket.emit("UPDATE_TRX", {trxCount: 'writing output trx', trxRead :i }); 
+            //key =  key.substring(1,4);           
             await this.writeout(fs,'outputs',sql,key);
-            // if (sql!='')
-            //     await BlockChainModel.saveOutputs(sql,key); 
-          }
-          if (i>5000) console.info('voutQueryKeys##:',voutQueryKeys);
+          }   
     }
 
 
@@ -604,8 +598,9 @@ class Blockchain {
     }
 
     static async writeout(fs,type,line,key) {
+       
         var fs = require('fs');
-        fs.appendFile('outputs/'+ type +'_'+ key +'.csv', line, function (err) {
+        await fs.appendFile('outputs/'+ type +'_'+ key +'.csv', line, function (err) {
             if (err) {
               console.log('error','write error' + '> outputs/'+ type +'_'+ key +'.csv > ' + err);
             } 
