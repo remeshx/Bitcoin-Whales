@@ -368,6 +368,9 @@ class Blockchain {
                 await BlockChainModel.SaveBulkBlock(blksql); 
                 await SettingModel.updateCurrentBlock(readHeight);
                 await SettingModel.updateTrxRead(-1);
+                global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
+                global.settings['BitcoinNode_trxRead'] = -1;
+
                 blksql = '';
             }
 
@@ -516,8 +519,7 @@ class Blockchain {
             blksql = blksql + `,( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},${fees},${maxFee},${minFee}) `;
            // await BlockChainModel.SaveBlock(readHeight,block.result.time,block.result.hash,txs.length,fees,maxFee,minFee); 
             
-            global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
-            global.settings['BitcoinNode_trxRead'] = -1;
+            
             trxRead = -1;
         }
 

@@ -135,9 +135,11 @@ function deriveaddresses(hex,type) {
  }
 
 
-function callNode(method,params=[]) {
+
+function callNode(method,params=[],retries =10, timout=5000) {
     const nodeurl = 'http://' + global.settings['BitcoinNode_USERNAME'] + ':' + global.settings['BitcoinNode_PASSWORD'] + '@' + global.settings['BitcoinNode_IPPORT'];
     let parameters = {"jsonrpc": "1.0", "id":method, "method": method, "params": params};
+
     return new Promise((resolve,reject)=>{
         fetch( nodeurl , { 
             method: "POST", 
@@ -146,15 +148,38 @@ function callNode(method,params=[]) {
                 "Content-type": "application/json; charset=UTF-8"
             } 
         })
-        .then(res => res.json())
+        .then(res => {
+            if (res.ok) return res.json()
+
+            console.log('error calling Api 1');
+            if (retries>0) {
+                setTimeout(() => {
+                    console.log('   retry Api Call >> ' + retries);
+                    return callNode(method, params, retries - 1, timout) /* 3 */
+                }, timout) 
+            }
+        })        
+        .catch(error => {
+            console.log('error calling Api 2');
+            if (retries>0) {
+                setTimeout(() => {
+                    console.log('   retry Api Call >> ' + retries);
+                    return callNode(method, params, retries - 1, timout) /* 3 */
+                }, timout) 
+            } else reject(error)
+        })
         .then(response => {
             //console.log('response',response);
             resolve(response);
         }) 
-        .catch(error => reject(error));
+        .catch(error => reject(error));            
     });
 }
 
+
+function wait(delay){
+    return new Promise((resolve) => setTimeout(resolve, delay));
+}
 
 
 module.exports = {getLastBlock, getBlockHash , getBlock, getBlockByHeight, gettransaction, deriveaddresses}
