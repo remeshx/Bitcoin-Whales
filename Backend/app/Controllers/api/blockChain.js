@@ -513,7 +513,7 @@ class Blockchain {
                                                  
             socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 }); 
                  
-            blksql = blksql + `,( ${readHeight},${block.result.time}, ${block.result.hash},${tx_count},${block_fee},${max_fee},${min_fee}) `;
+            blksql = blksql + `,( ${readHeight},${block.result.time}, ${block.result.hash},${txs.length},${block_fee},${max_fee},${min_fee}) `;
            // await BlockChainModel.SaveBlock(readHeight,block.result.time,block.result.hash,txs.length,fees,maxFee,minFee); 
             
             global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
