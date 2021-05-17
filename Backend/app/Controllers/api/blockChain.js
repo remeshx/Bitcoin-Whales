@@ -354,6 +354,8 @@ class Blockchain {
 
         while(readHeight<blockCount) {
            
+            readHeight ++;
+            console.log('b: ',readHeight);
 
 
             if ((readHeight % 1000)==0){
@@ -376,8 +378,6 @@ class Blockchain {
                 blksql = '';
             }
 
-            readHeight ++;
-            console.log('b: ',readHeight);
 
             global.transactions=[];
             //blockCount  =  await getLastBlock();
