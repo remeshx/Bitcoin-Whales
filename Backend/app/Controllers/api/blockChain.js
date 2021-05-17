@@ -5,9 +5,7 @@ const fs = require('fs');
 
 class Blockchain {
 
-    fileStream = [];
-
-    static getLastBlockHeight() {
+     static getLastBlockHeight() {
         return new Promise((resolve,reject) =>{
             settingModel.loadSetting('BlockChain','LastBlockHeightRead')
             .then(()=>{
@@ -308,6 +306,7 @@ class Blockchain {
         console.log('blockCount',blockCount);
         //let ourheight   = 182010;//global.settings['BitcoinNode_LastBlockHeightRead'];
         
+        this.fileStream = [];
         let ourheight   = global.settings['BitcoinNode_LastBlockHeightRead'];
         //ourheight   = 680097;
         let trxRead = global.settings['BitcoinNode_trxRead'];
@@ -354,11 +353,11 @@ class Blockchain {
         
 
         while(readHeight<blockCount) {
-            readHeight ++;
-            console.log('b: ',readHeight);
+           
 
 
             if ((readHeight % 1000)==0){
+                console.log('writing trxs');
                 await this.writeAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket,fs);
                 vinQueryCount =[];
                 voutQueryCount =[];
@@ -376,6 +375,9 @@ class Blockchain {
 
                 blksql = '';
             }
+
+            readHeight ++;
+            console.log('b: ',readHeight);
 
             global.transactions=[];
             //blockCount  =  await getLastBlock();
@@ -602,11 +604,11 @@ class Blockchain {
 
     static async writeout(type,line,key) {
        
-        if (typeof fileStream[type+key] !== 'undefined' && fileStream[type+key] !== null) 
-        {
-            fileStream[type+key] = fs.createWriteStream('outputs/'+ type +'_'+ key +'.csv', {flags:'a'});
-        } else {
-            await fileStream[type+key].write(line);
+        try {
+            await this.fileStream[type+key].write(line);
+        } catch (error) {
+            this.fileStream[type+key] = fs.createWriteStream('outputs/'+ type +'_'+ key +'.csv', {flags:'a'});
+            this.fileStream[type+key].write(line);
         }
         /*
         var fs = require('fs');
