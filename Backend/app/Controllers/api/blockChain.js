@@ -1,8 +1,11 @@
 const {getBlockByHeight,gettransaction,deriveaddresses,getLastBlock} = require('../../helpers/btcnode');
 const BlockChainModel = require('../../Models/blockchain');
 const SettingModel = require('../../Models/settings');
+const fs = require('fs');
 
 class Blockchain {
+
+    fileStream = [];
 
     static getLastBlockHeight() {
         return new Promise((resolve,reject) =>{
@@ -348,7 +351,7 @@ class Blockchain {
         let sql='';
         let blksql='';
 
-        var fs = require('fs')
+        
 
         while(readHeight<blockCount) {
             readHeight ++;
@@ -536,7 +539,7 @@ class Blockchain {
     }
 
 
-    static async writeAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket,fs) {
+    static async writeAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket) {
         
         let sql='';
          var i=0;
@@ -549,7 +552,7 @@ class Blockchain {
             sql = sql.replace(/(^,)|(,$)/g, "");
             //key =  key.substring(1,4);
          
-            await this.writeout(fs,'inputs',sql,key);
+            await this.writeout('inputs',sql,key);
           }
 
           i=0;
@@ -560,7 +563,7 @@ class Blockchain {
             sql = voutQuery[key];
             sql = sql.replace(/(^,)|(,$)/g, "");
             //key =  key.substring(1,4);           
-            await this.writeout(fs,'outputs',sql,key);
+            await this.writeout('outputs',sql,key);
           }   
     }
 
@@ -597,14 +600,21 @@ class Blockchain {
           if (i>5000) console.info('voutQueryKeys##:',voutQueryKeys);
     }
 
-    static async writeout(fs,type,line,key) {
+    static async writeout(type,line,key) {
        
+        if (typeof fileStream[type+key] !== 'undefined' && fileStream[type+key] !== null) 
+        {
+            fileStream[type+key] = fs.createWriteStream('outputs/'+ type +'_'+ key +'.csv', {flags:'a'});
+        } else {
+            await fileStream[type+key].write(line);
+        }
+        /*
         var fs = require('fs');
         await fs.appendFile('outputs/'+ type +'_'+ key +'.csv', line, function (err) {
             if (err) {
               console.log('error','write error' + '> outputs/'+ type +'_'+ key +'.csv > ' + err);
             } 
-          })
+          })*/
     }
 
     static async saveInputTransaction(vinQuery,key,socket) {
