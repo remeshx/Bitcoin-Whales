@@ -370,9 +370,9 @@ class Blockchain {
                 
                 blksql = blksql.replace(/(^,)|(,$)/g, "");
                 await BlockChainModel.SaveBulkBlock(blksql); 
-                await SettingModel.updateCurrentBlock(readHeight);
+                await SettingModel.updateCurrentBlock(readHeight-1);
                 await SettingModel.updateTrxRead(-1);
-                global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
+                global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight-1;
                 global.settings['BitcoinNode_trxRead'] = -1;
 
                 blksql = '';
