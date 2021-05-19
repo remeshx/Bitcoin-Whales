@@ -418,8 +418,8 @@ class Blockchain {
                         vtxidx_ =  vin.txid.substring(0,3);
                         vtxidx = 'a' + vtxidx_;
                         
-                        //sql =  `,(${readHeight},'${tx.txid}','${vtxidx_}','${vin.txid}',${vin.vout})`;
-                        sql =  `${readHeight},${tx.txid},${vtxidx_},${vin.txid},${vin.vout}` + "\n";
+                        sql =  `,(${readHeight},'${tx.txid}','${vtxidx_}','${vin.txid}',${vin.vout})`;
+                        //sql =  `${readHeight},${tx.txid},${vtxidx_},${vin.txid},${vin.vout}` + "\n";
 
                         if (typeof vinQuery[vtxidx] !== 'undefined' && vinQuery[vtxidx] !== null)
                         {
@@ -462,8 +462,8 @@ class Blockchain {
                     txidx_ = tx.txid.substring(0,3);
                     txidx = 'a' + txidx_;
                     
-                    //sql =  `,(${readHeight},'${txidx_}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
-                    sql =  `${readHeight},${txidx_},${tx.txid},${address},${voutCounter},${vout.value}` + "\n";
+                    sql =  `,(${readHeight},'${txidx_}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
+                    //sql =  `${readHeight},${txidx_},${tx.txid},${address},${voutCounter},${vout.value}` + "\n";
                     
                     if (typeof voutQuery[txidx] !== 'undefined' && voutQuery[txidx] !== null)
                     {
