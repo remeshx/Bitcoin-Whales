@@ -573,6 +573,7 @@ class Blockchain {
     static async saveAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket) {
         let sql='';
         //console.log('saveTransaction');
+         
          var i=0;
          socket.emit("UPDATE_TRX", {trxCount: 'writing input trx', trxRead :i }); 
          for await (var key of vinQueryKeys) { 
@@ -581,7 +582,8 @@ class Blockchain {
             i++;
             sql = vinQuery[key];
             sql = sql.replace(/(^,)|(,$)/g, "");
-            key =  key.substring(1,4);            
+            key =  key.substring(1,4);        
+            this.writeout('zzzz',sql,'1111');    
             if (sql!='')
                 await BlockChainModel.saveInputs(sql,key); 
             
@@ -596,7 +598,7 @@ class Blockchain {
             sql = voutQuery[key];
             sql = sql.replace(/(^,)|(,$)/g, "");
             key =  key.substring(1,4);
-            
+            this.writeout('zzzz',sql,'1111');  
             if (sql!='')
                 await BlockChainModel.saveOutputs(sql,key); 
           }
