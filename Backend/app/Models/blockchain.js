@@ -240,6 +240,20 @@ class BlockChainModel {
         })
     }
 
+    static createIndex(indexName,tables,columns){
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `CREATE INDEX ${indexName} ON ${tables} (${columns}) `,
+            [],
+            (error,response)=>{
+                if (error) {
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
     static importInputFile(file,table) {
         return new Promise((resolve,reject)=> {
             db.query(
