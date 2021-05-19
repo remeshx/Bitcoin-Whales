@@ -583,7 +583,7 @@ class Blockchain {
             sql = vinQuery[key];
             sql = sql.replace(/(^,)|(,$)/g, "");
             key =  key.substring(1,4);        
-            this.writeout('zzzz',sql,'1111');    
+            //this.writeout('zzzz',sql,'1111');    
             if (sql!='')
                 await BlockChainModel.saveInputs(sql,key); 
             
@@ -598,7 +598,7 @@ class Blockchain {
             sql = voutQuery[key];
             sql = sql.replace(/(^,)|(,$)/g, "");
             key =  key.substring(1,4);
-            this.writeout('zzzz',sql,'1111');  
+            //this.writeout('zzzz',sql,'1111');  
             if (sql!='')
                 await BlockChainModel.saveOutputs(sql,key); 
           }
