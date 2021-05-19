@@ -2,6 +2,8 @@ const {getBlockByHeight,gettransaction,deriveaddresses,getLastBlock} = require('
 const BlockChainModel = require('../../Models/blockchain');
 const SettingModel = require('../../Models/settings');
 const fs = require('fs');
+const path = require('path');
+        
 
 class Blockchain {
 
@@ -297,9 +299,48 @@ class Blockchain {
     }
 
 
+    static async WriteTrxFilesToDB(socket){
+        
+        const directoryPath = path.join('outputs');
+        //passsing directoryPath and callback function
+        fs.readdir(directoryPath, function (err, files) {
+            //handling error
+            if (err) {
+                return console.log('Unable to scan directory: ' + err);
+            } 
+            //listing all files using forEach
+            console.log('files : ' + files.length); 
+           
+            socket.emit("UPDATE_BLK", {lastBlock: 'Writing To Database...', lastBlockRead: ''});
+            var i=0;
+            var filepath='';
+            var tblName='';
+            files.forEach(function (file) {
+                console.log('file',file);
+                // Do whatever you want to do with the file
+                i++;
+                socket.emit("UPDATE_TRX", {trxCount: files.length, trxRead :i });
+                console.log('import:',  files.length + '/' + i + '   >> '+ file);
+                filepath = path.dirname(require.main.filename) + '\\outputs\\'  + file; 
+                tblName = file.substring(0,6);
+                
+                if (tblName=='inputs') {         
+                 tblName = 'inputs_' + file.substring(8,11);
+                 BlockChainModel.importInputFile(filepath,tblName); 
+                } else if (tblName=='output') {              
+                 tblName = 'outputs_' + file.substring(9,12);
+                 BlockChainModel.importOutputFile(filepath,tblName); 
+                }
+                else return;
+                
+            });
+        });  
+        console.log('done');
+    }
+    
     
     static async checkForNewblocks_new(socket) {
-
+        //phase 1 : read transactions and save to file
         let blockCount  =  await getLastBlock();
         
 
@@ -360,7 +401,7 @@ class Blockchain {
 
             if ((readHeight % 1000)==0){
                 console.log('writing trxs');
-                await this.saveAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket,fs);
+                await this.writeAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket,fs);
                 vinQueryCount =[];
                 voutQueryCount =[];
                 voutQuery=[];
@@ -418,8 +459,8 @@ class Blockchain {
                         vtxidx_ =  vin.txid.substring(0,3);
                         vtxidx = 'a' + vtxidx_;
                         
-                        sql =  `,(${readHeight},'${tx.txid}','${vtxidx_}','${vin.txid}',${vin.vout})`;
-                        //sql =  `${readHeight},${tx.txid},${vtxidx_},${vin.txid},${vin.vout}` + "\n";
+                        //sql =  `,(${readHeight},'${tx.txid}','${vtxidx_}','${vin.txid}',${vin.vout})`;
+                        sql =  `${readHeight},${tx.txid},${vtxidx_},${vin.txid},${vin.vout}` + "\n";
 
                         if (typeof vinQuery[vtxidx] !== 'undefined' && vinQuery[vtxidx] !== null)
                         {
@@ -462,8 +503,8 @@ class Blockchain {
                     txidx_ = tx.txid.substring(0,3);
                     txidx = 'a' + txidx_;
                     
-                    sql =  `,(${readHeight},'${txidx_}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
-                    //sql =  `${readHeight},${txidx_},${tx.txid},${address},${voutCounter},${vout.value}` + "\n";
+                    //sql =  `,(${readHeight},'${txidx_}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
+                    sql =  `${readHeight},${txidx_},${tx.txid},${address},${voutCounter},${vout.value}` + "\n";
                     
                     if (typeof voutQuery[txidx] !== 'undefined' && voutQuery[txidx] !== null)
                     {

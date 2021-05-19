@@ -240,6 +240,40 @@ class BlockChainModel {
         })
     }
 
+    static importInputFile(file,table) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `COPY ${table}( blockheight ,txid, vouttxidx, vouttxid, vout)  FROM '${file}'
+                DELIMITER ','
+                CSV HEADER;
+                `,
+            [],
+            (error,response)=>{
+                if (error) {
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
+    static importOutputFile(file,table) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `COPY ${table}(blockheight,txidx,txid,outaddress,vout,amount) FROM '${file}'
+                DELIMITER ','
+                CSV HEADER;
+                `,
+            [],
+            (error,response)=>{
+                if (error) {
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
 
     static saveOutputs(values,key) {
         return new Promise((resolve,reject)=> {

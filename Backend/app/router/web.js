@@ -27,6 +27,11 @@ router.get('/blockchain/checkForNewblocks', (req,res, next)=> {
     })
 });
 
+router.get('/blockchain/savefiles', (req,res, next)=> {
+    Blockchain.WriteTrxFilesToDB(res.io).then(str=>{
+        res.json({msg: str});
+    })
+});
 
 module.exports = router;
 
