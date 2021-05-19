@@ -298,8 +298,31 @@ class Blockchain {
         
     }
 
+    static async updateSpentTransactions(){
+        //Phase4 : update outputs table and check each row to see if it has spent or not.
+        var chs = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
+        var key='';
+        var tblNameOut='';
+        var tblNameIn='';
+        var i=0;
+        socket.emit("UPDATE_BLK", {lastBlock: 'Updateing Spen transactions ...', lastBlockRead: ''});
+        for await (const ch of chs){
+            for await (const ch2 of chs){
+                for await (const ch3 of chs){
+                    i++;
+                    key = ch + ch2 + ch3;
+                    tblNameOut = 'outputs_' + key;
+                    tblNameIn = 'inputs_' + key;
+                    await BlockChainModel.updateSpendTrx(tblNameOut,tblNameIn);
+                    socket.emit("UPDATE_TRX", {trxCount: '8194', trxRead :i });                
+                }
+            }   
+        }
+    }
+
     static async WriteTrxFilesToDB(socket){
-        
+        //Phase2 : import written files to DB
+        //          and also set an index on each Table
         const directoryPath = path.join('outputs');
         //passsing directoryPath and callback function
 
@@ -319,6 +342,7 @@ class Blockchain {
             
             // Do whatever you want to do with the file
             i++;
+            if (i<5000) continue;
             socket.emit("UPDATE_TRX", {trxCount: files.length, trxRead :i });
             console.log('import:',  files.length + '/' + i + '   >> '+ file);
             filepath = path.dirname(require.main.filename) + '/outputs/'  + file; 
@@ -341,6 +365,8 @@ class Blockchain {
 
         console.log('done');
     }
+
+
     
     
     static async checkForNewblocks_new(socket) {

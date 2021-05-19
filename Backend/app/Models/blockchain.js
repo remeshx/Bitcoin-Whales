@@ -240,6 +240,21 @@ class BlockChainModel {
         })
     }
 
+    static updateSpendTrx(outputTbl,inputTbl){
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `update ${outputTbl} As A set spend=1 from ${inputTbl} As B where A.txid=B.vouttxid and A.vout=B.vout`,
+            [],
+            (error,response)=>{
+                if (error) {
+                    console.log('error',error);
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
     static createIndex(indexName,tables,columns){
         return new Promise((resolve,reject)=> {
             db.query(
