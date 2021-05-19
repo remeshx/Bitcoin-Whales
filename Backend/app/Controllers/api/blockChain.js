@@ -315,13 +315,13 @@ class Blockchain {
             var i=0;
             var filepath='';
             var tblName='';
-            files.forEach(function (file) {
-                console.log('file',file);
+            files.forEach(async function (file) {
+                
                 // Do whatever you want to do with the file
                 i++;
                 socket.emit("UPDATE_TRX", {trxCount: files.length, trxRead :i });
                 console.log('import:',  files.length + '/' + i + '   >> '+ file);
-                filepath = path.dirname(require.main.filename) + '\\outputs\\'  + file; 
+                filepath = path.dirname(require.main.filename) + '/outputs/'  + file; 
                 tblName = file.substring(0,6);
                 
                 if (tblName=='inputs') {         
@@ -329,7 +329,7 @@ class Blockchain {
                  BlockChainModel.importInputFile(filepath,tblName); 
                 } else if (tblName=='output') {              
                  tblName = 'outputs_' + file.substring(9,12);
-                 BlockChainModel.importOutputFile(filepath,tblName); 
+                 await BlockChainModel.importOutputFile(filepath,tblName); 
                 }
                 else return;
                 
