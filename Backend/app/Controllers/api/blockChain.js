@@ -3,7 +3,7 @@ const BlockChainModel = require('../../Models/blockchain');
 const SettingModel = require('../../Models/settings');
 const fs = require('fs');
 const path = require('path');
-        
+const util = require('util');     
 
 class Blockchain {
 
@@ -303,38 +303,39 @@ class Blockchain {
         
         const directoryPath = path.join('outputs');
         //passsing directoryPath and callback function
-        fs.readdir(directoryPath, function (err, files) {
-            //handling error
-            if (err) {
-                return console.log('Unable to scan directory: ' + err);
-            } 
-            //listing all files using forEach
-            console.log('files : ' + files.length); 
+
+        const readdir = util.promisify(fs.readdir);
+
+        let files = await readdir(directoryPath);
+
+        //listing all files using forEach
+        console.log('files : ' + files.length); 
            
-            socket.emit("UPDATE_BLK", {lastBlock: 'Writing To Database...', lastBlockRead: ''});
-            var i=0;
-            var filepath='';
-            var tblName='';
-            for await( const file of files) {
-                
-                // Do whatever you want to do with the file
-                i++;
-                socket.emit("UPDATE_TRX", {trxCount: files.length, trxRead :i });
-                console.log('import:',  files.length + '/' + i + '   >> '+ file);
-                filepath = path.dirname(require.main.filename) + '/outputs/'  + file; 
-                tblName = file.substring(0,6);
-                
-                if (tblName=='inputs') {         
-                 tblName = 'inputs_' + file.substring(8,11);
-                 BlockChainModel.importInputFile(filepath,tblName); 
-                } else if (tblName=='output') {              
-                 tblName = 'outputs_' + file.substring(9,12);
-                 await BlockChainModel.importOutputFile(filepath,tblName); 
-                }
-                else return;
-                
-            });
-        });  
+        socket.emit("UPDATE_BLK", {lastBlock: 'Writing To Database...', lastBlockRead: ''});
+        var i=0;
+        var filepath='';
+        var tblName='';
+        
+        for await( const file of files) {
+            
+            // Do whatever you want to do with the file
+            i++;
+            socket.emit("UPDATE_TRX", {trxCount: files.length, trxRead :i });
+            console.log('import:',  files.length + '/' + i + '   >> '+ file);
+            filepath = path.dirname(require.main.filename) + '/outputs/'  + file; 
+            tblName = file.substring(0,6);
+            
+            if (tblName=='inputs') {         
+             tblName = 'inputs_' + file.substring(8,11);
+             await BlockChainModel.importInputFile(filepath,tblName); 
+            } else if (tblName=='output') {              
+             tblName = 'outputs_' + file.substring(9,12);
+             await BlockChainModel.importOutputFile(filepath,tblName); 
+            }
+            else continue;
+        }   
+        
+
         console.log('done');
     }
     
