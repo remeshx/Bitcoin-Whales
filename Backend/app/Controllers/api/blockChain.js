@@ -308,7 +308,7 @@ class Blockchain {
         
         this.fileStream = [];
         let ourheight   = global.settings['BitcoinNode_LastBlockHeightRead'];
-        //ourheight   = 680097;
+        ourheight   = 680097;
         let trxRead = global.settings['BitcoinNode_trxRead'];
         trxRead = -1;
         let readHeight  =  ourheight;
@@ -360,7 +360,7 @@ class Blockchain {
 
             if ((readHeight % 1000)==0){
                 console.log('writing trxs');
-                await this.writeAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket,fs);
+                await this.saveAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket,fs);
                 vinQueryCount =[];
                 voutQueryCount =[];
                 voutQuery=[];
@@ -574,14 +574,14 @@ class Blockchain {
         let sql='';
         //console.log('saveTransaction');
          var i=0;
+         socket.emit("UPDATE_TRX", {trxCount: 'writing input trx', trxRead :i }); 
          for await (var key of vinQueryKeys) { 
            // console.log('VIN');
             if (!key) continue;
             i++;
             sql = vinQuery[key];
             sql = sql.replace(/(^,)|(,$)/g, "");
-            key =  key.substring(1,4);
-            socket.emit("UPDATE_TRX", {trxCount: 'writing input trx', trxRead :i }); 
+            key =  key.substring(1,4);            
             if (sql!='')
                 await BlockChainModel.saveInputs(sql,key); 
             
@@ -589,17 +589,17 @@ class Blockchain {
           }
 
           i=0;
+          socket.emit("UPDATE_TRX", {trxCount: 'writing output trx', trxRead :i }); 
           for await (var key of voutQueryKeys) { 
             if (!key) continue;
             i++;
             sql = voutQuery[key];
             sql = sql.replace(/(^,)|(,$)/g, "");
             key =  key.substring(1,4);
-            socket.emit("UPDATE_TRX", {trxCount: 'writing output trx', trxRead :i }); 
+            
             if (sql!='')
                 await BlockChainModel.saveOutputs(sql,key); 
           }
-          if (i>5000) console.info('voutQueryKeys##:',voutQueryKeys);
     }
 
     static async writeout(type,line,key) {
