@@ -315,7 +315,7 @@ class Blockchain {
             var i=0;
             var filepath='';
             var tblName='';
-            files.forEach(async function (file) {
+            for await( const file of files) {
                 
                 // Do whatever you want to do with the file
                 i++;
