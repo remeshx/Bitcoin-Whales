@@ -379,7 +379,7 @@ class Blockchain {
         
         this.fileStream = [];
         let ourheight   = global.settings['BitcoinNode_LastBlockHeightRead'];
-        ourheight   = 680097;
+        //ourheight   = 680097;
         let trxRead = global.settings['BitcoinNode_trxRead'];
         trxRead = -1;
         let readHeight  =  ourheight;

@@ -243,7 +243,7 @@ class BlockChainModel {
     static updateSpendTrx(outputTbl,inputTbl){
         //update outputs_387 As A set spend=1 where id IN (select B.id from outputs_387 As B left join inputs_387 As C ON B.txid=C.vouttxid and B.vout=C.vout where C.txid is not null);
         //update outputs_387 set spend=1 where concat(txid,vout) IN (select concat(vouttxid,vout) from inputs_387) ;
-
+//update outputs_387 set spend=1 where concat(txid,vout)=any(select concat(vouttxid,vout) from inputs_387) ;
         return new Promise((resolve,reject)=> {
             db.query(
                 `update ${outputTbl} As A set spend=1 from ${inputTbl} As B where A.txid=B.vouttxid and A.vout=B.vout`,
