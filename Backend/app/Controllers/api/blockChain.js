@@ -351,13 +351,13 @@ class Blockchain {
             if (tblName=='inputs') {         
              tblName = 'inputs_' + file.substring(8,11);
              await BlockChainModel.importInputFile(filepath,tblName); 
-             await BlockChainModel.createIndex('idx_'+tblName+'_vouttxid',tblName,'vouttxid'); 
-             await BlockChainModel.createIndex('idx_'+tblName+'_vout',tblName,'vout'); 
+             await BlockChainModel.createIndex('idx_'+tblName+'_vouttxid',tblName,'vouttxid,vout'); 
+             //await BlockChainModel.createIndex('idx_'+tblName+'_vout',tblName,'vout'); 
             } else if (tblName=='output') {              
              tblName = 'outputs_' + file.substring(9,12);
              await BlockChainModel.importOutputFile(filepath,tblName); 
-             await BlockChainModel.createIndex('idx_'+tblName+'_txid',tblName,'txid'); 
-             await BlockChainModel.createIndex('idx_'+tblName+'_vout',tblName,'vout'); 
+             await BlockChainModel.createIndex('idx_'+tblName+'_txid',tblName,'txid,vout'); 
+             //await BlockChainModel.createIndex('idx_'+tblName+'_vout',tblName,'vout'); 
             }
             else continue;
         }   
