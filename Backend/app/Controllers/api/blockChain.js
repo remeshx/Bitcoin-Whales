@@ -342,7 +342,7 @@ class Blockchain {
             
             // Do whatever you want to do with the file
             i++;
-            if (i<5000) continue;
+            //if (i<5000) continue;
             socket.emit("UPDATE_TRX", {trxCount: files.length, trxRead :i });
             console.log('import:',  files.length + '/' + i + '   >> '+ file);
             filepath = path.dirname(require.main.filename) + '/outputs/'  + file; 
