@@ -56,7 +56,7 @@ io.on("connection", (socket) => {
 });
 
 
-const port = process.env.PORT || 5133;
+const port = process.env.PORT || 51332;
 server.listen(port, () => console.log(`Listening on port ${port}`));
 
 module.exports = app;

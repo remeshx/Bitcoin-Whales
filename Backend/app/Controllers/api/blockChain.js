@@ -1,4 +1,5 @@
 const {getBlockByHeight,gettransaction,deriveaddresses,getLastBlock} = require('../../helpers/btcnode');
+const {range} = require('../../helpers/math');
 const BlockChainModel = require('../../Models/blockchain');
 const SettingModel = require('../../Models/settings');
 const fs = require('fs');
@@ -294,34 +295,49 @@ class Blockchain {
             global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
             global.settings['BitcoinNode_trxRead'] = -1;
             trxRead = -1;
-        }
-        
+        }        
     }
+    
 
-    static async updateSpentTransactions(){
-        //Phase4 : update outputs table and check each row to see if it has spent or not.
-        var chs = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
+    static async findWhalesAddresses(){
+       
+        //Phase 6 :check each of addresses tables for richest addresses
+        var addCount = 1000;
+        var chs = [...range(48,57), ...range(65,90), ...range(97,122)];
         var key='';
-        var tblNameOut='';
-        var tblNameIn='';
+        var tblName='';
+        var addresses='';
+        var richest=[];
+        var temp=[];
         var i=0;
-        socket.emit("UPDATE_BLK", {lastBlock: 'Updateing Spen transactions ...', lastBlockRead: ''});
-        for await (const ch of chs){
-            for await (const ch2 of chs){
-                for await (const ch3 of chs){
-                    i++;
-                    key = ch + ch2 + ch3;
-                    tblNameOut = 'outputs_' + key;
-                    tblNameIn = 'inputs_' + key;
-                    await BlockChainModel.updateSpendTrx(tblNameOut,tblNameIn);
-                    socket.emit("UPDATE_TRX", {trxCount: '8194', trxRead :i });                
+        for await(const ch of chs) {
+            for await(const ch2 of chs) {
+                key = String.fromCharCode(ch,ch2);
+                tblName='addresses_' + key;
+                addresses = await BlockChainModel.getRichestAddresses(tblName,addCount);
+
+                temp = [...richest];
+                for await(const address of addresses) 
+                {
+                    temp = [ ...temp , [address.btc_address,address.balance,address.maxtime,address.mintime,]];
                 }
+                temp.sort((a,b)=>{
+                    return (a[1] > b[1]) ? -1 : 1;
+                });
+                richest = temp.slice(0,addCount);
             }   
         }
+
+        var query = '';
+        for await(const rich of richest) { 
+            query= `,('${rich[0]}',${rich[3]},${rich[2]},${rich[1]})`;
+        }
+        query = query.replace(/(^,)|(,$)/g, "");
+        await BlockChainModel.saveRichestAddresses(query);
     }
 
-    static async WriteTrxFilesToDB(socket){
-        //Phase2 : import written files to DB
+    static async WriteAddressFilesToDB(socket){
+        //Phase5 : import written address files to DB
         //          and also set an index on each Table
         const directoryPath = path.join('outputs');
         //passsing directoryPath and callback function
@@ -346,6 +362,117 @@ class Blockchain {
             socket.emit("UPDATE_TRX", {trxCount: files.length, trxRead :i });
             console.log('import:',  files.length + '/' + i + '   >> '+ file);
             filepath = path.dirname(require.main.filename) + '/outputs/'  + file; 
+            tblName = file.substring(0,9);
+            
+            if (tblName=='addresses') {         
+             tblName = 'addresses_' + file.slice(-2);
+             await BlockChainModel.importAddressFile(filepath,tblName); 
+             await BlockChainModel.createIndex('idx_'+tblName+'_address',tblName,'btc_address'); 
+             await BlockChainModel.createIndex('idx_'+tblName+'_address',tblName,'spend');
+            } else continue;
+        }   
+        
+
+        console.log('done');
+    }
+
+    static async GenerateBitcoinAddressFiles(){
+        //Phase4 : generate bitcoin address csv file        
+        var chs = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
+        var key='';
+        var sql='';
+        var tblNameOut='';
+        var transactions='';
+        var i=0;
+        var addQuery = [];
+        var addQueryKeys = [];
+        for await (const ch of chs){
+            for await (const ch2 of chs){
+                for await (const ch3 of chs){
+                    i++;
+                    key = ch + ch2 + ch3;
+                    tblNameOut = 'outputs_' + key;
+                    socket.emit("UPDATE_BLK", {lastBlock: 'Inserting Bitcoin addresses ...', lastBlockRead: 'Reading data...'});
+                    socket.emit("UPDATE_TRX", {trxCount: '8194', trxRead :i });                
+                    console.log('insertaddresses ' + i + '/8194');     
+
+                    transactions = await BlockChainModel.getAllTransactions(tblNameOut);
+                    for await(const transaction of transactions) 
+                    {
+                        $addKey = transaction.outaddress.slice(-2);// partitioned by two last character of address
+                        sql = `${transaction.blockheight},'${transaction.outaddress}',0,${transaction.amount},${transaction.spend},'${transaction.txid}',${transaction.vout}` + "\n";
+                        if (typeof addQuery[addKey] !== 'undefined' && addQuery[addKey] !== null)
+                        {
+                            addQuery[addKey] = addQuery[addKey] + sql;
+                        } else {
+                            addQuery[addKey] = sql;
+                            addQueryKeys.push(addKey);
+                        }
+                    }       
+                    
+                    socket.emit("UPDATE_BLK", {lastBlock: 'Inserting Bitcoin addresses ...', lastBlockRead: 'writing data...'});
+                    this.writeAllAddresses(addQuery,addQueryKeys);
+                    addQuery = [];
+                    addQueryKeys = [];
+                    sql='';
+                }
+            }   
+        }
+    }
+
+    static async updateSpentTransactions(){
+        //Phase3 : update outputs table and check each row to see if it has spent or not.
+        var chs = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
+        var key='';
+        var tblNameOut='';
+        var tblNameIn='';
+        var i=0;
+        socket.emit("UPDATE_BLK", {lastBlock: 'Updateing Spend transactions ...', lastBlockRead: ''});
+        for await (const ch of chs){
+            for await (const ch2 of chs){
+                for await (const ch3 of chs){
+                    i++;
+                    key = ch + ch2 + ch3;
+                    tblNameOut = 'outputs_' + key;
+                    tblNameIn = 'inputs_' + key;
+                    await BlockChainModel.updateSpendTrx(tblNameOut,tblNameIn);
+                    socket.emit("UPDATE_TRX", {trxCount: '8194', trxRead :i });                
+                    console.log('updateSpentTransactions ' + i + '/8194');                          
+                }
+            }   
+        }
+
+        socket.emit("UPDATE_TRX", {trxCount: 'DONE', trxRead :0 });      
+        console.log('Done : updateSpentTransactions');         
+    }
+
+    static async WriteTrxFilesToDB(socket){
+        //Phase2 : import written files to DB
+        //          and also set an index on each Table
+        const directoryPath = path.join('outputs');
+        //passsing directoryPath and callback function
+
+        const readdir = util.promisify(fs.readdir);
+
+        let files = await readdir(directoryPath);
+
+        //listing all files using forEach
+        console.log('files : ' + files.length); 
+           
+        socket.emit("UPDATE_BLK", {lastBlock: 'Writing To Database...', lastBlockRead: ''});
+        let lastWritten  = global.settings['BitcoinNode_LastFileWritten'];
+        var i=0;
+        var filepath='';
+        var tblName='';
+        
+        for await( const file of files) {
+            
+            // Do whatever you want to do with the file
+            i++;
+            if (i<=lastWritten) continue;
+            socket.emit("UPDATE_TRX", {trxCount: files.length, trxRead :i });
+            console.log('import:',  files.length + '/' + i + '   >> '+ file);
+            filepath = path.dirname(require.main.filename) + '/outputs/'  + file; 
             tblName = file.substring(0,6);
             
             if (tblName=='inputs') {         
@@ -360,6 +487,8 @@ class Blockchain {
              //await BlockChainModel.createIndex('idx_'+tblName+'_vout',tblName,'vout'); 
             }
             else continue;
+
+            await SettingModel.updateCurrentFile(i);
         }   
         
 
@@ -611,6 +740,21 @@ class Blockchain {
         
     }
 
+    static async writeAllAddresses(addQueries,addQueriesKeys) {
+        
+        let sql='';
+         var i=0;
+         for  await(var key of addQueriesKeys) { 
+           // console.log('VIN');
+            if (!key) continue;
+            i++;
+            sql = addQueries[key];
+            sql = sql.replace(/(^,)|(,$)/g, "");
+            //key =  key.substring(1,4);
+         
+            await this.writeout('addresses',sql,key);
+          }
+    }
 
     static async writeAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket) {
         

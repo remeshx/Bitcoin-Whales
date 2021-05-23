@@ -47,6 +47,21 @@ class settingModel {
         })
     }
 
+    static updateCurrentFile(readHeight) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `update settings set varValue=$1 where varCategory='BitcoinNode' and varName='LastFileWritten';`,
+            [readHeight],
+            (error,response)=>{
+                if (error) {
+                    console.log('error',error);
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
     static updateTrxRead(trxRead) {
         return new Promise((resolve,reject)=> {
             db.query(

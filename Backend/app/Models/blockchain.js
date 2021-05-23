@@ -243,10 +243,11 @@ class BlockChainModel {
     static updateSpendTrx(outputTbl,inputTbl){
         //update outputs_387 As A set spend=1 where id IN (select B.id from outputs_387 As B left join inputs_387 As C ON B.txid=C.vouttxid and B.vout=C.vout where C.txid is not null);
         //update outputs_387 set spend=1 where concat(txid,vout) IN (select concat(vouttxid,vout) from inputs_387) ;
-//update outputs_387 set spend=1 where concat(txid,vout)=any(select concat(vouttxid,vout) from inputs_387) ;
+        //update outputs_387 set spend=1 where concat(txid,vout)=any(select concat(vouttxid,vout) from inputs_387) ;
+        //`update ${outputTbl} As A set spend=1 from ${inputTbl} As B where A.txid=B.vouttxid and A.vout=B.vout`,
         return new Promise((resolve,reject)=> {
             db.query(
-                `update ${outputTbl} As A set spend=1 from ${inputTbl} As B where A.txid=B.vouttxid and A.vout=B.vout`,
+                `update ${outputTbl} set spend=1 where concat(txid,vout)=any(select concat(vouttxid,vout) from ${inputTbl}) ;`,
             [],
             (error,response)=>{
                 if (error) {
@@ -262,6 +263,60 @@ class BlockChainModel {
         return new Promise((resolve,reject)=> {
             db.query(
                 `CREATE INDEX ${indexName} ON ${tables} (${columns}) `,
+            [],
+            (error,response)=>{
+                if (error) {
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
+    static getRichestAddresses(tblName,limits)
+    {
+        return new Promise((resolve,reject) => {
+            db.query(`SELECT btc_address,SUM((spend*-1) * amount - (spend-1) * amount) as balance, MIN(created_at) as mintime, MAX(created_at) as maxtime
+            FROM ${tblName} group by btc_address order by balance DESC limit ${limits}`,
+                [],
+                (error,response)=>{
+                    if (error) {
+                        console.log('error 11',error);
+                        resolve('');
+                    }
+                    if (response.rows.length === 0) resolve('');
+                    else resolve(response.rows);
+                })
+        });
+    }
+
+    static saveRichestAddresses(values)
+    {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `INSERT INTO richestAddresses ( btc_address ,created_at, updated_at, balance) 
+                    VALUES ${values}`,
+            [],
+            (error,response)=>{
+                if (error) {
+                    console.log('error',error);
+                    
+                    console.log('values',values);
+                    console.log('key',key);
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
+    static importAddressFile(file,table) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `COPY ${table}(blockheight ,btc_address, created_time, amount, spend, txid, vout)  FROM '${file}'
+                DELIMITER ','
+                CSV HEADER;
+                `,
             [],
             (error,response)=>{
                 if (error) {
@@ -324,6 +379,22 @@ class BlockChainModel {
                 resolve(true);
             });
         })
+    }
+
+
+    static getAllTransactions(tblName){
+        return new Promise((resolve,reject) => {
+            db.query(`SELECT * FROM ${tblName}`,
+                [],
+                (error,response)=>{
+                    if (error) {
+                        console.log('error 11',error);
+                        resolve('');
+                    }
+                    if (response.rows.length === 0) resolve('');
+                    else resolve(response.rows);
+                })
+        });
     }
 
     

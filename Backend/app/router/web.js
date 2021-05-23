@@ -33,6 +33,18 @@ router.get('/blockchain/savefiles', (req,res, next)=> {
     })
 });
 
+router.get('/blockchain/updatespent', (req,res, next)=> {
+    Blockchain.updateSpentTransactions(res.io).then(str=>{
+        res.json({msg: str});
+    })
+});
+
+router.get('/blockchain/findwhalesaddresses', (req,res, next)=> {
+    Blockchain.findWhalesAddresses(res.io).then(str=>{
+        res.json({msg: str});
+    })
+});
+
 module.exports = router;
 
 
