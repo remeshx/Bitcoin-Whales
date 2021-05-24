@@ -421,7 +421,7 @@ class Blockchain {
     }
 
     static async updateSpentTransactions(socket){
-        //Phase3 : update outputs table and check each row to see if it has spent or not.
+        //Phase2 & 3 : update outputs table and check each row to see if it has spent or not.
         var chs = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
         var key='';
         var tblNameOut='';
@@ -439,26 +439,23 @@ class Blockchain {
                     key = ch + ch2 + ch3;
                     tblNameOut = 'outputs_' + key;
                     tblNameIn = 'inputs_' + key;
-                    /*
+                    
+                    
                     filepath = path.dirname(require.main.filename) + '/outputs/' + 'inputs_a' + key + '.csv';
-                    if (!fs.existsSync(filepath)) {
-                        console.log('error - Input File not exists: ', filepath);
-                        continue;
+                    if (fs.existsSync(filepath)) {
+                        console.log('importing file: ', filepath);
+                        await BlockChainModel.importInputFile(filepath,tblNameIn); 
+                        await BlockChainModel.createIndex('idx_'+tblNameIn+'_vouttxid',tblNameIn,'vouttxid,vout'); 
+                        fs.unlinkSync(filepath);           
                     }
-                    await BlockChainModel.importInputFile(filepath,tblNameIn); 
-                    await BlockChainModel.createIndex('idx_'+tblNameIn+'_vouttxid',tblNameIn,'vouttxid,vout'); 
-                    fs.unlinkSync(filepath);
-                    */
                    
                     filepath = path.dirname(require.main.filename) + '/outputs/' + 'outputs_a' + key + '.csv';
-                    if (!fs.existsSync(filepath)) {
-                        console.log('error - Output File not exists: ', filepath);
-                        continue;
-                    }
-                    console.log('importing file: ', filepath);
-                    await BlockChainModel.importOutputFile(filepath,tblNameOut); 
-                    await BlockChainModel.createIndex('idx_'+tblNameOut+'_txid',tblNameOut,'txid,vout');
-                    fs.unlinkSync(filepath);
+                    if (fs.existsSync(filepath)) {
+                        console.log('importing file: ', filepath);
+                        await BlockChainModel.importOutputFile(filepath,tblNameOut); 
+                        await BlockChainModel.createIndex('idx_'+tblNameOut+'_txid',tblNameOut,'txid,vout');
+                        fs.unlinkSync(filepath);
+                    }                    
                     
                     console.log('updateSpendTrx :' + tblNameIn + ' >> ', tblNameOut);
                     await BlockChainModel.updateSpendTrx(tblNameOut,tblNameIn);

@@ -400,7 +400,7 @@ class BlockChainModel {
 
     static dropTable(tblName) {
         return new Promise((resolve,reject) => {
-            db.query(`Dropt Table ${tblName}`,
+            db.query(`Drop Table ${tblName}`,
                 [],
                 (error,response)=>{
                     if (error) {
