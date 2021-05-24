@@ -420,7 +420,7 @@ class Blockchain {
         }
     }
 
-    static async updateSpentTransactions(){
+    static async updateSpentTransactions(socket){
         //Phase3 : update outputs table and check each row to see if it has spent or not.
         var chs = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
         var key='';
