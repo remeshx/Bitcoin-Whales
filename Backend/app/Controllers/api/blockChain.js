@@ -489,6 +489,7 @@ class Blockchain {
             else continue;
 
             await SettingModel.updateCurrentFile(i);
+            fs.unlinkSync(filepath);
         }   
         
 
