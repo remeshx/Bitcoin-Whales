@@ -427,17 +427,50 @@ class Blockchain {
         var tblNameOut='';
         var tblNameIn='';
         var i=0;
+        let lastWritten  = global.settings['BitcoinNode_LastFileWritten'];
+        var filepath = ''; 
+
         socket.emit("UPDATE_BLK", {lastBlock: 'Updateing Spend transactions ...', lastBlockRead: ''});
         for await (const ch of chs){
             for await (const ch2 of chs){
                 for await (const ch3 of chs){
                     i++;
+                    if (i<=lastWritten) continue;
                     key = ch + ch2 + ch3;
                     tblNameOut = 'outputs_' + key;
                     tblNameIn = 'inputs_' + key;
+                    /*
+                    filepath = path.dirname(require.main.filename) + '/outputs/' + 'inputs_a' + key + '.csv';
+                    if (!fs.existsSync(filepath)) {
+                        console.log('error - Input File not exists: ', filepath);
+                        continue;
+                    }
+                    await BlockChainModel.importInputFile(filepath,tblNameIn); 
+                    await BlockChainModel.createIndex('idx_'+tblNameIn+'_vouttxid',tblNameIn,'vouttxid,vout'); 
+                    fs.unlinkSync(filepath);
+                    */
+                   
+                    filepath = path.dirname(require.main.filename) + '/outputs/' + 'outputs_a' + key + '.csv';
+                    if (!fs.existsSync(filepath)) {
+                        console.log('error - Output File not exists: ', filepath);
+                        continue;
+                    }
+                    console.log('importing file: ', filepath);
+                    await BlockChainModel.importOutputFile(filepath,tblNameOut); 
+                    await BlockChainModel.createIndex('idx_'+tblNameOut+'_txid',tblNameOut,'txid,vout');
+                    fs.unlinkSync(filepath);
+                    
+                    console.log('updateSpendTrx :' + tblNameIn + ' >> ', tblNameOut);
                     await BlockChainModel.updateSpendTrx(tblNameOut,tblNameIn);
+
+                    console.log('drop table : ',tblNameIn);
+                    await BlockChainModel.dropTable(tblNameIn);
+
                     socket.emit("UPDATE_TRX", {trxCount: '8194', trxRead :i });                
-                    console.log('updateSpentTransactions ' + i + '/8194');                          
+                    console.log('updateSpentTransactions ' + i + '/8194');    
+                
+
+                    await SettingModel.updateCurrentFile(i);
                 }
             }   
         }

@@ -397,7 +397,20 @@ class BlockChainModel {
         });
     }
 
-    
+
+    static dropTable(tblName) {
+        return new Promise((resolve,reject) => {
+            db.query(`Dropt Table ${tblName}`,
+                [],
+                (error,response)=>{
+                    if (error) {
+                        console.log('error 11',error);
+                        reject(false);
+                    }
+                    resolve(true);               
+                })
+            });
+    }      
 }
 
 module.exports = BlockChainModel;
