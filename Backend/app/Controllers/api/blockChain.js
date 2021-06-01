@@ -583,7 +583,7 @@ class Blockchain {
         let record=false;
         let sql='';
         let blksql='';
-        let trxTotalCounter=0;        
+        let trxTotalCounter=global.settings['BitcoinNode_totalTrxRead'];        
 
         while(readHeight<blockCount) {
            
@@ -591,7 +591,7 @@ class Blockchain {
             console.log('b: ',readHeight);
 
 
-            if ((readHeight % 2)==0){
+            if ((readHeight % 1000)==0){
                 console.log('writing trxs');
                 await this.writeAllTransaction(vinQuery,voutQuery,txQuery,vinQueryKeys,voutQueryKeys,txQueryKeys,socket,fs);
                 vinQueryCount =[];
@@ -607,9 +607,10 @@ class Blockchain {
                 await BlockChainModel.SaveBulkBlock(blksql); 
                 await SettingModel.updateCurrentBlock(readHeight-1);
                 await SettingModel.updateTrxRead(-1);
+                await SettingModel.updateTotalTrxRead(trxTotalCounter);
                 global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight-1;
                 global.settings['BitcoinNode_trxRead'] = -1;
-
+                global.settings['BitcoinNode_totalTrxRead'] = trxTotalCounter;
                 blksql = '';
             }
 
@@ -756,6 +757,7 @@ class Blockchain {
 
                 
                 txcounter++;
+                
             };
 
             

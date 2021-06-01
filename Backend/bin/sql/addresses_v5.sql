@@ -131,7 +131,7 @@ CREATE TABLE inputs  (
     txid          INT ,
     vouttx      character(80),
     vouttxid      INT Default 0,
-    vout          INT
+    vout          INT,
     primary key (id)
 ) ;
 
