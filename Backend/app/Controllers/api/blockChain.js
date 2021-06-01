@@ -566,13 +566,16 @@ class Blockchain {
         let voutCounter=0;
         let voutQuery=[];
         let vinQuery=[];
+        let txQuery=[];
         
         let voutQueryKeys=[];
         let vinQueryKeys=[];
+        let txQueryKeys=[];
 
         let skipBalance= false;
         let vinQueryCount =[];
         let voutQueryCount =[];
+
         let vtxidx='';
         let txidx='';
         let vtxidx_='';
@@ -580,8 +583,7 @@ class Blockchain {
         let record=false;
         let sql='';
         let blksql='';
-
-        
+        let trxTotalCounter=0;        
 
         while(readHeight<blockCount) {
            
@@ -589,15 +591,17 @@ class Blockchain {
             console.log('b: ',readHeight);
 
 
-            if ((readHeight % 1000)==0){
+            if ((readHeight % 2)==0){
                 console.log('writing trxs');
-                await this.writeAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket,fs);
+                await this.writeAllTransaction(vinQuery,voutQuery,txQuery,vinQueryKeys,voutQueryKeys,txQueryKeys,socket,fs);
                 vinQueryCount =[];
                 voutQueryCount =[];
                 voutQuery=[];
                 vinQuery=[];
+                txQuery=[];
                 voutQueryKeys=[];
                 vinQueryKeys=[];
+                txQueryKeys=[];
                 
                 blksql = blksql.replace(/(^,)|(,$)/g, "");
                 await BlockChainModel.SaveBulkBlock(blksql); 
@@ -631,6 +635,19 @@ class Blockchain {
             minFee = 999;
         
             for await (const tx of txs) {
+                trxTotalCounter++;
+                txidx_ = tx.txid.substring(0,3);
+                txidx = 'a' + txidx_;
+
+                sql =  `${trxTotalCounter},${readHeight},${tx.txid},${txcounter}` + "\n";
+                if (typeof txQuery[txidx] !== 'undefined' && txQuery[txidx] !== null)
+                {
+                    txQuery[txidx] = txQuery[txidx] + sql;
+                } else {
+                    txQuery[txidx] = sql;
+                    txQueryKeys.push(txidx);
+                }
+                
                 //if (txcounter<10)  {
                 //if (txcounter>trxRead) transactionId = await BlockChainModel.saveTransaction(readHeight,tx.txid,txcounter);
                 
@@ -650,7 +667,7 @@ class Blockchain {
                         vtxidx = 'a' + vtxidx_;
                         
                         //sql =  `,(${readHeight},'${tx.txid}','${vtxidx_}','${vin.txid}',${vin.vout})`;
-                        sql =  `${readHeight},${tx.txid},${vtxidx_},${vin.txid},${vin.vout}` + "\n";
+                        sql =  `${trxTotalCounter},${vin.txid},${vin.vout}` + "\n";
 
                         if (typeof vinQuery[vtxidx] !== 'undefined' && vinQuery[vtxidx] !== null)
                         {
@@ -690,11 +707,10 @@ class Blockchain {
                         //console.log('error TRX',tx.txid);
                    }  
 
-                    txidx_ = tx.txid.substring(0,3);
-                    txidx = 'a' + txidx_;
+                    
                     
                     //sql =  `,(${readHeight},'${txidx_}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
-                    sql =  `${readHeight},${txidx_},${tx.txid},${address},${voutCounter},${vout.value}` + "\n";
+                    sql =  `${trxTotalCounter},${address},${voutCounter},${vout.value}` + "\n";
                     
                     if (typeof voutQuery[txidx] !== 'undefined' && voutQuery[txidx] !== null)
                     {
@@ -787,11 +803,11 @@ class Blockchain {
           }
     }
 
-    static async writeAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket) {
+    static async writeAllTransaction(vinQuery,voutQuery,txQuery,vinQueryKeys,voutQueryKeys,txQueryKeys, socket) {
         
         let sql='';
          var i=0;
-         socket.emit("UPDATE_TRX", {trxCount: 'writing input trx', trxRead :i }); 
+         socket.emit("UPDATE_TRX", {trxCount: 'writing inputs', trxRead :i }); 
          for  await(var key of vinQueryKeys) { 
            // console.log('VIN');
             if (!key) continue;
@@ -804,7 +820,7 @@ class Blockchain {
           }
 
           i=0;
-          socket.emit("UPDATE_TRX", {trxCount: 'writing output trx', trxRead :i }); 
+          socket.emit("UPDATE_TRX", {trxCount: 'writing outputs', trxRead :i }); 
           for await (var key of voutQueryKeys) { 
             if (!key) continue;
             i++;
@@ -812,6 +828,18 @@ class Blockchain {
             sql = sql.replace(/(^,)|(,$)/g, "");
             //key =  key.substring(1,4);           
             await this.writeout('outputs',sql,key);
+          }   
+
+
+          i=0;
+          socket.emit("UPDATE_TRX", {trxCount: 'writing trxs', trxRead :i }); 
+          for await (var key of txQueryKeys) { 
+            if (!key) continue;
+            i++;
+            sql = txQuery[key];
+            sql = sql.replace(/(^,)|(,$)/g, "");
+            //key =  key.substring(1,4);           
+            await this.writeout('trx',sql,key);
           }   
     }
 
@@ -1000,6 +1028,7 @@ class Blockchain {
         return address;
     }
 
+    
 
     static analyzeBlock(block) {
         console.log('VIN', block.result.tx[0].vin);

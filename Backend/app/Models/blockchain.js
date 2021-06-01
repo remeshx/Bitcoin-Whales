@@ -243,8 +243,8 @@ class BlockChainModel {
     static updateSpendTrx(outputTbl,inputTbl){
         //update outputs_387 As A set spend=1 where id IN (select B.id from outputs_387 As B left join inputs_387 As C ON B.txid=C.vouttxid and B.vout=C.vout where C.txid is not null);
         //update outputs_387 set spend=1 where concat(txid,vout) IN (select concat(vouttxid,vout) from inputs_387) ;
-        //update outputs_387 set spend=1 where concat(txid,vout)=any(select concat(vouttxid,vout) from inputs_387) ;
-        //`update ${outputTbl} As A set spend=1 from ${inputTbl} As B where A.txid=B.vouttxid and A.vout=B.vout`,
+        //update outputs_055 set spend=1 where concat(txid,vout)=any(select concat(vouttxid,vout) from outputs_055) ;
+        //`update outputs_055 As A set spend=1 from inputs_055 As B where A.txid=B.vouttxid and A.vout=B.vout`,
         return new Promise((resolve,reject)=> {
             db.query(
                 `update ${outputTbl} set spend=1 where concat(txid,vout)=any(select concat(vouttxid,vout) from ${inputTbl}) ;`,
@@ -330,7 +330,7 @@ class BlockChainModel {
     static importInputFile(file,table) {
         return new Promise((resolve,reject)=> {
             db.query(
-                `COPY ${table}( blockheight ,txid, vouttxidx, vouttxid, vout)  FROM '${file}'
+                `COPY ${table}( txid, vouttx, vout)  FROM '${file}'
                 DELIMITER ','
                 CSV HEADER;
                 `,
@@ -347,7 +347,7 @@ class BlockChainModel {
     static importOutputFile(file,table) {
         return new Promise((resolve,reject)=> {
             db.query(
-                `COPY ${table}(blockheight,txidx,txid,outaddress,vout,amount) FROM '${file}'
+                `COPY ${table}(txid,outaddress,vout,amount) FROM '${file}'
                 DELIMITER ','
                 CSV HEADER;
                 `,
