@@ -603,7 +603,7 @@ class Blockchain {
             readHeight ++;
             console.log('b: ',readHeight);
 
-            if ((readHeight % 500)==0 && readHeight>(ourheight+1)){
+            if ((readHeight % 500)==0 && readHeight>(Number(ourheight)+1)){
                 console.log('writing trxs');
                 await this.writeAllTransaction(vinQuery,voutQuery,txQuery,vinQueryKeys,voutQueryKeys,txQueryKeys,socket,fs);
                 vinQueryCount =[];
