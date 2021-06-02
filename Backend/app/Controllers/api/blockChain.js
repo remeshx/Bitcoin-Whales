@@ -439,13 +439,14 @@ class Blockchain {
                     key = ch + ch2 + ch3;
                     tblNameOut = 'outputs_' + key;
                     tblNameIn = 'inputs_' + key;
+                    tblNameTrx = 'transactions_' + key;
                     
                     
                     filepath = path.dirname(require.main.filename) + '/outputs/' + 'inputs_a' + key + '.csv';
                     if (fs.existsSync(filepath)) {
                         console.log('importing file: ', filepath);
                         await BlockChainModel.importInputFile(filepath,tblNameIn); 
-                        await BlockChainModel.createIndex('idx_'+tblNameIn+'_vouttxid',tblNameIn,'vouttxid,vout'); 
+                        await BlockChainModel.createIndex('idx_'+tblNameIn+'_vouttx',tblNameIn,'vouttx'); 
                         fs.unlinkSync(filepath);           
                     }
                    
@@ -455,8 +456,20 @@ class Blockchain {
                         await BlockChainModel.importOutputFile(filepath,tblNameOut); 
                         await BlockChainModel.createIndex('idx_'+tblNameOut+'_txid',tblNameOut,'txid,vout');
                         fs.unlinkSync(filepath);
-                    }                    
+                    }          
                     
+                    filepath = path.dirname(require.main.filename) + '/outputs/' + 'transactions_a' + key + '.csv';
+                    if (fs.existsSync(filepath)) {
+                        console.log('importing file: ', filepath);
+                        await BlockChainModel.importTrxFile(filepath,tblNameTrx); 
+                        await BlockChainModel.createIndex('idx_'+tblNameTrx+'_txid',tblNameTrx,'txid'); 
+                        fs.unlinkSync(filepath);           
+                    }
+                    
+                    console.log('updateInputTrx :' + tblNameIn + ' >> ', tblNameOut);
+                    await BlockChainModel.updateInputTrx(tblNameTrx,tblNameIn);
+                    await BlockChainModel.createIndex('idx_'+tblNameIn+'_vouttxid',tblNameIn,'vouttxid'); 
+
                     console.log('updateSpendTrx :' + tblNameIn + ' >> ', tblNameOut);
                     await BlockChainModel.updateSpendTrx(tblNameOut,tblNameIn);
 
@@ -590,8 +603,7 @@ class Blockchain {
             readHeight ++;
             console.log('b: ',readHeight);
 
-
-            if ((readHeight % 1000)==0){
+            if ((readHeight % 1000)==0 && readHeight>(ourheight+1)){
                 console.log('writing trxs');
                 await this.writeAllTransaction(vinQuery,voutQuery,txQuery,vinQueryKeys,voutQueryKeys,txQueryKeys,socket,fs);
                 vinQueryCount =[];

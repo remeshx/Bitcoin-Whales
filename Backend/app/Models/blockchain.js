@@ -259,6 +259,22 @@ class BlockChainModel {
         })
     }
 
+
+    static updateInputTrx(trxTbl,inputTbl){
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `update ${inputTbl} As A set vouttxid=B.id from ${trxTbl} where A.vouttx=B.txid`,
+            [],
+            (error,response)=>{
+                if (error) {
+                    console.log('error',error);
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
     static createIndex(indexName,tables,columns){
         return new Promise((resolve,reject)=> {
             db.query(
@@ -361,6 +377,24 @@ class BlockChainModel {
         })
     }
 
+    
+    static importTrxFile(file,table) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `COPY ${table}(id,,block_height,txid,txseq) FROM '${file}'
+                DELIMITER ','
+                CSV HEADER;
+                `,
+            [],
+            (error,response)=>{
+                if (error) {
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
 
     static saveOutputs(values,key) {
         return new Promise((resolve,reject)=> {
@@ -380,6 +414,8 @@ class BlockChainModel {
             });
         })
     }
+
+    
 
 
     static getAllTransactions(tblName){
