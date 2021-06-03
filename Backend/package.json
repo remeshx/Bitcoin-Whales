@@ -13,6 +13,7 @@
     "bitcoinjs-lib": "^5.2.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "errorhandler": "^1.5.1",
     "express": "^4.17.1",
     "node-fetch": "^2.6.1",
     "pg": "^8.5.1",

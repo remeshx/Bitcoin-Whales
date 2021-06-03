@@ -2,11 +2,14 @@ const {_PORT_ADDRESS} = require('./config/server');
 const express = require('express');
 const cors = require('cors');
 const http = require("http");
+const fs = require('fs');
 const socketIo = require("socket.io");
 
 const ApiRouter = require('./app/router/web');
 
 const app = express();
+var errorHandler = require('errorhandler')
+
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
@@ -18,6 +21,8 @@ const io = socketIo(server, {
 global.settings =[];
 
 global.newvar = 'Hello';
+
+app.use(errorHandler({ dumpExceptions: true, showStack: true })); 
 app.use(cors({origin: '*'}));
 app.use(function(req, res, next){
     res.io = io;
@@ -34,6 +39,15 @@ app.use((err,req, res, next)=>{
         type:'error', message: err.message
     });
 });
+
+process.on('uncaughtException', (err, origin) => {
+  fs.writeSync(
+    process.stderr.fd,
+    `Caught exception: ${err}\n` +
+    `Exception origin: ${origin}`
+  );
+});
+
 
 app.listen(_PORT_ADDRESS, () => {
     console.log(`App listening at http://localhost:${_PORT_ADDRESS}`)
