@@ -2,11 +2,9 @@ const {getBlockByHeight,gettransaction,deriveaddresses,getLastBlock} = require('
 const {range} = require('../../helpers/math');
 const BlockChainModel = require('../../Models/blockchain');
 const SettingModel = require('../../Models/settings');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const util = require('util');     
-
-const writestream = util.promisify(fs.createWriteStream);
 
 class Blockchain {
 
@@ -900,7 +898,7 @@ class Blockchain {
             await this.fileStream[type+key].write(line);
         } catch (error) {
             
-            this.fileStream[type+key] = await writestream('outputs/'+ type +'_'+ key +'.csv', {flags:'a'});
+            this.fileStream[type+key] = await fs.createWriteStream('outputs/'+ type +'_'+ key +'.csv', {flags:'a'});
             await this.fileStream[type+key].write(line);
         }
         /*
