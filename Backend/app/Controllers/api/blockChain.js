@@ -6,6 +6,8 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');     
 
+const writestream = util.promisify(fs.createWriteStream);
+
 class Blockchain {
 
      static getLastBlockHeight() {
@@ -631,7 +633,7 @@ class Blockchain {
             //blockCount  =  await getLastBlock();
             coinBaseReward=0;
             coinBaseAddress = {};
-            socket.emit("UPDATE_BLK", {lastBlock: blockCount, lastBlockRead: readHeight});
+            ///socket.emit("UPDATE_BLK", {lastBlock: blockCount, lastBlockRead: readHeight});
                 
             const block = await getBlockByHeight(readHeight);
             
@@ -639,7 +641,7 @@ class Blockchain {
             transactionId=0;
             txs = block.result.tx;
             const BlockReward = this.getCoinBaseRewardByBlockHeight(readHeight);
-            socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :0 });
+            ///socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :0 });
             //console.log('BlockReward',BlockReward);
             //return block;
             fee = 0;
@@ -780,7 +782,7 @@ class Blockchain {
             // console.info('vinQueryKeys',vinQueryKeys);
             // console.info('voutQueryKeys',voutQueryKeys);
                                                  
-            socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 }); 
+            ///socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :txcounter+1 }); 
                  
             blksql = blksql + `,( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},${fees},${maxFee},${minFee}) `;
            // await BlockChainModel.SaveBlock(readHeight,block.result.time,block.result.hash,txs.length,fees,maxFee,minFee); 
@@ -821,7 +823,7 @@ class Blockchain {
         
         let sql='';
          var i=0;
-         socket.emit("UPDATE_TRX", {trxCount: 'writing inputs', trxRead :i }); 
+         ///socket.emit("UPDATE_TRX", {trxCount: 'writing inputs', trxRead :i }); 
          for  await(var key of vinQueryKeys) { 
            // console.log('VIN');
             if (!key) continue;
@@ -834,7 +836,7 @@ class Blockchain {
           }
 
           i=0;
-          socket.emit("UPDATE_TRX", {trxCount: 'writing outputs', trxRead :i }); 
+          ///socket.emit("UPDATE_TRX", {trxCount: 'writing outputs', trxRead :i }); 
           for await (var key of voutQueryKeys) { 
             if (!key) continue;
             i++;
@@ -846,7 +848,7 @@ class Blockchain {
 
 
           i=0;
-          socket.emit("UPDATE_TRX", {trxCount: 'writing trxs', trxRead :i }); 
+          ///socket.emit("UPDATE_TRX", {trxCount: 'writing trxs', trxRead :i }); 
           for await (var key of txQueryKeys) { 
             if (!key) continue;
             i++;
@@ -897,8 +899,9 @@ class Blockchain {
         try {
             await this.fileStream[type+key].write(line);
         } catch (error) {
-            this.fileStream[type+key] = fs.createWriteStream('outputs/'+ type +'_'+ key +'.csv', {flags:'a'});
-            this.fileStream[type+key].write(line);
+            
+            this.fileStream[type+key] = await writestream('outputs/'+ type +'_'+ key +'.csv', {flags:'a'});
+            await this.fileStream[type+key].write(line);
         }
         /*
         var fs = require('fs');
@@ -908,6 +911,16 @@ class Blockchain {
             } 
           })*/
     }
+
+    // static async streamToFile = (inputStream, filePath) => {
+    //     return new Promise((resolve, reject) => {
+    //       const fileWriteStream = fs.createWriteStream(filePath)
+    //       inputStream
+    //         .pipe(fileWriteStream)
+    //         .on('finish', resolve)
+    //         .on('error', reject)
+    //     })
+    //   }
 
     static async saveInputTransaction(vinQuery,key,socket) {
         let sql=''
