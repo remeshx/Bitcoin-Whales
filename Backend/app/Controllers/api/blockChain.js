@@ -606,6 +606,16 @@ class Blockchain {
             if ((readHeight % 500)==0 && readHeight>(Number(ourheight)+1)){
                 console.log('writing trxs');
                 await this.writeAllTransaction(vinQuery,voutQuery,txQuery,vinQueryKeys,voutQueryKeys,txQueryKeys,socket,fs);
+                
+                vinQueryCount.length=0;
+                voutQueryCount.length=0;
+                voutQuery.length=0;
+                vinQuery.length=0;
+                txQuery.length=0;
+                voutQueryKeys.length=0;
+                vinQueryKeys.length=0;
+                txQueryKeys.length=0;
+
                 vinQueryCount =[];
                 voutQueryCount =[];
                 voutQuery=[];
@@ -631,7 +641,8 @@ class Blockchain {
                 console.log(6);
             }
 
-
+            Object.keys(coinBaseAddress).forEach(function(key) { delete coinBaseAddress[key]; });
+            global.transactions.length=0;
             global.transactions=[];
             //blockCount  =  await getLastBlock();
             coinBaseReward=0;
@@ -672,6 +683,9 @@ class Blockchain {
                
                 //console.log(`================== ${txcounter}/${txs.length} Start transaction analysis` , tx.txid);
                 //console.log(`===== ${txcounter}/${txs.length} TRX ` , tx.txid);
+                Object.keys(addresses).forEach(function(key) { delete addresses[key]; });
+                Object.keys(vouts).forEach(function(key) { delete vouts[key]; });
+                vinDetails.length=0;
                 vinDetails =[];
                 addresses ={};
                 vouts ={};
