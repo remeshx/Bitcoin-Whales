@@ -34,19 +34,19 @@ app.use('/api', ApiRouter);
 
 app.use((err,req, res, next)=>{
     const statusCode = err.statusCode || 500;
-
+    console.log('error XX: ' + err.message);
     res.status(statusCode).json({
         type:'error', message: err.message
     });
 });
 
-process.on('uncaughtException', (err, origin) => {
-  fs.writeSync(
-    process.stderr.fd,
-    `Caught exception: ${err}\n` +
-    `Exception origin: ${origin}`
-  );
-});
+
+process.on('uncaughtException', (reason, p) => {
+    console.error(reason, 'uncaught Exception at Promise', p);
+  })
+process.on('unhandledRejection', (reason, p) => {
+    console.error(reason, 'Unhandled Rejection at Promise', p);
+  });
 
 
 app.listen(_PORT_ADDRESS, () => {
