@@ -381,7 +381,7 @@ class BlockChainModel {
     static importTrxFile(file,table) {
         return new Promise((resolve,reject)=> {
             db.query(
-                `COPY ${table}(id,,block_height,txid,txseq) FROM '${file}'
+                `COPY ${table}(id,block_height,txid,txseq) FROM '${file}'
                 DELIMITER ','
                 CSV HEADER;
                 `,
