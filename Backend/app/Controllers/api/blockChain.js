@@ -459,7 +459,7 @@ class Blockchain {
                         fs.unlinkSync(filepath);
                     }          
                     
-                    filepath = path.dirname(require.main.filename) + '/outputs/' + 'transactions_a' + key + '.csv';
+                    filepath = path.dirname(require.main.filename) + '/outputs/' + 'trx_a' + key + '.csv';
                     if (fs.existsSync(filepath)) {
                         console.log('importing file: ', filepath);
                         await BlockChainModel.importTrxFile(filepath,tblNameTrx); 
