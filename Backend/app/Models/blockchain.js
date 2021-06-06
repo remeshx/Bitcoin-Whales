@@ -263,7 +263,7 @@ class BlockChainModel {
     static updateInputTrx(trxTbl,inputTbl){
         return new Promise((resolve,reject)=> {
             db.query(
-                `update ${inputTbl} As A set vouttxid=B.id from ${trxTbl} where A.vouttx=B.txid`,
+                `update ${inputTbl} As A set vouttxid=B.id from ${trxTbl} As B where A.vouttx=B.txid`,
             [],
             (error,response)=>{
                 if (error) {
