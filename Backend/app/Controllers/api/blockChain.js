@@ -426,6 +426,7 @@ class Blockchain {
         var key='';
         var tblNameOut='';
         var tblNameIn='';
+        var tblNameTrx='';
         var i=0;
         let lastWritten  = global.settings['BitcoinNode_LastFileWritten'];
         var filepath = ''; 
@@ -808,7 +809,8 @@ class Blockchain {
             trxRead = -1;
         }
         console.log(18);
-        await this.writeAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket,fs);
+        //await this.writeAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket,fs);
+        await this.writeAllTransaction(vinQuery,voutQuery,txQuery,vinQueryKeys,voutQueryKeys,txQueryKeys,socket,fs);
         console.log(19);
         vinQueryCount =[];
         voutQueryCount =[];
