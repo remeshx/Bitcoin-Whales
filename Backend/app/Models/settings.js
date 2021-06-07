@@ -62,6 +62,21 @@ class settingModel {
         })
     }
 
+    static updateSettingVariable(varCategory,varName,varValue) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `update settings set varValue=$1 where varCategory=$2 and varName=$3;`,
+            [varValue,varCategory,varName],
+            (error,response)=>{
+                if (error) {
+                    console.log('error',error);
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
     static updateTrxRead(trxRead) {
         return new Promise((resolve,reject)=> {
             db.query(

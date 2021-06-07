@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const http = require("http");
 const fs = require('fs');
+const Blockchain = require('./app/Controllers/api/blockChain');
 const socketIo = require("socket.io");
 
 const ApiRouter = require('./app/router/web');
@@ -30,15 +31,28 @@ app.use(function(req, res, next){
   });
 app.use('/api', ApiRouter);
 
+const SettingModel = require('./app/Models/settings');
+SettingModel.loadSetting('BlockChain','CurrentStage')
+.then(()=>{
+    let action = global.settings['BitcoinNode_CurrentStage'];
+    console.log(action);
+    switch (action) {
+      case 'checkForNewblocks_new': 
+              console.log('Start App : ', 'checkForNewblocks_new');
+              Blockchain.checkForNewblocks_new();
+              break;
+      case 'updateSpentTransactions': 
+              console.log('Start App : ', 'updateSpentTransactions');
+              Blockchain.updateSpentTransactions();
+              break;
+    }
+}).catch(error=>reject(error));
 
 
-app.use((err,req, res, next)=>{
-    const statusCode = err.statusCode || 500;
-    console.log('error XX: ' + err.message);
-    res.status(statusCode).json({
-        type:'error', message: err.message
-    });
-});
+
+
+
+
 
 
 process.on('uncaughtException', (reason, p) => {
@@ -47,6 +61,24 @@ process.on('uncaughtException', (reason, p) => {
 process.on('unhandledRejection', (reason, p) => {
     console.error(reason, 'Unhandled Rejection at Promise', p);
   });
+
+  process.on('SIGTERM', signal => {
+    console.log(`Process ${process.pid} received a SIGTERM signal`)
+    process.exit(0)
+  })
+  
+  process.on('SIGINT', signal => {
+    console.log(`Process ${process.pid} has been interrupted`)
+    process.exit(0)
+  })
+
+  app.use((err,req, res, next)=>{
+    const statusCode = err.statusCode || 500;
+    console.log('error XX: ' + err.message);
+    res.status(statusCode).json({
+        type:'error', message: err.message
+    });
+});
 
 
 app.listen(_PORT_ADDRESS, () => {

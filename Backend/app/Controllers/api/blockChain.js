@@ -9,6 +9,7 @@ const util = require('util');
 class Blockchain {
 
      static getLastBlockHeight() {
+          
         return new Promise((resolve,reject) =>{
             settingModel.loadSetting('BlockChain','LastBlockHeightRead')
             .then(()=>{
@@ -430,6 +431,7 @@ class Blockchain {
         var i=0;
         let lastWritten  = global.settings['BitcoinNode_LastFileWritten'];
         var filepath = ''; 
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','updateSpentTransactions');
 
         socket.emit("UPDATE_BLK", {lastBlock: 'Updateing Spend transactions ...', lastBlockRead: ''});
         for await (const ch of chs){
@@ -446,6 +448,7 @@ class Blockchain {
                     filepath = path.dirname(require.main.filename) + '/outputs/' + 'inputs_a' + key + '.csv';
                     if (fs.existsSync(filepath)) {
                         console.log('importing file: ', filepath);
+                        await BlockChainModel.dropIndex('idx_'+tblNameIn+'_vouttx'); 
                         await BlockChainModel.importInputFile(filepath,tblNameIn); 
                         await BlockChainModel.createIndex('idx_'+tblNameIn+'_vouttx',tblNameIn,'vouttx'); 
                         fs.unlinkSync(filepath);           
@@ -454,6 +457,7 @@ class Blockchain {
                     filepath = path.dirname(require.main.filename) + '/outputs/' + 'outputs_a' + key + '.csv';
                     if (fs.existsSync(filepath)) {
                         console.log('importing file: ', filepath);
+                        await BlockChainModel.dropIndex('idx_'+tblNameOut+'_txid'); 
                         await BlockChainModel.importOutputFile(filepath,tblNameOut); 
                         await BlockChainModel.createIndex('idx_'+tblNameOut+'_txid',tblNameOut,'txid,vout');
                         fs.unlinkSync(filepath);
@@ -462,12 +466,14 @@ class Blockchain {
                     filepath = path.dirname(require.main.filename) + '/outputs/' + 'trx_a' + key + '.csv';
                     if (fs.existsSync(filepath)) {
                         console.log('importing file: ', filepath);
+                        await BlockChainModel.dropIndex('idx_'+tblNameTrx+'_txid'); 
                         await BlockChainModel.importTrxFile(filepath,tblNameTrx); 
                         await BlockChainModel.createIndex('idx_'+tblNameTrx+'_txid',tblNameTrx,'txid'); 
                         fs.unlinkSync(filepath);           
                     }
                     
                     console.log('updateInputTrx :' + tblNameIn + ' >> ', tblNameOut);
+                    await BlockChainModel.dropIndex('idx_'+tblNameIn+'_vouttxid'); 
                     await BlockChainModel.updateInputTrx(tblNameTrx,tblNameIn);
                     await BlockChainModel.createIndex('idx_'+tblNameIn+'_vouttxid',tblNameIn,'vouttxid'); 
 
@@ -478,16 +484,18 @@ class Blockchain {
                     await BlockChainModel.dropTable(tblNameIn);
 
                     socket.emit("UPDATE_TRX", {trxCount: '8194', trxRead :i });                
-                    console.log('updateSpentTransactions ' + i + '/8194');    
+                    console.log('updateSpentTransactions ' + i + '/8194');  
                 
 
                     await SettingModel.updateCurrentFile(i);
+                    global.settings['BitcoinNode_LastFileWritten']= i;
                 }
             }   
         }
 
         socket.emit("UPDATE_TRX", {trxCount: 'DONE', trxRead :0 });      
         console.log('Done : updateSpentTransactions');         
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','');
     }
 
     static async WriteTrxFilesToDB(socket){
@@ -598,6 +606,7 @@ class Blockchain {
         let sql='';
         let blksql='';
         let trxTotalCounter=global.settings['BitcoinNode_totalTrxRead'];        
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','checkForNewblocks_new');
 
         while(readHeight<blockCount) {
            
@@ -822,6 +831,8 @@ class Blockchain {
         console.log(20);
         await SettingModel.updateTrxRead(-1);
         console.log(21);
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','updateSpentTransactions');
+        await this.updateSpentTransactions();
     }
 
     static async writeAllAddresses(addQueries,addQueriesKeys) {

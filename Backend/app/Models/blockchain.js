@@ -275,6 +275,21 @@ class BlockChainModel {
         })
     }
 
+    static dropIndex(indexName){
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `DROP  INDEX IF EXISTS ${indexName}`,
+            [],
+            (error,response)=>{
+                if (error) {
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
+
     static createIndex(indexName,tables,columns){
         return new Promise((resolve,reject)=> {
             db.query(
@@ -343,8 +358,23 @@ class BlockChainModel {
         })
     }
 
+    static truncateTable(table) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `TRUNCATE '${table}'`,
+            [],
+            (error,response)=>{
+                if (error) {
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
     static importInputFile(file,table) {
         return new Promise((resolve,reject)=> {
+            this.truncateTable(table);
             db.query(
                 `COPY ${table}( txid, vouttx, vout)  FROM '${file}'
                 DELIMITER ','
@@ -362,6 +392,7 @@ class BlockChainModel {
 
     static importOutputFile(file,table) {
         return new Promise((resolve,reject)=> {
+            this.truncateTable(table);
             db.query(
                 `COPY ${table}(txid,outaddress,vout,amount) FROM '${file}'
                 DELIMITER ','
@@ -380,6 +411,7 @@ class BlockChainModel {
     
     static importTrxFile(file,table) {
         return new Promise((resolve,reject)=> {
+            this.truncateTable(table);
             db.query(
                 `COPY ${table}(id,block_height,txid,txseq) FROM '${file}'
                 DELIMITER ','
@@ -436,7 +468,7 @@ class BlockChainModel {
 
     static dropTable(tblName) {
         return new Promise((resolve,reject) => {
-            db.query(`Drop Table ${tblName}`,
+            db.query(`Drop Table  IF EXISTS ${tblName}`,
                 [],
                 (error,response)=>{
                     if (error) {
