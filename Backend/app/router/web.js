@@ -39,6 +39,12 @@ router.get('/blockchain/updatespent', (req,res, next)=> {
     })
 });
 
+router.get('/blockchain/updateaddresses', (req,res, next)=> {
+    Blockchain.GenerateBitcoinAddressFiles(res.io).then(str=>{
+        res.json({msg: str});
+    })
+});
+
 router.get('/blockchain/findwhalesaddresses', (req,res, next)=> {
     Blockchain.findWhalesAddresses(res.io).then(str=>{
         res.json({msg: str});
