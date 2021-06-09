@@ -63,6 +63,7 @@ class settingModel {
     }
 
     static updateSettingVariable(varCategory,varName,varValue) {
+        global.settings[varCategory+'_'+ varName] = varValue;
         return new Promise((resolve,reject)=> {
             db.query(
                 `update settings set varValue=$1 where varCategory=$2 and varName=$3;`,

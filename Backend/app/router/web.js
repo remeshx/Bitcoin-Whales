@@ -45,6 +45,12 @@ router.get('/blockchain/findwhalesaddresses', (req,res, next)=> {
     })
 });
 
+router.get('/blockchain/getLoadingStatus', (req,res, next)=> {
+    Blockchain.getLoadingStatus(res.io).then(str=>{
+        res.json(str);
+    })
+});
+
 module.exports = router;
 
 

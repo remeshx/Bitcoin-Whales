@@ -19,4 +19,5 @@ INSERT INTO settings (varCategory,varName,varValue,lastUpdate) VALUES
 INSERT INTO settings (varCategory,varName,varValue,lastUpdate) VALUES 
         ('BitcoinNode','trxRead','-1',CURRENT_TIMESTAMP),
         ('BitcoinNode','totalTrxRead','0',CURRENT_TIMESTAMP),
-        ('BitcoinNode','CurrentStage','checkForNewblocks_new',CURRENT_TIMESTAMP);
+        ('BitcoinNode','CurrentStage','1',CURRENT_TIMESTAMP),
+        ('BitcoinNode','CurrentStageTitle','checkForNewblocks_new',CURRENT_TIMESTAMP);

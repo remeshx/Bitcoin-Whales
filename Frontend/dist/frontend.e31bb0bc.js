@@ -33306,11 +33306,13 @@ exports.BLOCKS = BLOCKS;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.URL_GET_LAST_BLOCK = exports.BTC_NODE = void 0;
-var BTC_NODE = 'http://localhost:2400/';
+exports.URL_PROGRESS_STATUS = exports.URL_GET_LAST_BLOCK = exports.BTC_NODE = void 0;
+var BTC_NODE = 'http://localhost:7400/';
 exports.BTC_NODE = BTC_NODE;
 var URL_GET_LAST_BLOCK = BTC_NODE + 'api/blockchain/LastBlockHeightRead';
 exports.URL_GET_LAST_BLOCK = URL_GET_LAST_BLOCK;
+var URL_PROGRESS_STATUS = BTC_NODE + 'api/blockchain/getLoadingStatus';
+exports.URL_PROGRESS_STATUS = URL_PROGRESS_STATUS;
 },{}],"src/actions/blocks.js":[function(require,module,exports) {
 "use strict";
 
@@ -33372,6 +33374,68 @@ var updateBlkInfo = function updateBlkInfo(data) {
 };
 
 exports.updateBlkInfo = updateBlkInfo;
+},{"./types":"src/actions/types.js","../../config":"config.js"}],"src/actions/progress.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.updateBlkInfo = exports.updateTrxInfo = exports.updateTime = exports.fetchProgressStatus = void 0;
+
+var _types = require("./types");
+
+var _config = require("../../config");
+
+var fetchProgressStatus = function fetchProgressStatus() {
+  return function (dispatch) {
+    console.log('fetchProgressStatus');
+    fetch(_config.URL_PROGRESS_STATUS).then(function (response) {
+      return response.json();
+    }).then(function (json) {
+      return dispatch({
+        type: 'FETCH_PROGRESS_STATUS',
+        progress: json
+      });
+    }).catch(function (error) {
+      return console.log('error', error);
+    });
+  };
+};
+
+exports.fetchProgressStatus = fetchProgressStatus;
+
+var updateTime = function updateTime(time) {
+  return function (dispatch) {
+    dispatch({
+      type: 'UPDATE_TIME',
+      time: time
+    });
+  };
+};
+
+exports.updateTime = updateTime;
+
+var updateTrxInfo = function updateTrxInfo(data) {
+  return function (dispatch) {
+    dispatch({
+      type: 'UPDATE_TRX',
+      trxInfo: data
+    });
+  };
+};
+
+exports.updateTrxInfo = updateTrxInfo;
+
+var updateBlkInfo = function updateBlkInfo(data) {
+  return function (dispatch) {
+    dispatch({
+      type: 'UPDATE_BLK',
+      blockInfo: data
+    });
+  };
+};
+
+exports.updateBlkInfo = updateBlkInfo;
 },{"./types":"src/actions/types.js","../../config":"config.js"}],"src/components/Blocks.js":[function(require,module,exports) {
 "use strict";
 
@@ -33385,6 +33449,8 @@ var _react = _interopRequireWildcard(require("react"));
 var _reactRedux = require("react-redux");
 
 var _blocks = require("../actions/blocks");
+
+var _progress = require("../actions/progress");
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
@@ -33428,6 +33494,8 @@ var Blocks = /*#__PURE__*/function (_Component) {
     value: function componentDidMount() {
       var _this = this;
 
+      console.log('componentDidMount');
+      this.props.fetchProgressStatus();
       this.props.socket.on("UPDATE_BLK", function (data) {
         _this.updateState(data);
       });
@@ -33448,7 +33516,112 @@ var Blocks = /*#__PURE__*/function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("p", null, "Last Block Mined : ", this.props.blockInfo.lastBlock), /*#__PURE__*/_react.default.createElement("p", null, "Last Block Read : ", this.props.blockInfo.lastBlockRead), /*#__PURE__*/_react.default.createElement("p", null, "current Block Trx Count : ", this.props.trxInfo.trxCount), /*#__PURE__*/_react.default.createElement("p", null, "current Block Trx Read : ", this.props.trxInfo.trxRead));
+      console.log('rebder');
+      return /*#__PURE__*/_react.default.createElement("div", {
+        class: "layout-wrapper layout-1 layout-without-sidenav"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "layout-inner"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "layout-container"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "layout-content"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "container flex-grow-1 container-p-y"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "col-xl-12 col-md-12 px-0"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "card ui-timeline mb-4"
+      }, /*#__PURE__*/_react.default.createElement("h5", {
+        class: "card-header"
+      }, "Loading For The First Time ..."), /*#__PURE__*/_react.default.createElement("div", {
+        class: "card-body"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "timelines-box"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "row pt-3 pb-4"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "col-auto text-right update-meta"
+      }, /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0 d-inline"
+      }, "STEP 1"), /*#__PURE__*/_react.default.createElement("i", {
+        className: "ion ".concat(this.props.progress.step1_icon_class, " update-icon")
+      })), /*#__PURE__*/_react.default.createElement("div", {
+        class: "col"
+      }, /*#__PURE__*/_react.default.createElement("h6", {
+        class: "mb-1"
+      }, "Anylyzing Bitcoin Blockchain"), /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-2"
+      }, this.props.progress.step1_status), /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress-bar bg-warning",
+        style: {
+          width: "".concat(this.props.progress.step1_progress, "%")
+        }
+      })))), /*#__PURE__*/_react.default.createElement("div", {
+        class: "row pb-4"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "col-auto text-right update-meta"
+      }, /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0 d-inline"
+      }, "STEP 2"), /*#__PURE__*/_react.default.createElement("i", {
+        className: "ion ".concat(this.props.progress.step2_icon_class, " update-icon")
+      })), /*#__PURE__*/_react.default.createElement("div", {
+        class: "col"
+      }, /*#__PURE__*/_react.default.createElement("h6", {
+        class: "mb-1"
+      }, "Writing Transactions To Database"), /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0"
+      }, this.props.trxInfo.trxRead, "/", this.props.trxInfo.trxCount), /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress-bar bg-warning",
+        style: {
+          width: "".concat(this.props.progress.step2_progress, "%")
+        }
+      })))), /*#__PURE__*/_react.default.createElement("div", {
+        class: "row pb-4"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "col-auto text-right update-meta"
+      }, /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0 d-inline"
+      }, "STEP 3"), /*#__PURE__*/_react.default.createElement("i", {
+        className: "ion ".concat(this.props.progress.step3_icon_class, " update-icon")
+      })), /*#__PURE__*/_react.default.createElement("div", {
+        class: "col"
+      }, /*#__PURE__*/_react.default.createElement("h6", {
+        class: "mb-1"
+      }, "Finding Spent Transactions"), /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0"
+      }, "Not Started"), /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress-bar bg-warning",
+        style: {
+          width: "".concat(this.props.progress.step3_progress, "%")
+        }
+      })))), /*#__PURE__*/_react.default.createElement("div", {
+        class: "row p-b-0"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "col-auto text-right update-meta"
+      }, /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0 d-inline"
+      }, "STEP 4"), /*#__PURE__*/_react.default.createElement("i", {
+        className: "ion ".concat(this.props.progress.step4_icon_class, " update-icon")
+      })), /*#__PURE__*/_react.default.createElement("div", {
+        class: "col"
+      }, /*#__PURE__*/_react.default.createElement("h6", {
+        class: "mb-1"
+      }, "Generating Address Tables"), /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-2"
+      }, "Not Started"), /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress-bar bg-warning",
+        style: {
+          width: "".concat(this.props.progress.step4_progress, "%")
+        }
+      })))))))))))));
     }
   }]);
 
@@ -33458,11 +33631,13 @@ var Blocks = /*#__PURE__*/function (_Component) {
 var mapStateToProps = function mapStateToProps(state) {
   var blockInfo = state.blockInfo;
   var trxInfo = state.trxInfo;
+  var progress = state.progress;
   var time = state.time;
   return {
     blockInfo: blockInfo,
     time: time,
-    trxInfo: trxInfo
+    trxInfo: trxInfo,
+    progress: progress
   };
 };
 
@@ -33470,13 +33645,14 @@ var componentConnector = (0, _reactRedux.connect)(mapStateToProps, {
   fetchBlocks: _blocks.fetchBlocks,
   updateTime: _blocks.updateTime,
   updateTrxInfo: _blocks.updateTrxInfo,
-  updateBlkInfo: _blocks.updateBlkInfo
+  updateBlkInfo: _blocks.updateBlkInfo,
+  fetchProgressStatus: _progress.fetchProgressStatus
 });
 
 var _default = componentConnector(Blocks);
 
 exports.default = _default;
-},{"react":"node_modules/react/index.js","react-redux":"node_modules/react-redux/es/index.js","../actions/blocks":"src/actions/blocks.js"}],"node_modules/parseuri/index.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","react-redux":"node_modules/react-redux/es/index.js","../actions/blocks":"src/actions/blocks.js","../actions/progress":"src/actions/progress.js"}],"node_modules/parseuri/index.js":[function(require,module,exports) {
 /**
  * Parses an URI
  *
@@ -42220,6 +42396,20 @@ var DEFAULT_BLOCK = {
     trxCount: 0,
     trxRead: 0
   },
+  progress: {
+    step1_status: 'Not Started',
+    step1_progress: '0',
+    step1_icon_class: 'ion-md-analytics bg-secondary',
+    step2_status: 'Not Started',
+    step2_progress: '0',
+    step2_icon_class: 'ion-md-grid bg-secondary',
+    step3_status: 'Not Started',
+    step3_progress: '0',
+    step3_icon_class: 'ion-logo-bitcoin bg-secondary',
+    step4_status: 'Not Started',
+    step4_progress: '0',
+    step4_icon_class: 'ion-ios-code-working bg-secondary'
+  },
   time: '0000-00-00 00:00:00.000'
 };
 
@@ -42234,6 +42424,7 @@ var blockReducer = function blockReducer() {
     //console.log('action',action);
     newState.blockInfo = _objectSpread({}, action.blockInfo);
     newState.trxInfo = _objectSpread({}, DEFAULT_BLOCK.trxInfo);
+    newState.progress = _objectSpread({}, DEFAULT_BLOCK.progress);
   }
 
   if (action.type == 'UPDATE_TIME') {
@@ -42245,6 +42436,32 @@ var blockReducer = function blockReducer() {
   if (action.type == 'UPDATE_TRX') {
     //console.log('action.trxInfo', action.trxInfo);
     newState.trxInfo = _objectSpread({}, action.trxInfo);
+  }
+
+  if (action.type == 'FETCH_PROGRESS_STATUS') {
+    console.log('action : FETCH_PROGRESS_STATUS', action);
+
+    var fetchResult = _objectSpread({}, action.progress);
+
+    var progressResult = _objectSpread({}, DEFAULT_BLOCK.progress);
+
+    var i = 1;
+
+    while (i < fetchResult.step) {
+      progressResult['step' + i + '_status'] = 'Completed';
+      progressResult['step' + i + '_progress'] = '0';
+      progressResult['step' + i + '_icon_class'] = 'ion-md-checkmark bg-success';
+      i++;
+    }
+
+    if (fetchResult.step == i) {
+      progressResult['step' + i + '_status'] = fetchResult.status;
+      progressResult['step' + i + '_progress'] = fetchResult.progress;
+      progressResult['step' + i + '_icon_class'] = progressResult['step' + i + '_icon_class'] + ' bg-warning';
+    }
+
+    newState.progress = _objectSpread({}, progressResult);
+    console.log('progressResult: ', progressResult);
   }
 
   return newState;
@@ -42297,7 +42514,7 @@ var store = (0, _redux.createStore)(_reducers.default, composeEnhancer((0, _redu
 var socket = (0, _socket.default)(ENDPOINT);
 (0, _reactDom.render)( /*#__PURE__*/_react.default.createElement(_reactRedux.Provider, {
   store: store
-}, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h2", null, "Analyzing blockchain ..."), /*#__PURE__*/_react.default.createElement(_Blocks.default, {
+}, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_Blocks.default, {
   socket: socket
 }))), document.getElementById('root'));
 },{"react":"node_modules/react/index.js","redux":"node_modules/redux/es/redux.js","react-redux":"node_modules/react-redux/es/index.js","redux-thunk":"node_modules/redux-thunk/es/index.js","react-dom":"node_modules/react-dom/index.js","./src/components/Blocks":"src/components/Blocks.js","socket.io-client":"node_modules/socket.io-client/build/index.js","./src/reducers":"src/reducers/index.js"}],"../../../../Users/remesh/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
@@ -42328,7 +42545,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "16737" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36066" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

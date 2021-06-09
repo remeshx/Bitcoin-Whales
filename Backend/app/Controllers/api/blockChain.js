@@ -5,6 +5,7 @@ const SettingModel = require('../../Models/settings');
 const fs = require('fs');
 const path = require('path');
 const util = require('util');     
+const { json } = require('body-parser');
 
 class Blockchain {
 
@@ -378,7 +379,8 @@ class Blockchain {
     }
 
     static async GenerateBitcoinAddressFiles(){
-        //Phase4 : generate bitcoin address csv file        
+        //Phase4 : generate bitcoin address csv file
+        console.log('Phase 4 - GenerateBitcoinAddressFiles ');           
         var chs = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
         var key='';
         var sql='';
@@ -387,15 +389,18 @@ class Blockchain {
         var i=0;
         var addQuery = [];
         var addQueryKeys = [];
+        let lastWritten  = global.settings['BitcoinNode_LastFileWritten'];
         for await (const ch of chs){
             for await (const ch2 of chs){
                 for await (const ch3 of chs){
                     i++;
+                    if (i<=lastWritten) continue;
+
                     key = ch + ch2 + ch3;
                     tblNameOut = 'outputs_' + key;
                     socket.emit("UPDATE_BLK", {lastBlock: 'Inserting Bitcoin addresses ...', lastBlockRead: 'Reading data...'});
-                    socket.emit("UPDATE_TRX", {trxCount: '8194', trxRead :i });                
-                    console.log('insertaddresses ' + i + '/8194');     
+                    socket.emit("UPDATE_TRX", {trxCount: '4096', trxRead :i });                
+                    console.log('insertaddresses ' + i + '/4096');     
 
                     transactions = await BlockChainModel.getAllTransactions(tblNameOut);
                     for await(const transaction of transactions) 
@@ -413,9 +418,14 @@ class Blockchain {
                     
                     socket.emit("UPDATE_BLK", {lastBlock: 'Inserting Bitcoin addresses ...', lastBlockRead: 'writing data...'});
                     this.writeAllAddresses(addQuery,addQueryKeys);
+                    addQuery.length=0;
+                    addQueryKeys.length=0;
                     addQuery = [];
                     addQueryKeys = [];
+                    sql.length=0;
                     sql='';
+                    global.settings['BitcoinNode_LastFileWritten']=i;
+                    await SettingModel.updateCurrentFile(i);
                 }
             }   
         }
@@ -431,9 +441,11 @@ class Blockchain {
         var i=0;
         let lastWritten  = global.settings['BitcoinNode_LastFileWritten'];
         var filepath = ''; 
-        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','updateSpentTransactions');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','2');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','updateSpentTransactions');
 
         socket.emit("UPDATE_BLK", {lastBlock: 'Updateing Spend transactions ...', lastBlockRead: ''});
+        
         for await (const ch of chs){
             for await (const ch2 of chs){
                 for await (const ch3 of chs){
@@ -495,7 +507,11 @@ class Blockchain {
 
         socket.emit("UPDATE_TRX", {trxCount: 'DONE', trxRead :0 });      
         console.log('Done : updateSpentTransactions');         
-        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','');
+        global.settings['BitcoinNode_LastFileWritten']=0;
+        await SettingModel.updateCurrentFile(0);
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','3');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','');
+
     }
 
     static async WriteTrxFilesToDB(socket){
@@ -554,13 +570,14 @@ class Blockchain {
     static async checkForNewblocks_new(socket) {
         //phase 1 : read transactions and save to file
         let blockCount  =  await getLastBlock();
-        
+        global.settings['BitcoinNode_blockCount'] = blockCount;
 
         console.log('blockCount',blockCount);
         //let ourheight   = 182010;//global.settings['BitcoinNode_LastBlockHeightRead'];
         
         this.fileStream = [];
         let ourheight   = global.settings['BitcoinNode_LastBlockHeightRead'];
+        global.settings['BitcoinNode_currBlockHeightRead'] = ourheight;
         //ourheight   = 680097;
         let trxRead = global.settings['BitcoinNode_trxRead'];
         trxRead = -1;
@@ -606,7 +623,8 @@ class Blockchain {
         let sql='';
         let blksql='';
         let trxTotalCounter=global.settings['BitcoinNode_totalTrxRead'];        
-        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','checkForNewblocks_new');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','1');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','checkForNewblocks_new');
 
         while(readHeight<blockCount) {
            
@@ -816,6 +834,7 @@ class Blockchain {
            console.log(17);
             
             trxRead = -1;
+            global.settings['BitcoinNode_currBlockHeightRead'] = readHeight;
         }
         console.log(18);
         //await this.writeAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket,fs);
@@ -831,7 +850,8 @@ class Blockchain {
         console.log(20);
         await SettingModel.updateTrxRead(-1);
         console.log(21);
-        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','updateSpentTransactions');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','2');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','updateSpentTransactions');
         await this.updateSpentTransactions();
     }
 
@@ -1101,6 +1121,42 @@ class Blockchain {
 
     }
 
+    static getLoadingStatus(){
+
+        return new Promise((resolve,reject) => {
+                let action = global.settings['BitcoinNode_CurrentStage'];
+                // let action = 2;
+                // global.settings['BitcoinNode_LastFileWritten']=2090;
+
+                console.log('getLoadingStatus : ', action);
+                let step=0;
+                let progress=0;
+                let status='';
+                switch (action) {
+                case '1': 
+                        step=1;
+                        progress= Math.round((10000 * global.settings['BitcoinNode_currBlockHeightRead']) / global.settings['BitcoinNode_blockCount']) /100;
+                        status = 'Reading block ' + global.settings['BitcoinNode_currBlockHeightRead'];
+                        break;
+                case '2': 
+                        step=2;
+                        progress=Math.round((10000 * global.settings['BitcoinNode_LastFileWritten']) / 8194) /100;
+                        status='importing files';
+                        break;
+                }
+
+                let progressStatus = {
+                    'step' : step,
+                    'progress' : progress,
+                    'status' : status
+                }
+                console.log('getLoadingStatus Result: ', progressStatus);
+                resolve(progressStatus); 
+        });
+
+
+       
+    }
 }
 
 module.exports  = Blockchain;

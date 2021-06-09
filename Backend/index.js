@@ -37,13 +37,13 @@ SettingModel.loadSetting('BlockChain','CurrentStage')
     let action = global.settings['BitcoinNode_CurrentStage'];
     console.log(action);
     switch (action) {
-      case 'checkForNewblocks_new': 
+      case '1': 
               console.log('Start App : ', 'checkForNewblocks_new');
               Blockchain.checkForNewblocks_new();
               break;
-      case 'updateSpentTransactions': 
+      case '2': 
               console.log('Start App : ', 'updateSpentTransactions');
-              Blockchain.updateSpentTransactions();
+              //Blockchain.updateSpentTransactions();
               break;
     }
 }).catch(error=>reject(error));
