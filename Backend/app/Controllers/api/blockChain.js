@@ -432,7 +432,7 @@ class Blockchain {
                     }       
                     
                     socket.emit("UPDATE_BLK", {lastBlock: 'Inserting Bitcoin addresses ...', lastBlockRead: 'writing data...'});
-                    this.writeAllAddresses(addQuery,addQueryKeys);
+                    await this.writeAllAddresses(addQuery,addQueryKeys);
                     addQuery.length=0;
                     addQueryKeys.length=0;
                     addQuery = [];
