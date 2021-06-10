@@ -415,7 +415,7 @@ class Blockchain {
                     {
                         j++;
                         if (j>100) process.exit(0);
-                        address = 'A'+ transaction.outaddress ;
+                        address = 'A'+ transaction.outaddress.trim() + 'B';
                         addkeyCHAR = address.slice(-2);// partitioned by two last character of address
                         console.log('outaddress', address);
                         console.log('addkeyCHAR', addkeyCHAR);
