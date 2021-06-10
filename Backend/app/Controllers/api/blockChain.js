@@ -428,7 +428,6 @@ class Blockchain {
                     addQueryKeys.length=0;
                     addQuery = [];
                     addQueryKeys = [];
-                    sql.length=0;
                     sql='';
                     global.settings['BitcoinNode_LastFileWritten']=i;
                     await SettingModel.updateCurrentFile(i);
