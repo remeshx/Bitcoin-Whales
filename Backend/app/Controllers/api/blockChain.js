@@ -422,7 +422,7 @@ class Blockchain {
                         //console.log('addkeyCHAR', addkeyCHAR);
                         addKey = addkeyCHAR.charCodeAt(0) +''+ addkeyCHAR.charCodeAt(1); 
                         //console.log('addKey', addKey);
-                        sql = `${transaction.blockheight},'${transaction.outaddress}',0,${transaction.amount},${transaction.spend},'${transaction.txid}',${transaction.vout}` + "\n";
+                        sql = `0,'${transaction.outaddress.trim()}',0,${transaction.amount},${transaction.spend},'${transaction.txid}',${transaction.vout}` + "\n";
                         if (typeof addQuery[addKey] !== 'undefined' && addQuery[addKey] !== null)
                         {
                             addQuery[addKey] = addQuery[addKey] + sql;
