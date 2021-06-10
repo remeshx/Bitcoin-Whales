@@ -378,7 +378,7 @@ class Blockchain {
         console.log('done');
     }
 
-    static async GenerateBitcoinAddressFiles(){
+    static async GenerateBitcoinAddressFiles(socket){
         //Phase4 : generate bitcoin address csv file
         console.log('Phase 4 - GenerateBitcoinAddressFiles ');           
         var chs = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
@@ -392,7 +392,7 @@ class Blockchain {
         let lastWritten  = global.settings['BitcoinNode_LastFileWritten'];
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','3');
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','GenerateBitcoinAddressFiles');
-        
+
         for await (const ch of chs){
             for await (const ch2 of chs){
                 for await (const ch3 of chs){
@@ -432,6 +432,7 @@ class Blockchain {
                 }
             }   
         }
+        console.log('DONE 4096 files');   
     }
 
     static async updateSpentTransactions(socket){
