@@ -411,7 +411,9 @@ class Blockchain {
                     for await(const transaction of transactions) 
                     {
                         addkeyCHAR = transaction.outaddress.slice(-2);// partitioned by two last character of address
+                        console.log('outaddress', transaction.outaddress);
                         addKey = addkeyCHAR.charCodeAt(0) + addkeyCHAR.charCodeAt(2); 
+                        console.log('addKey', addKey);
                         sql = `${transaction.blockheight},'${transaction.outaddress}',0,${transaction.amount},${transaction.spend},'${transaction.txid}',${transaction.vout}` + "\n";
                         if (typeof addQuery[addKey] !== 'undefined' && addQuery[addKey] !== null)
                         {
