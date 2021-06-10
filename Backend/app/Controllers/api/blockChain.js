@@ -392,6 +392,7 @@ class Blockchain {
         let addQuery = [];
         let addQueryKeys = [];
         let lastWritten  = global.settings['BitcoinNode_LastFileWritten'];
+        let address = '';
         let addkeyCHAR = '';
         let addKey = '';
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','3');
@@ -414,8 +415,9 @@ class Blockchain {
                     {
                         j++;
                         if (j>100) process.exit(0);
-                        addkeyCHAR = transaction.outaddress.slice(-2);// partitioned by two last character of address
-                        console.log('outaddress', transaction.outaddress);
+                        address = 'A'+ transaction.outaddress ;
+                        addkeyCHAR = address.slice(-2);// partitioned by two last character of address
+                        console.log('outaddress', address);
                         console.log('addkeyCHAR', addkeyCHAR);
                         addKey = addkeyCHAR.charCodeAt(0) + addkeyCHAR.charCodeAt(2); 
                         console.log('addKey', addKey);

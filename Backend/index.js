@@ -31,6 +31,7 @@ app.use(function(req, res, next){
   });
 app.use('/api', ApiRouter);
 
+
 const SettingModel = require('./app/Models/settings');
 SettingModel.loadSetting('BlockChain','CurrentStage')
 .then(()=>{
