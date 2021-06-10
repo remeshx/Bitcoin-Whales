@@ -391,7 +391,7 @@ class Blockchain {
         var addQueryKeys = [];
         let lastWritten  = global.settings['BitcoinNode_LastFileWritten'];
         let addkeyCHAR = '';
-        let addkey = '';
+        let addKey = '';
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','3');
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','GenerateBitcoinAddressFiles');
 
@@ -411,7 +411,7 @@ class Blockchain {
                     for await(const transaction of transactions) 
                     {
                         addkeyCHAR = transaction.outaddress.slice(-2);// partitioned by two last character of address
-                        addkey = addkeyCHAR.charCodeAt(0) + addkeyCHAR.charCodeAt(2); 
+                        addKey = addkeyCHAR.charCodeAt(0) + addkeyCHAR.charCodeAt(2); 
                         sql = `${transaction.blockheight},'${transaction.outaddress}',0,${transaction.amount},${transaction.spend},'${transaction.txid}',${transaction.vout}` + "\n";
                         if (typeof addQuery[addKey] !== 'undefined' && addQuery[addKey] !== null)
                         {
