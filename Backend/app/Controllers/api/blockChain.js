@@ -413,14 +413,14 @@ class Blockchain {
                     transactions = await BlockChainModel.getAllTransactions(tblNameOut);
                     for await(const transaction of transactions) 
                     {
-                        j++;
-                        if (j>100) process.exit(0);
+                        //j++;
+                        //if (j>100) process.exit(0);
                         //address = 'A'+  + '';
                         addkeyCHAR = transaction.outaddress.trim().slice(-2);// partitioned by two last character of address
                         //console.log('outaddress', address);
-                        console.log('addkeyCHAR', addkeyCHAR);
+                        //console.log('addkeyCHAR', addkeyCHAR);
                         addKey = addkeyCHAR.charCodeAt(0) +''+ addkeyCHAR.charCodeAt(1); 
-                        console.log('addKey', addKey);
+                        //console.log('addKey', addKey);
                         sql = `${transaction.blockheight},'${transaction.outaddress}',0,${transaction.amount},${transaction.spend},'${transaction.txid}',${transaction.vout}` + "\n";
                         if (typeof addQuery[addKey] !== 'undefined' && addQuery[addKey] !== null)
                         {
