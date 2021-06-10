@@ -43,8 +43,12 @@ SettingModel.loadSetting('BlockChain','CurrentStage')
               break;
       case '2': 
               console.log('Start App : ', 'updateSpentTransactions');
-              //Blockchain.updateSpentTransactions();
+              Blockchain.updateSpentTransactions();
               break;
+      case '3': 
+              console.log('Start App : ', 'updateSpentTransactions');
+              Blockchain.GenerateBitcoinAddressFiles();
+              break;        
     }
 }).catch(error=>reject(error));
 

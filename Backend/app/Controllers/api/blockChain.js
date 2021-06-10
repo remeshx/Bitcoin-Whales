@@ -390,6 +390,9 @@ class Blockchain {
         var addQuery = [];
         var addQueryKeys = [];
         let lastWritten  = global.settings['BitcoinNode_LastFileWritten'];
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','3');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','GenerateBitcoinAddressFiles');
+        
         for await (const ch of chs){
             for await (const ch2 of chs){
                 for await (const ch3 of chs){
@@ -510,7 +513,7 @@ class Blockchain {
         global.settings['BitcoinNode_LastFileWritten']=0;
         await SettingModel.updateCurrentFile(0);
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','3');
-        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','GenerateBitcoinAddressFiles');
 
     }
 
