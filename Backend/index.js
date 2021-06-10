@@ -46,7 +46,7 @@ SettingModel.loadSetting('BlockChain','CurrentStage')
               Blockchain.updateSpentTransactions(io);
               break;
       case '3': 
-              console.log('Start App : ', 'updateSpentTransactions');
+              console.log('Start App : ', 'GenerateBitcoinAddressFiles');
               Blockchain.GenerateBitcoinAddressFiles(io);
               break;        
     }
