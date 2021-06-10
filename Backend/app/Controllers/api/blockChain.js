@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');     
 const { json } = require('body-parser');
+const { exit } = require('process');
 
 class Blockchain {
 
@@ -381,14 +382,15 @@ class Blockchain {
     static async GenerateBitcoinAddressFiles(socket){
         //Phase4 : generate bitcoin address csv file
         console.log('Phase 4 - GenerateBitcoinAddressFiles ');           
-        var chs = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
-        var key='';
-        var sql='';
-        var tblNameOut='';
-        var transactions='';
-        var i=0;
-        var addQuery = [];
-        var addQueryKeys = [];
+        let chs = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
+        let key='';
+        let sql='';
+        let tblNameOut='';
+        let transactions='';
+        let i=0;
+        let j=0;
+        let addQuery = [];
+        let addQueryKeys = [];
         let lastWritten  = global.settings['BitcoinNode_LastFileWritten'];
         let addkeyCHAR = '';
         let addKey = '';
@@ -410,8 +412,11 @@ class Blockchain {
                     transactions = await BlockChainModel.getAllTransactions(tblNameOut);
                     for await(const transaction of transactions) 
                     {
+                        j++;
+                        if (j>100) process.exit(0);
                         addkeyCHAR = transaction.outaddress.slice(-2);// partitioned by two last character of address
                         console.log('outaddress', transaction.outaddress);
+                        console.log('addkeyCHAR', addkeyCHAR);
                         addKey = addkeyCHAR.charCodeAt(0) + addkeyCHAR.charCodeAt(2); 
                         console.log('addKey', addKey);
                         sql = `${transaction.blockheight},'${transaction.outaddress}',0,${transaction.amount},${transaction.spend},'${transaction.txid}',${transaction.vout}` + "\n";
