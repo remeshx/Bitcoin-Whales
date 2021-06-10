@@ -39,15 +39,15 @@ SettingModel.loadSetting('BlockChain','CurrentStage')
     switch (action) {
       case '1': 
               console.log('Start App : ', 'checkForNewblocks_new');
-              Blockchain.checkForNewblocks_new();
+              Blockchain.checkForNewblocks_new(io);
               break;
       case '2': 
               console.log('Start App : ', 'updateSpentTransactions');
-              Blockchain.updateSpentTransactions();
+              Blockchain.updateSpentTransactions(io);
               break;
       case '3': 
               console.log('Start App : ', 'updateSpentTransactions');
-              Blockchain.GenerateBitcoinAddressFiles();
+              Blockchain.GenerateBitcoinAddressFiles(io);
               break;        
     }
 }).catch(error=>reject(error));
