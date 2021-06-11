@@ -37,6 +37,7 @@ SettingModel.loadSetting('BlockChain','CurrentStage')
 .then(()=>{
     let action = global.settings['BitcoinNode_CurrentStage'];
     console.log(action);
+
     switch (action) {
       case '1': 
               console.log('Start App : ', 'checkForNewblocks_new');
@@ -49,6 +50,10 @@ SettingModel.loadSetting('BlockChain','CurrentStage')
       case '3': 
               console.log('Start App : ', 'GenerateBitcoinAddressFiles');
               Blockchain.GenerateBitcoinAddressFiles(io);
+              break;        
+      case '4': 
+              console.log('Start App : ', 'WriteAddressFilesToDB');
+              Blockchain.WriteAddressFilesToDB(io);
               break;        
     }
 }).catch(error=>reject(error));

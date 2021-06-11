@@ -343,40 +343,60 @@ class Blockchain {
         //Phase5 : import written address files to DB
         //          and also set an index on each Table
         const directoryPath = path.join('outputs');
+        let chs =  [...range(48,57), ...range(65,90), ...range(97,122)];
         //passsing directoryPath and callback function
 
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','4');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','WriteAddressFilesToDB');
+        let lastWritten  = global.settings['BitcoinNode_LastFileWritten'];
         const readdir = util.promisify(fs.readdir);
 
         let files = await readdir(directoryPath);
-
+        let key='';
         //listing all files using forEach
         console.log('files : ' + files.length); 
            
         socket.emit("UPDATE_BLK", {lastBlock: 'Writing To Database...', lastBlockRead: ''});
-        var i=0;
-        var filepath='';
-        var tblName='';
+        let i=0;
+        let filepath='';
+        let tblName='';
         
-        for await( const file of files) {
-            
-            // Do whatever you want to do with the file
-            i++;
-            //if (i<5000) continue;
-            socket.emit("UPDATE_TRX", {trxCount: files.length, trxRead :i });
-            console.log('import:',  files.length + '/' + i + '   >> '+ file);
-            filepath = path.dirname(require.main.filename) + '/outputs/'  + file; 
-            tblName = file.substring(0,9);
-            
-            if (tblName=='addresses') {         
-             tblName = 'addresses_' + file.slice(-2);
-             await BlockChainModel.importAddressFile(filepath,tblName); 
-             await BlockChainModel.createIndex('idx_'+tblName+'_address',tblName,'btc_address'); 
-             await BlockChainModel.createIndex('idx_'+tblName+'_address',tblName,'spend');
-            } else continue;
-        }   
-        
+        for await (const ch of chs){
+            for await (const ch2 of chs){
+               
+                i++;
+                if (i<=lastWritten) continue;
+                if (i>10) process.exit(0);
+                key = ch + '' + ch2;
+                tblName = 'addresses_' + key;
+                
+                socket.emit("UPDATE_TRX", {trxCount: files.length, trxRead :i });
+                console.log('import:',  4000 + '/' + i + '   >> '+ tblName);
+                filepath = path.dirname(require.main.filename) + '/outputs/'  + tblName + '.csv'; 
+                console.log('key:', key);
+                console.log('filepath:', filepath);
+                console.log('tblName:', tblName);
 
-        console.log('done');
+                if (! fs.existsSync(filepath)) {
+                    throw new Error ('File Not Exists : ' + file);
+                }
+
+                await BlockChainModel.importAddressFile(filepath,tblName); 
+                await BlockChainModel.createIndex('idx_'+tblName+'_addr',tblName,'btc_address'); 
+                await BlockChainModel.createIndex('idx_'+tblName+'_spn',tblName,'spend');
+
+                global.settings['BitcoinNode_LastFileWritten']=i;
+                await SettingModel.updateCurrentFile(i);
+                //fs.unlinkSync(filepath);
+            }  
+        }
+        global.settings['BitcoinNode_LastFileWritten']=0;
+        await SettingModel.updateCurrentFile(0);
+        global.settings['BitcoinNode_CurrentStage']=5;
+        global.settings['BitcoinNode_CurrentStageTitle']='findWhalesAddresses';
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','5');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','findWhalesAddresses');
+        console.log('Done');
     }
 
     static async GenerateBitcoinAddressFiles(socket){
@@ -444,6 +464,12 @@ class Blockchain {
                 }
             }   
         }
+        global.settings['BitcoinNode_LastFileWritten']=0;
+        await SettingModel.updateCurrentFile(0);
+        global.settings['BitcoinNode_CurrentStage']=4;
+        global.settings['BitcoinNode_CurrentStageTitle']='WriteAddressFilesToDB';
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','4');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','WriteAddressFilesToDB');
         console.log('DONE 4096 files');   
     }
 
