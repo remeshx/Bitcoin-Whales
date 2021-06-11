@@ -165,7 +165,7 @@ $inputs$;
 CREATE TABLE addresses (
     id              SERIAL PRIMARY KEY,
     blockheight     INT,
-    btc_address     character(80) UNIQUE,
+    btc_address     character(80) ,
     created_time      TIMESTAMP DEFAULT NOW() ,
     amount        NUMERIC(16,8) DEFAULT 0,
     spend        SMALLINT DEFAULT 0,
