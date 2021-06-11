@@ -33,10 +33,10 @@ app.use('/api', ApiRouter);
 
 
 const SettingModel = require('./app/Models/settings');
-SettingModel.loadSetting('BlockChain','CurrentStage')
+SettingModel.loadSetting('BitcoinNode','CurrentStage')
 .then(()=>{
     let action = global.settings['BitcoinNode_CurrentStage'];
-    console.log(action);
+    console.log('action:',action);
 
     switch (action) {
       case '1': 
