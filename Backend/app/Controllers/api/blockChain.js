@@ -377,14 +377,13 @@ class Blockchain {
                 console.log('filepath:', filepath);
                 console.log('tblName:', tblName);
 
-                if (! fs.existsSync(filepath)) {
-                    throw new Error ('File Not Exists : ' + file);
+                if (fs.existsSync(filepath)) {
+                    await BlockChainModel.importAddressFile(filepath,tblName); 
+                    await BlockChainModel.createIndex('idx_'+tblName+'_addr',tblName,'btc_address'); 
+                    await BlockChainModel.createIndex('idx_'+tblName+'_spn',tblName,'spend');
+                } else {
+                    console.log('File Not Exists : ' + filepath);
                 }
-
-                await BlockChainModel.importAddressFile(filepath,tblName); 
-                await BlockChainModel.createIndex('idx_'+tblName+'_addr',tblName,'btc_address'); 
-                await BlockChainModel.createIndex('idx_'+tblName+'_spn',tblName,'spend');
-
                 global.settings['BitcoinNode_LastFileWritten']=i;
                 await SettingModel.updateCurrentFile(i);
                 //fs.unlinkSync(filepath);
