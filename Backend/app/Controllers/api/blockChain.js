@@ -366,7 +366,7 @@ class Blockchain {
                
                 i++;
                 if (i<=lastWritten) continue;
-                if (i>10) process.exit(0);
+                //if (i>10) process.exit(0);
                 key = ch + '' + ch2;
                 tblName = 'addresses_' + key;
                 
