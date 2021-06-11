@@ -344,28 +344,31 @@ class BlockChainModel {
     static importAddressFile(file,table) {
         return new Promise((resolve,reject)=> {
             
-            db.query(
-                `ALTER TABLE ${table} 
-                ALTER COLUMN created_time type VARCHAR(1);
-                `,
-            [],
-            (error,response)=>{
-                if (error) {
-                    reject(error);
-                }
-            });
+            // db.query(
+            //     `ALTER TABLE ${table} 
+            //     ALTER COLUMN created_time type VARCHAR(1);
+            //     `,
+            // [],
+            // (error,response)=>{
+            //     if (error) {
+            //         reject(error);
+            //     }
+            // });
+
+            // db.query(
+            //     `ALTER TABLE  ${table}  DROP CONSTRAINT ${table}_btc_address_key`,
+            // [],
+            // (error,response)=>{
+            //     if (error) {
+            //         reject(error);
+            //     }
+            // });
 
             db.query(
-                `ALTER TABLE  ${table}  DROP CONSTRAINT ${table}_btc_address_key`,
-            [],
-            (error,response)=>{
-                if (error) {
-                    reject(error);
-                }
-            });
-
-            db.query(
-                `COPY ${table}(blockheight ,btc_address, created_time, amount, spend, txid, vout)  FROM '${file}'
+                `
+                ALTER TABLE ${table} ALTER COLUMN created_time type VARCHAR(1);
+                ALTER TABLE  ${table}  DROP CONSTRAINT ${table}_btc_address_key;
+                COPY ${table}(blockheight ,btc_address, created_time, amount, spend, txid, vout)  FROM '${file}'
                 DELIMITER ','
                 CSV HEADER;
                 `,
