@@ -367,7 +367,7 @@ class BlockChainModel {
             db.query(
                 `
                 ALTER TABLE ${table} ALTER COLUMN created_time type VARCHAR(1);
-                ALTER TABLE  ${table}  DROP CONSTRAINT ${table}_btc_address_key;
+                ALTER TABLE  ${table}  DROP CONSTRAINT IF EXISTS ${table}_btc_address_key;
                 COPY ${table}(blockheight ,btc_address, created_time, amount, spend, txid, vout)  FROM '${file}'
                 DELIMITER ','
                 CSV HEADER;
