@@ -386,7 +386,7 @@ class Blockchain {
                 }
                 global.settings['BitcoinNode_LastFileWritten']=i;
                 await SettingModel.updateCurrentFile(i);
-                //fs.unlinkSync(filepath);
+                fs.unlinkSync(filepath);
             }  
         }
         global.settings['BitcoinNode_LastFileWritten']=0;
