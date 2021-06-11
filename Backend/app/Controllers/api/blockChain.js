@@ -381,12 +381,13 @@ class Blockchain {
                     await BlockChainModel.importAddressFile(filepath,tblName); 
                     await BlockChainModel.createIndex('idx_'+tblName+'_addr',tblName,'btc_address'); 
                     await BlockChainModel.createIndex('idx_'+tblName+'_spn',tblName,'spend');
+                    fs.unlinkSync(filepath);
                 } else {
                     console.log('File Not Exists : ' + filepath);
                 }
                 global.settings['BitcoinNode_LastFileWritten']=i;
                 await SettingModel.updateCurrentFile(i);
-                fs.unlinkSync(filepath);
+                
             }  
         }
         global.settings['BitcoinNode_LastFileWritten']=0;
