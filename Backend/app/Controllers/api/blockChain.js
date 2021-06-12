@@ -340,7 +340,7 @@ class Blockchain {
                 console.info('temp before sort:',temp);
 
                 temp.sort((a,b)=>{
-                    return (a[1] > b[1]) ? -1 : 1;
+                    return (parseFloat(a[1]) > parseFloat(b[1])) ? -1 : 1;
                 });
 
                 console.info('temp after sort:',temp);
