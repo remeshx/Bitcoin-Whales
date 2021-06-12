@@ -322,8 +322,9 @@ class Blockchain {
             for await(const ch2 of chs) {
                 i++;
                 socket.emit("UPDATE_TRX", {trxCount: '3700', trxRead :i });
-                key = String.fromCharCode(ch,ch2);
-                tblName='addresses_' + key;
+                key = ch + '' + ch2;
+                tblName = 'addresses_' + key;
+                
                 Object.keys(addresses).forEach(function(key) { delete addresses[key]; });
                 addresses = await BlockChainModel.getRichestAddresses(tblName,addCount);
 
