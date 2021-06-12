@@ -309,7 +309,7 @@ class Blockchain {
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','5');
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','findWhalesAddresses');
 
-        var addCount = 10;
+        var addCount = 3;
         var chs = [...range(48,57), ...range(65,90), ...range(97,122)];
         var key='';
         var tblName='';
@@ -321,6 +321,7 @@ class Blockchain {
         for await(const ch of chs) {
             for await(const ch2 of chs) {
                 i++;
+                console.info('======== i',i);
                 socket.emit("UPDATE_TRX", {trxCount: '3700', trxRead :i });
                 key = ch + '' + ch2;
                 tblName = 'addresses_' + key;
@@ -328,19 +329,26 @@ class Blockchain {
                 Object.keys(addresses).forEach(function(key) { delete addresses[key]; });
                 addresses = await BlockChainModel.getRichestAddresses(tblName,addCount);
 
+                console.info('temp before add:',temp);
                 temp = [...richest];
                 for await(const address of addresses) 
                 {
                     temp = [ ...temp , [address.btc_address,address.balance,address.maxtime,address.mintime]];
                 }
+
+                
+                console.info('temp before sort:',temp);
+
                 temp.sort((a,b)=>{
                     return (a[1] < b[1]) ? -1 : 1;
                 });
+
+                console.info('temp after sort:',temp);
                 richest.length=0;
                 richest = temp.slice(0,addCount);
                 temp.length=0;
                 console.info('richest:',richest);
-                if (i>50) process.exit(0);
+                if (i>5) process.exit(0);
             }   
         }
 
