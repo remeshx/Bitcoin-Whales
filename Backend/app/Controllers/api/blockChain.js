@@ -334,7 +334,7 @@ class Blockchain {
                     temp = [ ...temp , [address.btc_address,address.balance,address.maxtime,address.mintime]];
                 }
                 temp.sort((a,b)=>{
-                    return (a[1] > b[1]) ? -1 : 1;
+                    return (a[1] < b[1]) ? -1 : 1;
                 });
                 richest.length=0;
                 richest = temp.slice(0,addCount);
