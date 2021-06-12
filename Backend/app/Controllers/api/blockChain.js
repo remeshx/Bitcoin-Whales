@@ -302,32 +302,44 @@ class Blockchain {
     }
     
 
-    static async findWhalesAddresses(){
+    static async findWhalesAddresses(socket){
        
         //Phase 6 :check each of addresses tables for richest addresses
-        var addCount = 1000;
+
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','5');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','findWhalesAddresses');
+
+        var addCount = 10;
         var chs = [...range(48,57), ...range(65,90), ...range(97,122)];
         var key='';
         var tblName='';
-        var addresses='';
+        var addresses={};
         var richest=[];
         var temp=[];
         var i=0;
+
         for await(const ch of chs) {
             for await(const ch2 of chs) {
+                i++;
+                socket.emit("UPDATE_TRX", {trxCount: '3700', trxRead :i });
                 key = String.fromCharCode(ch,ch2);
                 tblName='addresses_' + key;
+                Object.keys(addresses).forEach(function(key) { delete addresses[key]; });
                 addresses = await BlockChainModel.getRichestAddresses(tblName,addCount);
 
                 temp = [...richest];
                 for await(const address of addresses) 
                 {
-                    temp = [ ...temp , [address.btc_address,address.balance,address.maxtime,address.mintime,]];
+                    temp = [ ...temp , [address.btc_address,address.balance,address.maxtime,address.mintime]];
                 }
                 temp.sort((a,b)=>{
                     return (a[1] > b[1]) ? -1 : 1;
                 });
+                richest.length=0;
                 richest = temp.slice(0,addCount);
+                temp.length=0;
+                console.info('richest:',richest);
+                if (i>50) process.exit(0);
             }   
         }
 
@@ -337,6 +349,10 @@ class Blockchain {
         }
         query = query.replace(/(^,)|(,$)/g, "");
         await BlockChainModel.saveRichestAddresses(query);
+
+
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','6');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','Loaded');
     }
 
     static async WriteAddressFilesToDB(socket){

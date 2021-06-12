@@ -55,6 +55,10 @@ SettingModel.loadSetting('BitcoinNode','CurrentStage')
               console.log('Start App : ', 'WriteAddressFilesToDB');
               Blockchain.WriteAddressFilesToDB(io);
               break;        
+      case '5': 
+              console.log('Start App : ', 'findWhalesAddresses');
+              Blockchain.findWhalesAddresses(io);
+              break;        
     }
 }).catch(error=>reject(error));
 
