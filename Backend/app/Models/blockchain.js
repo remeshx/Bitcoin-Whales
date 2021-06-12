@@ -307,7 +307,8 @@ class BlockChainModel {
     static getRichestAddresses(tblName,limits)
     {
         return new Promise((resolve,reject) => {
-            db.query(`SELECT btc_address,SUM((spend*-1) * amount - (spend-1) * amount) as balance, MIN(created_at) as mintime, MAX(created_at) as maxtime
+            //db.query(`SELECT btc_address,SUM((spend*-1) * amount - (spend-1) * amount) as balance, MIN(created_at) as mintime, MAX(created_at) as maxtime
+            db.query(`SELECT btc_address,SUM((spend*-1) * amount - (spend-1) * amount) as balance, 0 as mintime, 0 as maxtime
             FROM ${tblName} group by btc_address order by balance DESC limit ${limits}`,
                 [],
                 (error,response)=>{
