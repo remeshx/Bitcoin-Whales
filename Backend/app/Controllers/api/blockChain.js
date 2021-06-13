@@ -746,7 +746,7 @@ class Blockchain {
             coinBaseReward=0;
             coinBaseAddress = {};
             ///socket.emit("UPDATE_BLK", {lastBlock: blockCount, lastBlockRead: readHeight});
-            socketUpdateProgress(socket,1,readHeight,blockCount);
+            this.socketUpdateProgress(socket,1,readHeight,blockCount);
 
             const block = await getBlockByHeight(readHeight);
           
