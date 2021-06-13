@@ -348,9 +348,11 @@ class Blockchain {
                 richest = temp.slice(0,addCount);
                 temp.length=0;
                 //console.info('richest:',richest);
-                //if (i>5) process.exit(0);
+                if (i>100) break;
             }   
         }
+
+        console.info('richest:',richest);
 
         var query = '';
         for await(const rich of richest) { 
@@ -358,10 +360,10 @@ class Blockchain {
         }
         query = query.replace(/(^,)|(,$)/g, "");
         await BlockChainModel.saveRichestAddresses(query);
+        console.log('DONE');
 
-
-        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','6');
-        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','Loaded');
+        //await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','6');
+        //await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','Loaded');
     }
 
     static async WriteAddressFilesToDB(socket){
