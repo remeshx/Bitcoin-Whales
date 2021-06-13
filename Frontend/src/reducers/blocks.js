@@ -100,7 +100,7 @@ export const blockReducer = (state = DEFAULT_BLOCK, action) => {
                 break;             
         }
 
-        while (i<fetchResult.step) 
+        while (i<parseInt(step)) 
         {
             progressResult['step'+i+'_status'] = 'Completed';
             progressResult['step'+i+'_progress'] = '0';
@@ -108,7 +108,7 @@ export const blockReducer = (state = DEFAULT_BLOCK, action) => {
             i++;
         }
 
-        if (fetchResult.step==i) 
+        if (parseInt(step)==i) 
         {
             progressResult['step'+i+'_status'] = status;
             progressResult['step'+i+'_progress'] = progress;
@@ -119,7 +119,7 @@ export const blockReducer = (state = DEFAULT_BLOCK, action) => {
         console.log('progressResult: ', progressResult);  
      
     }
-    
+
     return newState;
 }
 
