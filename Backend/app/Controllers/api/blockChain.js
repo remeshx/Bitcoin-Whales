@@ -947,7 +947,7 @@ class Blockchain {
         let sql='';
          var i=0;
          ///socket.emit("UPDATE_TRX", {trxCount: 'writing inputs', trxRead :i }); 
-         console.log(23);
+      
          for  await(var key of vinQueryKeys) { 
            // console.log('VIN');
             if (!key) continue;
@@ -955,9 +955,9 @@ class Blockchain {
             sql = vinQuery[key];
             sql = sql.replace(/(^,)|(,$)/g, "");
             //key =  key.substring(1,4);
-            console.log(24);
+         
             await this.writeout('inputs',sql,key);
-            console.log(25);
+      
           }
 
           i=0;
@@ -968,9 +968,9 @@ class Blockchain {
             sql = voutQuery[key];
             sql = sql.replace(/(^,)|(,$)/g, "");
             //key =  key.substring(1,4);        \
-            console.log(26);   
+  
             await this.writeout('outputs',sql,key);
-            console.log(27);
+    
           }   
 
 
@@ -982,9 +982,9 @@ class Blockchain {
             sql = txQuery[key];
             sql = sql.replace(/(^,)|(,$)/g, "");
             //key =  key.substring(1,4);          
-            console.log(28); 
+   
             await this.writeout('trx',sql,key);
-            console.log(29);
+        
           }   
     }
 
