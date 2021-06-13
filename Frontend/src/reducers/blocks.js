@@ -82,20 +82,20 @@ export const blockReducer = (state = DEFAULT_BLOCK, action) => {
         let step=data.step;
         let progress= Math.round((10000 * data.currPos) / data.finalPos) /100;
         let status = '';
-        switch (data.step) {
-            case '1':                
+        switch (parseInt(data.step)) {
+            case 1:                
                 status = 'Reading Block ' + data.currPos + ' of ' + data.finalPos; 
                 break;    
-            case '2':                
+            case 2:                
                 status = 'importing to DB ' + data.currPos + ' of ' + data.finalPos; 
                 break;    
-            case '3':                
+            case 3:                
                 status = 'Mark Spent ' + data.currPos + ' of ' + data.finalPos; 
                 break;   
-            case '4':                
+            case 4:                
                 status = 'Creating Tables ' + data.currPos + ' of ' + data.finalPos; 
                 break;         
-            case '5':                
+            case 5:                
                 status = 'Finding whales ' + data.currPos + ' of ' + data.finalPos; 
                 break;             
         }
