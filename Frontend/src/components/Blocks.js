@@ -37,7 +37,7 @@ class Blocks extends Component {
 
     render() {
      
-        console.log('rebder');
+        //console.log('rebder');
         return(
             
 <div class="layout-wrapper layout-1 layout-without-sidenav">

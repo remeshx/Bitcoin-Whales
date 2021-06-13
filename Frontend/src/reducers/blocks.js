@@ -43,7 +43,7 @@ export const blockReducer = (state = DEFAULT_BLOCK, action) => {
         newState.time = action.time;
     }
 
-    console.log('action.type', action.type);
+    //console.log('action.type', action.type);
     if (action.type=='UPDATE_TRX') {
         //console.log('action.trxInfo', action.trxInfo);
         newState.trxInfo = {...action.trxInfo}
