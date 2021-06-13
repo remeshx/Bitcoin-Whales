@@ -93,10 +93,12 @@ $transactions$;
 CREATE TABLE outputs  (
     id          SERIAL,
     txid          INT,
-    outaddress    character(80),
+    outaddress    text,
     vout          INT,
     amount        NUMERIC(16,8),
     spend       SMALLINT DEFAULT 0,
+    created_time      TIMESTAMP DEFAULT NOW() ,
+    spend_time      TIMESTAMP DEFAULT null,
     primary key (id)
 ) ;
 
@@ -129,9 +131,10 @@ $outputs$;
 CREATE TABLE inputs  (
     id          SERIAL,
     txid          INT ,
-    vouttx      character(80),
+    vouttx        text,
     vouttxid      INT Default 0,
     vout          INT,
+    created_time      TIMESTAMP DEFAULT NOW() ,
     primary key (id)
 ) ;
 
@@ -165,11 +168,12 @@ $inputs$;
 CREATE TABLE addresses (
     id              SERIAL PRIMARY KEY,
     blockheight     INT,
-    btc_address     character(80) ,
+    btc_address     text ,
     created_time      TIMESTAMP DEFAULT NOW() ,
     amount        NUMERIC(16,8) DEFAULT 0,
     spend        SMALLINT DEFAULT 0,
-    txid        character(80),
+    spend_time      TIMESTAMP DEFAULT null,
+    txid        INT,
     vout        SMALLINT
 );
 

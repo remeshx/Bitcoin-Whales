@@ -245,9 +245,11 @@ class BlockChainModel {
         //update outputs_387 set spend=1 where concat(txid,vout) IN (select concat(vouttxid,vout) from inputs_387) ;
         //update outputs_055 set spend=1 where concat(txid,vout)=any(select concat(vouttxid,vout) from outputs_055) ;
         //`update outputs_055 As A set spend=1 from inputs_055 As B where A.txid=B.vouttxid and A.vout=B.vout`,
+
+        // `update ${outputTbl} set spend=1 where concat(txid,vout)=any(select concat(vouttxid,vout) from ${inputTbl}) ;`,
         return new Promise((resolve,reject)=> {
             db.query(
-                `update ${outputTbl} set spend=1 where concat(txid,vout)=any(select concat(vouttxid,vout) from ${inputTbl}) ;`,
+                `update ${outputTbl} As A set spend=1,spend_time=B.create_time from ${inputTbl} As B where A.txid=B.vouttxid and A.vout=B.vout`,
             [],
             (error,response)=>{
                 if (error) {
@@ -366,12 +368,8 @@ class BlockChainModel {
             // });
 
             db.query(
-                `
-                ALTER TABLE ${table} ALTER COLUMN created_time type VARCHAR(1);
-                ALTER TABLE  ${table}  DROP CONSTRAINT IF EXISTS ${table}_btc_address_key;
-                COPY ${table}(blockheight ,btc_address, created_time, amount, spend, txid, vout)  FROM '${file}'
-                DELIMITER ','
-                CSV HEADER;
+                `COPY ${table}(blockheight ,btc_address, created_time,spend_time, amount, spend, txid, vout)  FROM '${file}'
+                DELIMITER ','  CSV QUOTE '"';
                 `,
             [],
             (error,response)=>{
@@ -401,9 +399,8 @@ class BlockChainModel {
         return new Promise((resolve,reject)=> {
             this.truncateTable(table);
             db.query(
-                `COPY ${table}( txid, vouttx, vout)  FROM '${file}'
-                DELIMITER ','
-                CSV HEADER;
+                `COPY ${table}( txid, vouttx, vout, created_time)  FROM '${file}'
+                DELIMITER ','  CSV QUOTE '"';
                 `,
             [],
             (error,response)=>{
@@ -419,9 +416,8 @@ class BlockChainModel {
         return new Promise((resolve,reject)=> {
             this.truncateTable(table);
             db.query(
-                `COPY ${table}(txid,outaddress,vout,amount) FROM '${file}'
-                DELIMITER ','
-                CSV HEADER;
+                `COPY ${table}(txid,outaddress,vout,amount,created_time) FROM '${file}'
+                DELIMITER ','  CSV QUOTE '"';
                 `,
             [],
             (error,response)=>{
@@ -439,8 +435,7 @@ class BlockChainModel {
             this.truncateTable(table);
             db.query(
                 `COPY ${table}(id,block_height,txid,txseq) FROM '${file}'
-                DELIMITER ','
-                CSV HEADER;
+                DELIMITER ',' CSV QUOTE '"';
                 `,
             [],
             (error,response)=>{

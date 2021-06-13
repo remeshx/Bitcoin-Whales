@@ -349,7 +349,8 @@ class Blockchain {
                 temp.length=0;
                 //console.info('richest:',richest);
                 if (i>100) break;
-            }   
+            }  
+            if (i>100) break; 
         }
 
         console.info('richest:',richest);
@@ -469,7 +470,7 @@ class Blockchain {
                         //console.log('addkeyCHAR', addkeyCHAR);
                         addKey = addkeyCHAR.charCodeAt(0) +''+ addkeyCHAR.charCodeAt(1); 
                         //console.log('addKey', addKey);
-                        sql = `0,'${transaction.outaddress.trim()}',0,${transaction.amount},${transaction.spend},'${transaction.txid}',${transaction.vout}` + "\n";
+                        sql = `0,${transaction.outaddress.trim()},${transaction.created_time},${transaction.spend_time},${transaction.amount},${transaction.spend},${transaction.txid},${transaction.vout}` + "\n";
                         if (typeof addQuery[addKey] !== 'undefined' && addQuery[addKey] !== null)
                         {
                             addQuery[addKey] = addQuery[addKey] + sql;
@@ -796,7 +797,7 @@ class Blockchain {
                         vtxidx = 'a' + vtxidx_;
                         
                         //sql =  `,(${readHeight},'${tx.txid}','${vtxidx_}','${vin.txid}',${vin.vout})`;
-                        sql =  `${trxTotalCounter},${vin.txid},${vin.vout}` + "\n";
+                        sql =  `${trxTotalCounter},${vin.txid},${vin.vout},${tx.time}` + "\n";
 
                         if (typeof vinQuery[vtxidx] !== 'undefined' && vinQuery[vtxidx] !== null)
                         {
@@ -839,7 +840,7 @@ class Blockchain {
                     
                     
                     //sql =  `,(${readHeight},'${txidx_}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
-                    sql =  `${trxTotalCounter},${address},${voutCounter},${vout.value}` + "\n";
+                    sql =  `${trxTotalCounter},${address},${voutCounter},${vout.value},${tx.time}` + "\n";
                     
                     if (typeof voutQuery[txidx] !== 'undefined' && voutQuery[txidx] !== null)
                     {
