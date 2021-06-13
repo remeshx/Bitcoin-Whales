@@ -722,21 +722,21 @@ class Blockchain {
                 voutQueryKeys=[];
                 vinQueryKeys=[];
                 txQueryKeys=[];
-                console.log(1);
+                
                 blksql = blksql.replace(/(^,)|(,$)/g, "");
                 await BlockChainModel.SaveBulkBlock(blksql); 
-                console.log(2);
+               
                 await SettingModel.updateCurrentBlock(readHeight-1);
-                console.log(3);
+              
                 await SettingModel.updateTrxRead(-1);
-                console.log(4);
+            
                 await SettingModel.updateTotalTrxRead(trxTotalCounter);
-                console.log(5);
+             
                 global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight-1;
                 global.settings['BitcoinNode_trxRead'] = -1;
                 global.settings['BitcoinNode_totalTrxRead'] = trxTotalCounter;
                 blksql = '';
-                console.log(6);
+                
             }
 
             Object.keys(coinBaseAddress).forEach(function(key) { delete coinBaseAddress[key]; });
@@ -748,7 +748,7 @@ class Blockchain {
             ///socket.emit("UPDATE_BLK", {lastBlock: blockCount, lastBlockRead: readHeight});
                 
             const block = await getBlockByHeight(readHeight);
-            console.log(7);
+          
             txcounter=0;
             transactionId=0;
             txs = block.result.tx;
@@ -760,13 +760,13 @@ class Blockchain {
             fees = 0;
             maxFee = 0;
             minFee = 999;
-            console.log(8);
+            
             for await (const tx of txs) {
                
                 trxTotalCounter++;
                 txidx_ = tx.txid.substring(0,3);
                 txidx = 'a' + txidx_;
-                console.log(9);
+                
                 sql =  `${trxTotalCounter},${readHeight},${tx.txid},${txcounter}` + "\n";
                 if (typeof txQuery[txidx] !== 'undefined' && txQuery[txidx] !== null)
                 {
@@ -775,7 +775,7 @@ class Blockchain {
                     txQuery[txidx] = sql;
                     txQueryKeys.push(txidx);
                 }
-                console.log(10);
+                
                 //if (txcounter<10)  {
                 //if (txcounter>trxRead) transactionId = await BlockChainModel.saveTransaction(readHeight,tx.txid,txcounter);
                 
@@ -793,7 +793,7 @@ class Blockchain {
                 //BlockChainModel.saveInputs(transactionId,vin.vout);
                 if (txcounter>0) {
                     for await (const vin of tx.vin) {
-                        console.log(11);
+                        
                         vtxidx_ =  vin.txid.substring(0,3);
                         vtxidx = 'a' + vtxidx_;
                         
@@ -809,7 +809,7 @@ class Blockchain {
                             vinQueryKeys.push(vtxidx);
                             vinQueryCount[vtxidx]=1;
                         }
-                        console.log(12);
+                        
                         
                         //console.log('vtxidx:' + vtxidx + ' > ' + vinQueryCount[vtxidx]);
             
@@ -825,7 +825,7 @@ class Blockchain {
                         // }   
                     };
                 } 
-                console.log(13);
+                
                 voutCounter =0;
                 for await (const vout of tx.vout) {        
                     //console.log('vout',vout);            
@@ -837,7 +837,7 @@ class Blockchain {
                         //console.log('vout',vout); 
                         //console.log('error TRX',tx.txid);
                    }  
-                   console.log(14);
+                   ;
                     
                     
                     //sql =  `,(${readHeight},'${txidx_}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
@@ -852,7 +852,7 @@ class Blockchain {
                         voutQueryKeys.push(txidx);  
                         voutQueryCount[txidx]=1;
                     }
-                    console.log(15);
+                    
                     //console.log('txidx:' + txidx + ' > ' + voutQueryCount[txidx]);
                    
                               
@@ -870,7 +870,7 @@ class Blockchain {
                   
                 };
 
-                console.log(16);
+                
         /*
                 if (record) {
                     await this.saveTransaction(vinQuery,voutQuery,vinQueryCount,voutQueryCount,vinQueryKeys,voutQueryKeys);
@@ -902,15 +902,15 @@ class Blockchain {
                  
             blksql = blksql + `,( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},${fees},${maxFee},${minFee}) `;
            // await BlockChainModel.SaveBlock(readHeight,block.result.time,block.result.hash,txs.length,fees,maxFee,minFee); 
-           console.log(17);
+           
             
             trxRead = -1;
             global.settings['BitcoinNode_currBlockHeightRead'] = readHeight;
         }
-        console.log(18);
+        
         //await this.writeAllTransaction(vinQuery,voutQuery,vinQueryKeys,voutQueryKeys,socket,fs);
         await this.writeAllTransaction(vinQuery,voutQuery,txQuery,vinQueryKeys,voutQueryKeys,txQueryKeys,socket,fs);
-        console.log(19);
+        ;
         vinQueryCount =[];
         voutQueryCount =[];
         voutQuery=[];
@@ -918,9 +918,9 @@ class Blockchain {
         voutQueryKeys=[];
         vinQueryKeys=[];
         await SettingModel.updateCurrentBlock(readHeight);
-        console.log(20);
+        
         await SettingModel.updateTrxRead(-1);
-        console.log(21);
+        
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','2');
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','updateSpentTransactions');
         await this.updateSpentTransactions();
