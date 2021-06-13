@@ -99,7 +99,7 @@ class Blocks extends Component {
                                     </div>
 
                                     
-                                    <div class="row p-b-0">
+                                    <div class="row pb-4">
                                         <div class="col-auto text-right update-meta">
                                             <p class="text-muted mb-0 d-inline">STEP 4</p>
                                             <i className={`ion ${this.props.progress.step4_icon_class} update-icon`}></i>
