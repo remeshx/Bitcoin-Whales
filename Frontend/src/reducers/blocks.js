@@ -73,6 +73,53 @@ export const blockReducer = (state = DEFAULT_BLOCK, action) => {
         console.log('progressResult: ', progressResult);
     }
 
+    if (action.type=='UPDATE_STARTUP_PROGRESS') {
+        console.log('action : UPDATE_STARTUP_PROGRESS', action);
+        const data = {...action.progress};
+
+        let progressResult = {...DEFAULT_BLOCK.progress};
+        let i=1;
+        let step=data.step;
+        let progress= Math.round((10000 * data.currPos) / data.finalPos) /100;
+        let status = '';
+        switch (data.step) {
+            case '1':                
+                status = 'Reading Block ' + data.currPos + ' of ' + data.finalPos; 
+                break;    
+            case '2':                
+                status = 'importing to DB ' + data.currPos + ' of ' + data.finalPos; 
+                break;    
+            case '3':                
+                status = 'Mark Spent ' + data.currPos + ' of ' + data.finalPos; 
+                break;   
+            case '4':                
+                status = 'Creating Tables ' + data.currPos + ' of ' + data.finalPos; 
+                break;         
+            case '5':                
+                status = 'Finding whales ' + data.currPos + ' of ' + data.finalPos; 
+                break;             
+        }
+
+        while (i<fetchResult.step) 
+        {
+            progressResult['step'+i+'_status'] = 'Completed';
+            progressResult['step'+i+'_progress'] = '0';
+            progressResult['step'+i+'_icon_class'] = 'ion-md-checkmark bg-success';
+            i++;
+        }
+
+        if (fetchResult.step==i) 
+        {
+            progressResult['step'+i+'_status'] = status;
+            progressResult['step'+i+'_progress'] = progress;
+            progressResult['step'+i+'_icon_class'] =progressResult['step'+i+'_icon_class'] +  ' bg-warning';
+        } 
+
+        newState.progress = {...progressResult}
+        console.log('progressResult: ', progressResult);  
+     
+    }
+    
     return newState;
 }
 

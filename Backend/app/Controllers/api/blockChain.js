@@ -746,14 +746,16 @@ class Blockchain {
             coinBaseReward=0;
             coinBaseAddress = {};
             ///socket.emit("UPDATE_BLK", {lastBlock: blockCount, lastBlockRead: readHeight});
-                
+            socketUpdateProgress(socket,1,readHeight,blockCount);
+
             const block = await getBlockByHeight(readHeight);
           
             txcounter=0;
             transactionId=0;
             txs = block.result.tx;
             const BlockReward = this.getCoinBaseRewardByBlockHeight(readHeight);
-            ///socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :0 });
+            //socket.emit("UPDATE_TRX", {trxCount: txs.length, trxRead :0 });
+           
             //console.log('BlockReward',BlockReward);
             //return block;
             fee = 0;
@@ -1227,6 +1229,16 @@ class Blockchain {
 
 
        
+    }
+
+
+    static socketUpdateProgress(socket,step,currPos,finalPos) {
+        let progressStatus = {
+            'step' : step,
+            'currPos' : currPos,
+            'finalPos' : finalPos
+        }
+        socket.emit("UPDATE_STARTUP_PROGRESS", progressStatus);
     }
 }
 

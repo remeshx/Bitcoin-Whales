@@ -1,7 +1,7 @@
 import React ,{Component,useState} from 'react'; 
 import { connect } from 'react-redux';
 import {fetchBlocks,updateTime,updateTrxInfo,updateBlkInfo} from '../actions/blocks';
-import {fetchProgressStatus} from '../actions/progress';
+import {fetchProgressStatus,updateStartupProgress} from '../actions/progress';
 
 class Blocks extends Component {
     componentDidMount(){
@@ -15,6 +15,10 @@ class Blocks extends Component {
          this.props.socket.on("UPDATE_TRX", data => {
              this.updateTrxState(data);
          });
+
+         this.props.socket.on("UPDATE_STARTUP_PROGRESS", data => {
+            this.updateStartupProgress(data);
+        });
     }
 
     updateState(data){
@@ -23,6 +27,11 @@ class Blocks extends Component {
 
     updateTrxState(data){
         this.props.updateTrxInfo(data);
+     }
+
+
+    updateStartupProgress(data){
+        this.props.updateStartupProgress(data);
      }
     
 

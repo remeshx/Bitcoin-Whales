@@ -9,17 +9,9 @@ export const fetchProgressStatus = () => dispatch => {
         .catch(error=> console.log('error',error));
 }
 
-export const updateTime = (time) => dispatch => {
 
-    dispatch({type:'UPDATE_TIME',time: time});
-}
-
-export const updateTrxInfo = (data) => dispatch => {
-    dispatch({type:'UPDATE_TRX',trxInfo: data} );
-}
-
-export const updateBlkInfo = (data) => dispatch => {
-    dispatch({type:'UPDATE_BLK',blockInfo: data} );
+export const updateStartupProgress = (data) => dispatch => {
+    dispatch({type:'UPDATE_STARTUP_PROGRESS',blockInfo: data} );
 }
 
 
