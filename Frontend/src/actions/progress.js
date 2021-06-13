@@ -11,7 +11,7 @@ export const fetchProgressStatus = () => dispatch => {
 
 
 export const updateStartupProgress = (data) => dispatch => {
-    dispatch({type:'UPDATE_STARTUP_PROGRESS',blockInfo: data} );
+    dispatch({type:'UPDATE_STARTUP_PROGRESS',progress: data} );
 }
 
 
