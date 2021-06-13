@@ -74,7 +74,7 @@ export const blockReducer = (state = DEFAULT_BLOCK, action) => {
     }
 
     if (action.type=='UPDATE_STARTUP_PROGRESS') {
-        console.log('action : UPDATE_STARTUP_PROGRESS', action);
+        //console.log('action : UPDATE_STARTUP_PROGRESS', action);
         const data = {...action.progress};
 
         let progressResult = {...DEFAULT_BLOCK.progress};
@@ -116,7 +116,7 @@ export const blockReducer = (state = DEFAULT_BLOCK, action) => {
         } 
 
         newState.progress = {...progressResult}
-        console.log('progressResult: ', progressResult);  
+        //console.log('progressResult: ', progressResult);  
      
     }
 
