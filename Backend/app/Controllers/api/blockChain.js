@@ -321,8 +321,9 @@ class Blockchain {
         for await(const ch of chs) {
             for await(const ch2 of chs) {
                 i++;
+                this.socketUpdateProgress(socket,5,i,3844);
                 console.info('======== i: ',i);
-                socket.emit("UPDATE_TRX", {trxCount: '3700', trxRead :i });
+                //socket.emit("UPDATE_TRX", {trxCount: '3700', trxRead :i });
                 key = ch + '' + ch2;
                 tblName = 'addresses_' + key;
                 
@@ -365,6 +366,8 @@ class Blockchain {
 
         //await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','6');
         //await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','Loaded');
+        console.log('######################## DONE Step 5');
+        
     }
 
     static async WriteAddressFilesToDB(socket){
@@ -384,7 +387,7 @@ class Blockchain {
         //listing all files using forEach
         console.log('files : ' + files.length); 
            
-        socket.emit("UPDATE_BLK", {lastBlock: 'Writing To Database...', lastBlockRead: ''});
+        //socket.emit("UPDATE_BLK", {lastBlock: 'Writing To Database...', lastBlockRead: ''});
         let i=0;
         let filepath='';
         let tblName='';
@@ -393,12 +396,13 @@ class Blockchain {
             for await (const ch2 of chs){
                
                 i++;
+                this.socketUpdateProgress(socket,4,i,3844);
                 if (i<=lastWritten) continue;
                 //if (i>10) process.exit(0);
                 key = ch + '' + ch2;
                 tblName = 'addresses_' + key;
                 
-                socket.emit("UPDATE_TRX", {trxCount: files.length, trxRead :i });
+                //socket.emit("UPDATE_TRX", {trxCount: files.length, trxRead :i });
                 console.log('import:',  4000 + '/' + i + '   >> '+ tblName);
                 filepath = path.dirname(require.main.filename) + '/outputs/'  + tblName + '.csv'; 
                 console.log('key:', key);
@@ -425,6 +429,8 @@ class Blockchain {
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','5');
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','findWhalesAddresses');
         console.log('Done');
+        console.log('######################## DONE Step 4');
+        this.findWhalesAddresses(socket);
     }
 
     static async GenerateBitcoinAddressFiles(socket){
@@ -451,12 +457,15 @@ class Blockchain {
             for await (const ch2 of chs){
                 for await (const ch3 of chs){
                     i++;
+                    this.socketUpdateProgress(socket,3,i,4096);
                     if (i<=lastWritten) continue;
 
                     key = ch + ch2 + ch3;
                     tblNameOut = 'outputs_' + key;
-                    socket.emit("UPDATE_BLK", {lastBlock: 'Inserting Bitcoin addresses ...', lastBlockRead: 'Reading data...'});
-                    socket.emit("UPDATE_TRX", {trxCount: '4096', trxRead :i });                
+
+                    
+                    // socket.emit("UPDATE_BLK", {lastBlock: 'Inserting Bitcoin addresses ...', lastBlockRead: 'Reading data...'});
+                    // socket.emit("UPDATE_TRX", {trxCount: '4096', trxRead :i });                
                     console.log('insertaddresses ' + i + '/4096');     
 
                     transactions = await BlockChainModel.getAllTransactions(tblNameOut);
@@ -480,7 +489,7 @@ class Blockchain {
                         }
                     }       
                     
-                    socket.emit("UPDATE_BLK", {lastBlock: 'Inserting Bitcoin addresses ...', lastBlockRead: 'writing data...'});
+                    //socket.emit("UPDATE_BLK", {lastBlock: 'Inserting Bitcoin addresses ...', lastBlockRead: 'writing data...'});
                     await this.writeAllAddresses(addQuery,addQueryKeys);
                     addQuery.length=0;
                     addQueryKeys.length=0;
@@ -498,7 +507,9 @@ class Blockchain {
         global.settings['BitcoinNode_CurrentStageTitle']='WriteAddressFilesToDB';
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','4');
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','WriteAddressFilesToDB');
-        console.log('DONE 4096 files');   
+        console.log('DONE 4096 files'); 
+        console.log('######################## DONE Step 3');
+        this.WriteAddressFilesToDB(socket);  
     }
 
     static async updateSpentTransactions(socket){
@@ -520,6 +531,7 @@ class Blockchain {
             for await (const ch2 of chs){
                 for await (const ch3 of chs){
                     i++;
+                    this.socketUpdateProgress(socket,2,i,4096);
                     if (i<=lastWritten) continue;
                     key = ch + ch2 + ch3;
                     tblNameOut = 'outputs_' + key;
@@ -565,7 +577,7 @@ class Blockchain {
                     console.log('drop table : ',tblNameIn);
                     await BlockChainModel.dropTable(tblNameIn);
 
-                    socket.emit("UPDATE_TRX", {trxCount: '8194', trxRead :i });                
+                    //socket.emit("UPDATE_TRX", {trxCount: '8194', trxRead :i });                
                     console.log('updateSpentTransactions ' + i + '/8194');  
                 
 
@@ -575,13 +587,14 @@ class Blockchain {
             }   
         }
 
-        socket.emit("UPDATE_TRX", {trxCount: 'DONE', trxRead :0 });      
+        //socket.emit("UPDATE_TRX", {trxCount: 'DONE', trxRead :0 });      
         console.log('Done : updateSpentTransactions');         
         global.settings['BitcoinNode_LastFileWritten']=0;
         await SettingModel.updateCurrentFile(0);
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','3');
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','GenerateBitcoinAddressFiles');
-
+        console.log('######################## DONE Step 2');
+        this.GenerateBitcoinAddressFiles(socket);
     }
 
     static async WriteTrxFilesToDB(socket){
@@ -926,6 +939,8 @@ class Blockchain {
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','2');
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','updateSpentTransactions');
         await this.updateSpentTransactions();
+        console.log('######################## DONE Step 1');
+        this.updateSpentTransactions(socket);
     }
 
     static async writeAllAddresses(addQueries,addQueriesKeys) {
@@ -1205,34 +1220,47 @@ class Blockchain {
                 let step=0;
                 let progress=0;
                 let status='';
+                
                 switch (action) {
-                case '1': 
-                        step=1;
-                        progress= Math.round((10000 * global.settings['BitcoinNode_currBlockHeightRead']) / global.settings['BitcoinNode_blockCount']) /100;
-                        status = 'Reading block ' + global.settings['BitcoinNode_currBlockHeightRead'];
-                        break;
-                case '2': 
-                        step=2;
-                        progress=Math.round((10000 * global.settings['BitcoinNode_LastFileWritten']) / 8194) /100;
-                        status='importing files';
-                        break;
+                    case '1': 
+                            step=1;
+                            currPos = global.settings['BitcoinNode_currBlockHeightRead'];
+                            finalPos = global.settings['BitcoinNode_blockCount'];
+                            break;
+                    case '2': 
+                            step=2;
+                            currPos = global.settings['BitcoinNode_LastFileWritten'];
+                            finalPos = 4096;
+                            break;
+                    case '3': 
+                            step=3;
+                            currPos = global.settings['BitcoinNode_LastFileWritten'];
+                            finalPos = 4096;
+                            break;
+                    case '4': 
+                            step=4;
+                            currPos = global.settings['BitcoinNode_LastFileWritten'];
+                            finalPos = 3844;
+                            break;
+                    case '5': 
+                            step=5;
+                            currPos = 0;
+                            finalPos = 3844;
+                            break;        
                 }
 
                 let progressStatus = {
                     'step' : step,
-                    'progress' : progress,
-                    'status' : status
+                    'currPos' : currPos,
+                    'finalPos' : finalPos
                 }
                 console.log('getLoadingStatus Result: ', progressStatus);
                 resolve(progressStatus); 
         });
-
-
-       
     }
 
 
-    static socketUpdateProgress(socket,step,currPos,finalPos) {
+    static socketUpdateProgress(socket,step,currPos,finalPos,ret=false) {
         let progressStatus = {
             'step' : step,
             'currPos' : currPos,

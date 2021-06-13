@@ -112,6 +112,22 @@ class Blocks extends Component {
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="row p-b-0">
+                                        <div class="col-auto text-right update-meta">
+                                            <p class="text-muted mb-0 d-inline">STEP 5</p>
+                                            <i className={`ion ${this.props.progress.step5_icon_class} update-icon`}></i>
+                                        </div>
+                                        <div class="col">
+                                            <h6 class="mb-1">Finding whales</h6>
+                                            <p class="text-muted mb-2">{this.props.progress.step5_status}</p>
+                                            <div class="progress">
+                                                <div class="progress-bar bg-warning" style={{width: `${this.props.progress.step5_progress}%`}}></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
                                 </div>
                             </div>
                         </div>

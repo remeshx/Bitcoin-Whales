@@ -22,7 +22,10 @@ const DEFAULT_BLOCK = {
         step3_icon_class : 'ion-logo-bitcoin bg-secondary',
         step4_status : 'Not Started',
         step4_progress : '0',
-        step4_icon_class : 'ion-ios-code-working bg-secondary'
+        step4_icon_class : 'ion-ios-code-working bg-secondary',
+        step5_status : 'Not Started',
+        step5_progress : '0',
+        step5_icon_class : 'ion-md-search bg-secondary'
     },
     time: '0000-00-00 00:00:00.000'
 };
@@ -49,31 +52,31 @@ export const blockReducer = (state = DEFAULT_BLOCK, action) => {
         newState.trxInfo = {...action.trxInfo}
     }
 
-    if (action.type=='FETCH_PROGRESS_STATUS') {
-        console.log('action : FETCH_PROGRESS_STATUS', action);
-        const fetchResult = {...action.progress};
-        let progressResult = {...DEFAULT_BLOCK.progress};
-        let i=1;
-        while (i<fetchResult.step) 
-        {
-            progressResult['step'+i+'_status'] = 'Completed';
-            progressResult['step'+i+'_progress'] = '0';
-            progressResult['step'+i+'_icon_class'] = 'ion-md-checkmark bg-success';
-            i++;
-        }
+    // if (action.type=='FETCH_PROGRESS_STATUS') {
+    //     console.log('action : FETCH_PROGRESS_STATUS', action);
+    //     const fetchResult = {...action.progress};
+    //     let progressResult = {...DEFAULT_BLOCK.progress};
+    //     let i=1;
+    //     while (i<fetchResult.step) 
+    //     {
+    //         progressResult['step'+i+'_status'] = 'Completed';
+    //         progressResult['step'+i+'_progress'] = '0';
+    //         progressResult['step'+i+'_icon_class'] = 'ion-md-checkmark bg-success';
+    //         i++;
+    //     }
 
-        if (fetchResult.step==i) 
-        {
-            progressResult['step'+i+'_status'] = fetchResult.status;
-            progressResult['step'+i+'_progress'] = fetchResult.progress;
-            progressResult['step'+i+'_icon_class'] =progressResult['step'+i+'_icon_class'] +  ' bg-warning';
-        } 
+    //     if (fetchResult.step==i) 
+    //     {
+    //         progressResult['step'+i+'_status'] = fetchResult.status;
+    //         progressResult['step'+i+'_progress'] = fetchResult.progress;
+    //         progressResult['step'+i+'_icon_class'] =progressResult['step'+i+'_icon_class'] +  ' bg-warning';
+    //     } 
 
-        newState.progress = {...progressResult}
-        console.log('progressResult: ', progressResult);
-    }
+    //     newState.progress = {...progressResult}
+    //     console.log('progressResult: ', progressResult);
+    // }
 
-    if (action.type=='UPDATE_STARTUP_PROGRESS') {
+    if (action.type=='FETCH_PROGRESS_STATUS' || action.type=='UPDATE_STARTUP_PROGRESS') {
         //console.log('action : UPDATE_STARTUP_PROGRESS', action);
         const data = {...action.progress};
 
