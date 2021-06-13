@@ -648,7 +648,7 @@ class Blockchain {
         this.fileStream = [];
         let ourheight   = global.settings['BitcoinNode_LastBlockHeightRead'];
         global.settings['BitcoinNode_currBlockHeightRead'] = ourheight;
-        //ourheight   = 680097;
+       // ourheight   = 680097;
         let trxRead = global.settings['BitcoinNode_trxRead'];
         trxRead = -1;
         let readHeight  =  ourheight;
@@ -762,6 +762,7 @@ class Blockchain {
             minFee = 999;
             console.log(8);
             for await (const tx of txs) {
+               
                 trxTotalCounter++;
                 txidx_ = tx.txid.substring(0,3);
                 txidx = 'a' + txidx_;
@@ -797,7 +798,7 @@ class Blockchain {
                         vtxidx = 'a' + vtxidx_;
                         
                         //sql =  `,(${readHeight},'${tx.txid}','${vtxidx_}','${vin.txid}',${vin.vout})`;
-                        sql =  `${trxTotalCounter},${vin.txid},${vin.vout},${tx.time}` + "\n";
+                        sql =  `${trxTotalCounter},${vin.txid},${vin.vout},${block.result.time}` + "\n";
 
                         if (typeof vinQuery[vtxidx] !== 'undefined' && vinQuery[vtxidx] !== null)
                         {
@@ -840,7 +841,7 @@ class Blockchain {
                     
                     
                     //sql =  `,(${readHeight},'${txidx_}','${tx.txid}','${address}',${voutCounter},${vout.value})`;
-                    sql =  `${trxTotalCounter},${address},${voutCounter},${vout.value},${tx.time}` + "\n";
+                    sql =  `${trxTotalCounter},${address},${voutCounter},${vout.value},${block.result.time}` + "\n";
                     
                     if (typeof voutQuery[txidx] !== 'undefined' && voutQuery[txidx] !== null)
                     {
