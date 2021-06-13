@@ -61,7 +61,7 @@ class Blocks extends Component {
                                         </div>
                                         <div class="col">
                                             <h6 class="mb-1">Anylyzing Bitcoin Blockchain</h6>
-                                            <p class="text-muted mb-2">{this.props.progress.step1_status}</p>
+                                            <p class="text-muted mb-0">{this.props.progress.step1_status}</p>
                                             <div class="progress">
                                                 <div class="progress-bar bg-warning" style={{width: `${this.props.progress.step1_progress}%`}}></div>
                                             </div>
@@ -106,7 +106,7 @@ class Blocks extends Component {
                                         </div>
                                         <div class="col">
                                             <h6 class="mb-1">Generating Address Tables</h6>
-                                            <p class="text-muted mb-2">{this.props.progress.step4_status}</p>
+                                            <p class="text-muted mb-0">{this.props.progress.step4_status}</p>
                                             <div class="progress">
                                                 <div class="progress-bar bg-warning" style={{width: `${this.props.progress.step4_progress}%`}}></div>
                                             </div>
@@ -120,7 +120,7 @@ class Blocks extends Component {
                                         </div>
                                         <div class="col">
                                             <h6 class="mb-1">Finding whales</h6>
-                                            <p class="text-muted mb-2">{this.props.progress.step5_status}</p>
+                                            <p class="text-muted mb-0">{this.props.progress.step5_status}</p>
                                             <div class="progress">
                                                 <div class="progress-bar bg-warning" style={{width: `${this.props.progress.step5_progress}%`}}></div>
                                             </div>
