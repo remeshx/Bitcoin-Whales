@@ -127,6 +127,6 @@ const mapStateToProps = state => {
     return {blockInfo,time,trxInfo,progress};
 }
 
-const componentConnector = connect(mapStateToProps,{fetchBlocks,updateTime,updateTrxInfo,updateBlkInfo,fetchProgressStatus});
+const componentConnector = connect(mapStateToProps,{fetchBlocks,updateTime,updateTrxInfo,updateBlkInfo,fetchProgressStatus,updateStartupProgress});
 
 export default componentConnector(Blocks);
