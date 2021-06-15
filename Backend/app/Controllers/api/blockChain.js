@@ -525,7 +525,7 @@ class Blockchain {
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','2');
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','updateSpentTransactions');
 
-        socket.emit("UPDATE_BLK", {lastBlock: 'Updateing Spend transactions ...', lastBlockRead: ''});
+        //socket.emit("UPDATE_BLK", {lastBlock: 'Updateing Spend transactions ...', lastBlockRead: ''});
         
         for await (const ch of chs){
             for await (const ch2 of chs){
@@ -938,7 +938,7 @@ class Blockchain {
         
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','2');
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','updateSpentTransactions');
-        await this.updateSpentTransactions();
+        await this.updateSpentTransactions(socket);
         console.log('######################## DONE Step 1');
         this.updateSpentTransactions(socket);
     }
@@ -1218,9 +1218,9 @@ class Blockchain {
 
                 console.log('getLoadingStatus : ', action);
                 let step=0;
-                let progress=0;
-                let status='';
-                
+                let currPos=0;
+                let finalPos=0;
+
                 switch (action) {
                     case '1': 
                             step=1;
