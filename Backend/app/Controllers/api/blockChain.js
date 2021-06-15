@@ -578,7 +578,7 @@ class Blockchain {
                     await BlockChainModel.dropTable(tblNameIn);
 
                     //socket.emit("UPDATE_TRX", {trxCount: '8194', trxRead :i });                
-                    console.log('updateSpentTransactions ' + i + '/8194');  
+                    console.log('updateSpentTransactions ' + i + '/4096');  
                 
 
                     await SettingModel.updateCurrentFile(i);

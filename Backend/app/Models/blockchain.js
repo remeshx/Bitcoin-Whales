@@ -249,7 +249,7 @@ class BlockChainModel {
         // `update ${outputTbl} set spend=1 where concat(txid,vout)=any(select concat(vouttxid,vout) from ${inputTbl}) ;`,
         return new Promise((resolve,reject)=> {
             db.query(
-                `update ${outputTbl} As A set spend=1,spend_time=B.create_time from ${inputTbl} As B where A.txid=B.vouttxid and A.vout=B.vout`,
+                `update ${outputTbl} As A set spend=1,spend_time=B.created_time from ${inputTbl} As B where A.txid=B.vouttxid and A.vout=B.vout`,
             [],
             (error,response)=>{
                 if (error) {

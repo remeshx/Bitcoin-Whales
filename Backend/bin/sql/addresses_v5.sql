@@ -95,10 +95,10 @@ CREATE TABLE outputs  (
     txid          INT,
     outaddress    text,
     vout          INT,
-    amount        NUMERIC(16,8),
-    spend       SMALLINT DEFAULT 0,
-    created_time      TIMESTAMP DEFAULT NOW() ,
-    spend_time      TIMESTAMP DEFAULT null,
+    amount        DOUBLE PRECISION,
+    spend       character(1) DEFAULT '0',
+    created_time      INT DEFAULT 0 ,
+    spend_time      INT DEFAULT 0,
     primary key (id)
 ) ;
 
@@ -134,7 +134,7 @@ CREATE TABLE inputs  (
     vouttx        text,
     vouttxid      INT Default 0,
     vout          INT,
-    created_time      TIMESTAMP DEFAULT NOW() ,
+    created_time   INT DEFAULT 0 ,
     primary key (id)
 ) ;
 
@@ -169,10 +169,10 @@ CREATE TABLE addresses (
     id              SERIAL PRIMARY KEY,
     blockheight     INT,
     btc_address     text ,
-    created_time      TIMESTAMP DEFAULT NOW() ,
-    amount        NUMERIC(16,8) DEFAULT 0,
-    spend        SMALLINT DEFAULT 0,
-    spend_time      TIMESTAMP DEFAULT null,
+    created_time      INT DEFAULT 0 ,
+    amount        DOUBLE PRECISION,
+    spend       character(1) DEFAULT '0',
+    spend_time      INT DEFAULT 0,
     txid        INT,
     vout        SMALLINT
 );
@@ -212,8 +212,8 @@ $addresses$;
 
 CREATE TABLE richestAddresses (
     id              SERIAL PRIMARY KEY,
-    btc_address     character(80) UNIQUE,
-    created_at      TIMESTAMP DEFAULT NOW() ,
-    updated_at      TIMESTAMP DEFAULT NOW() ,
-    balance        NUMERIC(16,8) DEFAULT 0    
+    btc_address     text,
+    created_at      INT DEFAULT 0 ,
+    updated_at      INT DEFAULT 0 ,
+    balance        DOUBLE PRECISION,  
 );
