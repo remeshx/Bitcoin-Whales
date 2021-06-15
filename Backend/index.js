@@ -2,11 +2,8 @@ const {_PORT_ADDRESS} = require('./config/server');
 const express = require('express');
 const cors = require('cors');
 const http = require("http");
-const fs = require('fs');
 const Blockchain = require('./app/Controllers/api/blockChain');
 const socketIo = require("socket.io");
-const path = require('path');
-
 const ApiRouter = require('./app/router/web');
 
 const app = express();
@@ -33,10 +30,6 @@ app.use(function(req, res, next){
 app.use('/api', ApiRouter);
 
 
-console.log('1: ', __dirname);      // "/Users/Sam/node-app/src/api"
-console.log('2: ',process.cwd());
-console.log('3: ',path.dirname(require.main.filename));
-process.exit(0);
 const SettingModel = require('./app/Models/settings');
 const { exit } = require('process');
 SettingModel.loadSetting('BitcoinNode','CurrentStage')
