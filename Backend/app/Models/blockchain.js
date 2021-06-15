@@ -280,7 +280,7 @@ class BlockChainModel {
     static dropIndex(indexName){
         return new Promise((resolve,reject)=> {
             db.query(
-                `DROP  INDEX IF EXISTS ${indexName}`,
+                `DROP INDEX IF EXISTS ${indexName}`,
             [],
             (error,response)=>{
                 if (error) {
@@ -384,7 +384,7 @@ class BlockChainModel {
     static truncateTable(table) {
         return new Promise((resolve,reject)=> {
             db.query(
-                `TRUNCATE '${table}'`,
+                `TRUNCATE ${table}`,
             [],
             (error,response)=>{
                 if (error) {
@@ -399,7 +399,7 @@ class BlockChainModel {
         return new Promise((resolve,reject)=> {
             this.truncateTable(table);
             db.query(
-                `COPY ${table}( txid, vouttx, vout, created_time)  FROM '${file}'
+                `COPY ${table} ( txid, vouttx, vout, created_time)  FROM '${file}'
                 DELIMITER ','  CSV QUOTE '"';
                 `,
             [],
