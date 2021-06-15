@@ -5,6 +5,7 @@ const http = require("http");
 const fs = require('fs');
 const Blockchain = require('./app/Controllers/api/blockChain');
 const socketIo = require("socket.io");
+const path = require('path');
 
 const ApiRouter = require('./app/router/web');
 
@@ -32,9 +33,9 @@ app.use(function(req, res, next){
 app.use('/api', ApiRouter);
 
 
-console.log(__dirname);      // "/Users/Sam/node-app/src/api"
-console.log(process.cwd());
-console.log(path.dirname(require.main.filename));
+console.log('1: ', __dirname);      // "/Users/Sam/node-app/src/api"
+console.log('2: ',process.cwd());
+console.log('3: ',path.dirname(require.main.filename));
 process.exit(0);
 const SettingModel = require('./app/Models/settings');
 const { exit } = require('process');
