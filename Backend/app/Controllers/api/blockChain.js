@@ -543,8 +543,12 @@ class Blockchain {
                     if (fs.existsSync(filepath)) {
                         console.log('importing file: ', filepath);
                         await BlockChainModel.dropIndex('idx_'+tblNameIn+'_vouttx'); 
+                        console.log('1');
                         await BlockChainModel.importInputFile(filepath,tblNameIn); 
+                        console.log('2');
                         await BlockChainModel.createIndex('idx_'+tblNameIn+'_vouttx',tblNameIn,'vouttx'); 
+                        console.log('3');
+                        process.exit(0);
                         fs.unlinkSync(filepath);           
                     }
                    
