@@ -32,7 +32,12 @@ app.use(function(req, res, next){
 app.use('/api', ApiRouter);
 
 
+console.log(__dirname);      // "/Users/Sam/node-app/src/api"
+console.log(process.cwd());
+console.log(path.dirname(require.main.filename));
+process.exit(0);
 const SettingModel = require('./app/Models/settings');
+const { exit } = require('process');
 SettingModel.loadSetting('BitcoinNode','CurrentStage')
 .then(()=>{
     let action = global.settings['BitcoinNode_CurrentStage'];
