@@ -7,7 +7,7 @@ export PGPASSWORD="btcpass"
 dropdb -U btcuser btcdb
 createdb -U btcuser btcdb
 
+psql -U btcuser btcdb < ./bin/sql/tables.sql
 psql -U btcuser btcdb < ./bin/sql/settings.sql
-psql -U btcuser btcdb < ./bin/sql/addresses_v5.sql
 
 echo "btcdb configured"

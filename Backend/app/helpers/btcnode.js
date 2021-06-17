@@ -1,11 +1,7 @@
 const fetch = require('node-fetch');
-const settingModel = require('../Models/settings');
+const BTCNodeConfig = require('../../config/btcnode');
 
-new Promise ((resolve,reject)=>{
-     settingModel.loadSetting('BitcoinNode').catch(error=>reject(error))
-});
 global.transactions=[];
-
 
 function getLastBlock() {
 
@@ -135,9 +131,8 @@ function deriveaddresses(hex,type) {
  }
 
 
-
 function callNode(method,params=[],retries =10, timout=5000) {
-    const nodeurl = 'http://' + global.settings['BitcoinNode_USERNAME'] + ':' + global.settings['BitcoinNode_PASSWORD'] + '@' + global.settings['BitcoinNode_IPPORT'];
+    const nodeurl = 'http://' + BTCNodeConfig.BTCNODE_USERNAME + ':' + BTCNodeConfig.BTCNODE_PASSWORD  + '@' + BTCNodeConfig.BTCNODE_IPPORT;
     //let parameters = {"jsonrpc": "1.0", "id":method, "method": method, "params": null};
     let parameters = {"jsonrpc": "1.0", "id":method, "method": method, "params": params};
 
@@ -153,7 +148,7 @@ function callNode(method,params=[],retries =10, timout=5000) {
             return res.json()
         })        
         .catch(error => {
-            console.log('error calling Api 2 : ' + retries);
+            console.log('error calling Api 2 : ' + retries + ' >> ' + nodeurl);
             if (retries>0) {
                         return new Promise(() =>setTimeout(()=>{
                             console.log('new call  ' + retries);

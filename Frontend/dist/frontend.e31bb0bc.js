@@ -33306,12 +33306,10 @@ exports.BLOCKS = BLOCKS;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.URL_PROGRESS_STATUS = exports.URL_GET_LAST_BLOCK = exports.BTC_NODE = void 0;
-var BTC_NODE = 'http://localhost:7400/';
+exports.URL_PROGRESS_STATUS = exports.BTC_NODE = void 0;
+var BTC_NODE = 'http://136.243.88.216:7400/';
 exports.BTC_NODE = BTC_NODE;
-var URL_GET_LAST_BLOCK = BTC_NODE + 'api/blockchain/LastBlockHeightRead';
-exports.URL_GET_LAST_BLOCK = URL_GET_LAST_BLOCK;
-var URL_PROGRESS_STATUS = BTC_NODE + 'api/blockchain/getLoadingStatus';
+var URL_PROGRESS_STATUS = BTC_NODE + 'api/getLoadingStatus';
 exports.URL_PROGRESS_STATUS = URL_PROGRESS_STATUS;
 },{}],"src/actions/blocks.js":[function(require,module,exports) {
 "use strict";
@@ -33380,7 +33378,7 @@ exports.updateBlkInfo = updateBlkInfo;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateBlkInfo = exports.updateTrxInfo = exports.updateTime = exports.fetchProgressStatus = void 0;
+exports.updateStartupProgress = exports.fetchProgressStatus = void 0;
 
 var _types = require("./types");
 
@@ -33404,38 +33402,16 @@ var fetchProgressStatus = function fetchProgressStatus() {
 
 exports.fetchProgressStatus = fetchProgressStatus;
 
-var updateTime = function updateTime(time) {
+var updateStartupProgress = function updateStartupProgress(data) {
   return function (dispatch) {
     dispatch({
-      type: 'UPDATE_TIME',
-      time: time
+      type: 'UPDATE_STARTUP_PROGRESS',
+      progress: data
     });
   };
 };
 
-exports.updateTime = updateTime;
-
-var updateTrxInfo = function updateTrxInfo(data) {
-  return function (dispatch) {
-    dispatch({
-      type: 'UPDATE_TRX',
-      trxInfo: data
-    });
-  };
-};
-
-exports.updateTrxInfo = updateTrxInfo;
-
-var updateBlkInfo = function updateBlkInfo(data) {
-  return function (dispatch) {
-    dispatch({
-      type: 'UPDATE_BLK',
-      blockInfo: data
-    });
-  };
-};
-
-exports.updateBlkInfo = updateBlkInfo;
+exports.updateStartupProgress = updateStartupProgress;
 },{"./types":"src/actions/types.js","../../config":"config.js"}],"src/components/Blocks.js":[function(require,module,exports) {
 "use strict";
 
@@ -33502,6 +33478,9 @@ var Blocks = /*#__PURE__*/function (_Component) {
       this.props.socket.on("UPDATE_TRX", function (data) {
         _this.updateTrxState(data);
       });
+      this.props.socket.on("UPDATE_STARTUP_PROGRESS", function (data) {
+        _this.updateStartupProgress(data);
+      });
     }
   }, {
     key: "updateState",
@@ -33514,9 +33493,14 @@ var Blocks = /*#__PURE__*/function (_Component) {
       this.props.updateTrxInfo(data);
     }
   }, {
+    key: "updateStartupProgress",
+    value: function updateStartupProgress(data) {
+      this.props.updateStartupProgress(data);
+    }
+  }, {
     key: "render",
     value: function render() {
-      console.log('rebder');
+      //console.log('rebder');
       return /*#__PURE__*/_react.default.createElement("div", {
         class: "layout-wrapper layout-1 layout-without-sidenav"
       }, /*#__PURE__*/_react.default.createElement("div", {
@@ -33549,8 +33533,8 @@ var Blocks = /*#__PURE__*/function (_Component) {
         class: "col"
       }, /*#__PURE__*/_react.default.createElement("h6", {
         class: "mb-1"
-      }, "Anylyzing Bitcoin Blockchain"), /*#__PURE__*/_react.default.createElement("p", {
-        class: "text-muted mb-2"
+      }, "Analyzing Bitcoin Blockchain"), /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0"
       }, this.props.progress.step1_status), /*#__PURE__*/_react.default.createElement("div", {
         class: "progress"
       }, /*#__PURE__*/_react.default.createElement("div", {
@@ -33572,7 +33556,7 @@ var Blocks = /*#__PURE__*/function (_Component) {
         class: "mb-1"
       }, "Writing Transactions To Database"), /*#__PURE__*/_react.default.createElement("p", {
         class: "text-muted mb-0"
-      }, this.props.trxInfo.trxRead, "/", this.props.trxInfo.trxCount), /*#__PURE__*/_react.default.createElement("div", {
+      }, this.props.progress.step2_status), /*#__PURE__*/_react.default.createElement("div", {
         class: "progress"
       }, /*#__PURE__*/_react.default.createElement("div", {
         class: "progress-bar bg-warning",
@@ -33593,7 +33577,7 @@ var Blocks = /*#__PURE__*/function (_Component) {
         class: "mb-1"
       }, "Finding Spent Transactions"), /*#__PURE__*/_react.default.createElement("p", {
         class: "text-muted mb-0"
-      }, "Not Started"), /*#__PURE__*/_react.default.createElement("div", {
+      }, this.props.progress.step3_status), /*#__PURE__*/_react.default.createElement("div", {
         class: "progress"
       }, /*#__PURE__*/_react.default.createElement("div", {
         class: "progress-bar bg-warning",
@@ -33601,7 +33585,7 @@ var Blocks = /*#__PURE__*/function (_Component) {
           width: "".concat(this.props.progress.step3_progress, "%")
         }
       })))), /*#__PURE__*/_react.default.createElement("div", {
-        class: "row p-b-0"
+        class: "row pb-4"
       }, /*#__PURE__*/_react.default.createElement("div", {
         class: "col-auto text-right update-meta"
       }, /*#__PURE__*/_react.default.createElement("p", {
@@ -33613,13 +33597,34 @@ var Blocks = /*#__PURE__*/function (_Component) {
       }, /*#__PURE__*/_react.default.createElement("h6", {
         class: "mb-1"
       }, "Generating Address Tables"), /*#__PURE__*/_react.default.createElement("p", {
-        class: "text-muted mb-2"
-      }, "Not Started"), /*#__PURE__*/_react.default.createElement("div", {
+        class: "text-muted mb-0"
+      }, this.props.progress.step4_status), /*#__PURE__*/_react.default.createElement("div", {
         class: "progress"
       }, /*#__PURE__*/_react.default.createElement("div", {
         class: "progress-bar bg-warning",
         style: {
           width: "".concat(this.props.progress.step4_progress, "%")
+        }
+      })))), /*#__PURE__*/_react.default.createElement("div", {
+        class: "row p-b-0"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "col-auto text-right update-meta"
+      }, /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0 d-inline"
+      }, "STEP 5"), /*#__PURE__*/_react.default.createElement("i", {
+        className: "ion ".concat(this.props.progress.step5_icon_class, " update-icon")
+      })), /*#__PURE__*/_react.default.createElement("div", {
+        class: "col"
+      }, /*#__PURE__*/_react.default.createElement("h6", {
+        class: "mb-1"
+      }, "Finding whales"), /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0"
+      }, this.props.progress.step5_status), /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress-bar bg-warning",
+        style: {
+          width: "".concat(this.props.progress.step5_progress, "%")
         }
       })))))))))))));
     }
@@ -33646,7 +33651,8 @@ var componentConnector = (0, _reactRedux.connect)(mapStateToProps, {
   updateTime: _blocks.updateTime,
   updateTrxInfo: _blocks.updateTrxInfo,
   updateBlkInfo: _blocks.updateBlkInfo,
-  fetchProgressStatus: _progress.fetchProgressStatus
+  fetchProgressStatus: _progress.fetchProgressStatus,
+  updateStartupProgress: _progress.updateStartupProgress
 });
 
 var _default = componentConnector(Blocks);
@@ -42408,7 +42414,10 @@ var DEFAULT_BLOCK = {
     step3_icon_class: 'ion-logo-bitcoin bg-secondary',
     step4_status: 'Not Started',
     step4_progress: '0',
-    step4_icon_class: 'ion-ios-code-working bg-secondary'
+    step4_icon_class: 'ion-ios-code-working bg-secondary',
+    step5_status: 'Not Started',
+    step5_progress: '0',
+    step5_icon_class: 'ion-md-search bg-secondary'
   },
   time: '0000-00-00 00:00:00.000'
 };
@@ -42429,39 +42438,82 @@ var blockReducer = function blockReducer() {
 
   if (action.type == 'UPDATE_TIME') {
     newState.time = action.time;
-  }
+  } //console.log('action.type', action.type);
 
-  console.log('action.type', action.type);
 
   if (action.type == 'UPDATE_TRX') {
     //console.log('action.trxInfo', action.trxInfo);
     newState.trxInfo = _objectSpread({}, action.trxInfo);
-  }
+  } // if (action.type=='FETCH_PROGRESS_STATUS') {
+  //     console.log('action : FETCH_PROGRESS_STATUS', action);
+  //     const fetchResult = {...action.progress};
+  //     let progressResult = {...DEFAULT_BLOCK.progress};
+  //     let i=1;
+  //     while (i<fetchResult.step) 
+  //     {
+  //         progressResult['step'+i+'_status'] = 'Completed';
+  //         progressResult['step'+i+'_progress'] = '0';
+  //         progressResult['step'+i+'_icon_class'] = 'ion-md-checkmark bg-success';
+  //         i++;
+  //     }
+  //     if (fetchResult.step==i) 
+  //     {
+  //         progressResult['step'+i+'_status'] = fetchResult.status;
+  //         progressResult['step'+i+'_progress'] = fetchResult.progress;
+  //         progressResult['step'+i+'_icon_class'] =progressResult['step'+i+'_icon_class'] +  ' bg-warning';
+  //     } 
+  //     newState.progress = {...progressResult}
+  //     console.log('progressResult: ', progressResult);
+  // }
 
-  if (action.type == 'FETCH_PROGRESS_STATUS') {
-    console.log('action : FETCH_PROGRESS_STATUS', action);
 
-    var fetchResult = _objectSpread({}, action.progress);
+  if (action.type == 'FETCH_PROGRESS_STATUS' || action.type == 'UPDATE_STARTUP_PROGRESS') {
+    //console.log('action : UPDATE_STARTUP_PROGRESS', action);
+    var data = _objectSpread({}, action.progress);
 
     var progressResult = _objectSpread({}, DEFAULT_BLOCK.progress);
 
     var i = 1;
+    var step = data.step;
+    var progress = Math.round(10000 * data.currPos / data.finalPos) / 100;
+    var status = '';
 
-    while (i < fetchResult.step) {
+    switch (parseInt(data.step)) {
+      case 1:
+        status = 'Reading Block ' + data.currPos + ' of ' + data.finalPos;
+        break;
+
+      case 2:
+        status = 'importing to DB ' + data.currPos + ' of ' + data.finalPos;
+        break;
+
+      case 3:
+        status = 'Mark Spent ' + data.currPos + ' of ' + data.finalPos;
+        break;
+
+      case 4:
+        status = 'Creating Tables ' + data.currPos + ' of ' + data.finalPos;
+        break;
+
+      case 5:
+        status = 'Finding whales ' + data.currPos + ' of ' + data.finalPos;
+        break;
+    }
+
+    while (i < parseInt(step)) {
       progressResult['step' + i + '_status'] = 'Completed';
       progressResult['step' + i + '_progress'] = '0';
       progressResult['step' + i + '_icon_class'] = 'ion-md-checkmark bg-success';
       i++;
     }
 
-    if (fetchResult.step == i) {
-      progressResult['step' + i + '_status'] = fetchResult.status;
-      progressResult['step' + i + '_progress'] = fetchResult.progress;
+    if (parseInt(step) == i) {
+      progressResult['step' + i + '_status'] = status;
+      progressResult['step' + i + '_progress'] = progress;
       progressResult['step' + i + '_icon_class'] = progressResult['step' + i + '_icon_class'] + ' bg-warning';
     }
 
-    newState.progress = _objectSpread({}, progressResult);
-    console.log('progressResult: ', progressResult);
+    newState.progress = _objectSpread({}, progressResult); //console.log('progressResult: ', progressResult);  
   }
 
   return newState;
@@ -42545,7 +42597,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36066" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "3411" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

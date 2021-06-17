@@ -2,7 +2,7 @@ const {_PORT_ADDRESS} = require('./config/server');
 const express = require('express');
 const cors = require('cors');
 const http = require("http");
-const Blockchain = require('./app/Controllers/api/blockChain');
+const PRELOADING = require('./app/Controllers/preloading');
 const socketIo = require("socket.io");
 const ApiRouter = require('./app/router/web');
 
@@ -19,12 +19,14 @@ const io = socketIo(server, {
 
 global.settings =[];
 
-global.newvar = 'Hello';
-
 app.use(errorHandler({ dumpExceptions: true, showStack: true })); 
 app.use(cors({origin: '*'}));
 app.use(function(req, res, next){
     res.io = io;
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, PUT, POST");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+   
     next();
   });
 app.use('/api', ApiRouter);
@@ -32,31 +34,31 @@ app.use('/api', ApiRouter);
 
 const SettingModel = require('./app/Models/settings');
 const { exit } = require('process');
-SettingModel.loadSetting('BitcoinNode','CurrentStage')
+SettingModel.loadSetting('BitcoinNode')
 .then(()=>{
     let action = global.settings['BitcoinNode_CurrentStage'];
     console.log('action:',action);
-
+   
     switch (action) {
       case '1': 
-              console.log('Start App : ', 'checkForNewblocks_new');
-              Blockchain.checkForNewblocks_new(io);
+              console.log('Start App : ', 'preloading_stage1_getblockinfo');
+              PRELOADING.preloading_stage1_getblockinfo(io);
               break;
       case '2': 
-              console.log('Start App : ', 'updateSpentTransactions');
-              Blockchain.updateSpentTransactions(io);
+              console.log('Start App : ', 'preloading_stage2_ImportFilesToDB');
+              PRELOADING.preloading_stage2_ImportFilesToDB(io);
               break;
       case '3': 
-              console.log('Start App : ', 'GenerateBitcoinAddressFiles');
-              Blockchain.GenerateBitcoinAddressFiles(io);
+              console.log('Start App : ', 'preloading_stage3_ExtractAddresses');
+              PRELOADING.preloading_stage3_ExtractAddresses(io);
               break;        
       case '4': 
-              console.log('Start App : ', 'WriteAddressFilesToDB');
-              Blockchain.WriteAddressFilesToDB(io);
+              console.log('Start App : ', 'preloading_stage4_ImportAddressesToDB');
+              PRELOADING.preloading_stage4_ImportAddressesToDB(io);
               break;        
       case '5': 
-              console.log('Start App : ', 'findWhalesAddresses');
-              Blockchain.findWhalesAddresses(io);
+              console.log('Start App : ', 'preloading_stage5_FindingWhales');
+              PRELOADING.preloading_stage5_FindingWhales(io);
               break;        
     }
 }).catch(error=>reject(error));

@@ -60,7 +60,7 @@ class Blocks extends Component {
                                             <i className={`ion ${this.props.progress.step1_icon_class} update-icon`}></i>
                                         </div>
                                         <div class="col">
-                                            <h6 class="mb-1">Anylyzing Bitcoin Blockchain</h6>
+                                            <h6 class="mb-1">Analyzing Bitcoin Blockchain</h6>
                                             <p class="text-muted mb-0">{this.props.progress.step1_status}</p>
                                             <div class="progress">
                                                 <div class="progress-bar bg-warning" style={{width: `${this.props.progress.step1_progress}%`}}></div>

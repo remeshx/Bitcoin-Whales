@@ -1,61 +1,14 @@
-CREATE TABLE addresses__ (
-    id              SERIAL PRIMARY KEY,
-    btc_address     character(80) UNIQUE,
-    first_update     TIMESTAMP DEFAULT NOW() , 
-    last_update      TIMESTAMP DEFAULT NOW() ,
-    deposits        NUMERIC(32,8) DEFAULT 0,
-    withdrawals        NUMERIC(32,8) DEFAULT 0
-);
-CREATE INDEX addressid ON addresses__(id);
-
-
-CREATE TABLE address_blocks (
-    id          SERIAL PRIMARY KEY,
-    address_id  BIGINT,
-    block_height  INT
-);
-
-CREATE TABLE TxIdOut (
-    id          SERIAL PRIMARY KEY,
-    txid        character(100),
-    vout        SMALLINT,
-    outaddress  character(40)
-);
-CREATE INDEX TxIdOut_txid_idx ON TxIdOut(txid);
-
 
 CREATE TABLE block_details(
     id SERIAL PRIMARY KEY,
     block_height INT,
     block_time INT,
-    block_hash character(100),
+    block_hash TEXT,
     tx_count INT,
-    block_fee NUMERIC(322,8),
-    max_fee NUMERIC(322,8),
-    min_fee NUMERIC(322,8) 
+    block_fee DOUBLE PRECISION,
+    max_fee DOUBLE PRECISION,
+    min_fee DOUBLE PRECISION
 );
-
-
-CREATE TABLE block_rewards (
-    id SERIAL PRIMARY KEY,
-    block_height INT,
-    block_reward_total NUMERIC(322,8),
-    reward_address_id INT,
-    reg_time TIMESTAMP DEFAULT NOW(),
-    reward_time INT 
-);
-
-CREATE TABLE addresses_input  (
-    id          SERIAL PRIMARY KEY,
-    addressid     INT,
-    txid          INT,
-    vout          INT,
-    amount        NUMERIC(322,8),
-    FOREIGN KEY (txid) REFERENCES transactions(id),
-    FOREIGN KEY (addressid) REFERENCES addresses(id)
-);
-CREATE INDEX adresses_input_txid_idx ON addresses_input(txid);
-
 
 CREATE TABLE transactions (
     id          SERIAL PRIMARY KEY,
@@ -119,7 +72,7 @@ begin
         foreach ch3 in array chars loop
             tbl := CONCAT('outputs_', ch1 , ch2 , ch3);
             raise info 'Create table %', tbl;
-            EXECUTE format('create table %s ( like outputs including all)',tbl);
+            EXECUTE format('create table %s ( like outputs including all);',tbl);
         end loop "FOREACH 3";
     end loop "FOREACH 2";
   end loop "FOREACH 1";
@@ -154,7 +107,7 @@ begin
         foreach ch3 in array chars loop
             tbl := CONCAT('inputs_', ch1 , ch2 , ch3);
             raise info 'Create table %', tbl;
-            EXECUTE format('create table %s ( like inputs including all)',tbl);
+            EXECUTE format('create table %s ( like inputs including all);',tbl);
         end loop "FOREACH 3";
     end loop "FOREACH 2";
   end loop "FOREACH 1";
@@ -171,7 +124,7 @@ CREATE TABLE addresses (
     btc_address     text ,
     created_time      INT DEFAULT 0 ,
     amount        DOUBLE PRECISION,
-    spend       character(1) DEFAULT '0',
+    spend       SMALLINT DEFAULT 0,
     spend_time      INT DEFAULT 0,
     txid        INT,
     vout        SMALLINT
@@ -202,7 +155,7 @@ begin
     foreach ch2 in array chars loop
             tbl := CONCAT('addresses_', ch1 , ch2);
             raise info 'Create table %', tbl;
-            EXECUTE format('create table %s ( like addresses including all)',tbl);
+            EXECUTE format('create table %s ( like addresses including all);',tbl);
     end loop "FOREACH 2";
   end loop "FOREACH 1";
 end;
@@ -215,5 +168,15 @@ CREATE TABLE richestAddresses (
     btc_address     text,
     created_at      INT DEFAULT 0 ,
     updated_at      INT DEFAULT 0 ,
-    balance        DOUBLE PRECISION,  
+    balance        DOUBLE PRECISION 
+);
+
+
+CREATE TABLE settings (
+    id SERIAL PRIMARY KEY,
+    varCategory varChar(20),
+    varName varChar(50),
+    varValue varChar(50),
+    varDefault boolean NOT NULL Default 'false',
+    lastUpdate TIMESTAMP NOT NULL
 );
