@@ -49,7 +49,7 @@ CREATE TABLE outputs  (
     outaddress    text,
     vout          INT,
     amount        DOUBLE PRECISION,
-    spend       character(1) DEFAULT '0',
+    spend       SMALLINT DEFAULT 0,
     created_time      INT DEFAULT 0 ,
     spend_time      INT DEFAULT 0,
     primary key (id)
