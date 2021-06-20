@@ -113,7 +113,7 @@ class Blocks extends Component {
                                         </div>
                                     </div>
 
-                                    <div class="row p-b-0">
+                                    <div class="row pb-4">
                                         <div class="col-auto text-right update-meta">
                                             <p class="text-muted mb-0 d-inline">STEP 5</p>
                                             <i className={`ion ${this.props.progress.step5_icon_class} update-icon`}></i>
@@ -123,6 +123,21 @@ class Blocks extends Component {
                                             <p class="text-muted mb-0">{this.props.progress.step5_status}</p>
                                             <div class="progress">
                                                 <div class="progress-bar bg-warning" style={{width: `${this.props.progress.step5_progress}%`}}></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row p-b-0">
+                                        <div class="col-auto text-right update-meta">
+                                            <p class="text-muted mb-0 d-inline">STEP 6</p>
+                                            <i className={`ion ${this.props.progress.step6_icon_class} update-icon`}></i>
+                                        </div>
+                                        <div class="col">
+                                            <h6 class="mb-1">Finalizing - analizing most recent blocks</h6>
+                                            <p class="text-muted mb-0">{this.props.progress.step6_status}</p>
+                                            <div class="progress">
+                                                <div class="progress-bar bg-warning" style={{width: `${this.props.progress.step6_progress}%`}}></div>
                                             </div>
                                         </div>
                                     </div>

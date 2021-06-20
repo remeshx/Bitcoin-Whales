@@ -89,34 +89,38 @@ class Blockchain {
        return true;
     }
 
+    static async getVInAddress(txid,vout){ 
+        console.log('gettransaction txid :',txid);
+        let tx = await gettransaction(txid);
+        if (tx) {
+            const address = await this.getAddressFromVOUT(tx.result.vout[vout]);
+            if (address=='errorAddress') {
+                console.log('error TRX',txid);
+                return '';
+            }
+            return address;
+        }
+        return '';
+    }
+
     
 
-    static async getAddressFromVOUT(vout,blockheight=0)
+    static async getAddressFromVOUT(vout)
     {
-        //console.log(`getAddressFromVOUT`);
         let address = ''; 
         let hex='';
         let type='';
         if (vout.scriptPubKey.addresses) 
         {           
             if (vout.scriptPubKey.addresses.length>1) {
-                //console.log('tx ', tx);
                 return 'errorAddress';
-                if (blockheight==164467) return 'errorAddress';
-                console.log('addresse ', vout.scriptPubKey.addresses);
-                throw new Error('ERROR : TOO MANY ADDRESSESS ' + tx.txid);
             } 
             address = vout.scriptPubKey.addresses[0];
-            //console.log(`address exists =>`, address);
         } else {
-            //console.log('no address ');
             hex=vout.scriptPubKey.hex;
             type=vout.scriptPubKey.type;
-            address = await deriveaddresses(hex,type);   
-            
-            //console.log(`address derived =>`, address);  
-        }
-        
+            address = await deriveaddresses(hex,type);  
+        }        
         return address;
     }
 

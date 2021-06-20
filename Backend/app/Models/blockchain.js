@@ -159,7 +159,8 @@ class BlockChainModel {
     {
         return new Promise((resolve,reject)=> {
             db.query(
-                `INSERT INTO richestAddresses ( btc_address ,created_at, updated_at, balance) 
+                `Truncate Table richestAddresses; 
+                 INSERT INTO richestAddresses ( btc_address ,created_at, updated_at, balance) 
                     VALUES ${values}`,
             [],
             (error,response)=>{
@@ -292,6 +293,242 @@ class BlockChainModel {
                 })
             });
     }      
+
+
+    static insertTransaction(tablePartition,id,height,txid,counter) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `INSERT INTO ${'transactions_' + tablePartition} (id,block_height,txid,txseq) 
+                    VALUES ($1,$2,$3,$4)`,
+            [id,height,txid,counter],
+            (error,response)=>{
+                if (error) {
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
+
+    static insertTransactionInput(addTablePartition,blockheight,btc_address,created_time,amount,txid,vout) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `INSERT INTO ${'addresses_' + addTablePartition} (blockheight,btc_address,created_time,amount,txid,vout) 
+                    VALUES ($1,$2,$3,$4,$5,$6)`,
+            [blockheight,btc_address,created_time,amount,txid,vout],
+            (error,response)=>{
+                if (error) {
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
+    static transactionMarkSpent(addTablePartition,txid,vout,blkTime) {
+        return new Promise((resolve,reject)=> {
+            db.query(
+                `update ${'addresses_' + addTablePartition} set spend=$1,spend_time=$2 where txid=$3 and vout=$4;`,
+            [1,blkTime,txid,vout],
+            (error,response)=>{
+                if (error) {
+                    reject(error);
+                }
+                resolve(true);
+            });
+        })
+    }
+
+    static getTransactionId(tablePartition,txid) {
+        return new Promise((resolve,reject) => {
+            db.query(`SELECT id FROM ${'transactions_' + tablePartition} where txid=$1`,
+                [txid],
+                (error,response)=>{
+                    if (error) {
+                        console.log('error 11',error);
+                        resolve('');
+                    }
+                    if (response.rows.length === 0) resolve('');
+                    else resolve(response.rows[0].id);
+                })
+        });
+    }
+
+    static query(sql){
+        return new Promise((resolve,reject) => {
+            db.query(sql,
+                [],
+                (error,response)=>{
+                    if (error) {
+                        console.log('error 12',error);
+                        reject(error);
+                    }
+                    resolve(true);
+                })
+        });
+    }
+
+
+    static  BeginTransaction() {
+        return new Promise((resolve,reject) => {
+            this.query('BEGIN').then(
+                ()=>{
+                    resolve(true);
+                }
+            );
+        });
+
+        
+    }
+
+    static  EndTransaction() {
+        return new Promise((resolve,reject) => {
+            this.query('COMMIT').then(
+                ()=>{
+                    resolve(true);
+                }
+            );
+        });
+    }
+
+    static async RollBack() {
+        return new Promise((resolve,reject) => {
+            this.query('ROLLBACK').then(
+                ()=>{
+                    resolve(true);
+                }
+            );
+        });
+    }
+
+
+
+    static getRichestMinimumBlance() {
+        return new Promise((resolve,reject) => {
+            db.query(`SELECT balance FROM richestAddresses order by balance limit 1`,
+                [txid],
+                (error,response)=>{
+                    if (error) {
+                        console.log('error 11',error);
+                        resolve('');
+                    }
+                    if (response.rows.length === 0) resolve('');
+                    else resolve(response.rows[0].balance);
+                })
+        });
+    }
+
+
+    static addressIsRich(address) {
+        return new Promise((resolve,reject) => {
+            db.query(`SELECT id FROM richestAddresses where btc_address=$1`,
+                [address],
+                (error,response)=>{
+                    if (error) {
+                        console.log('error 11',error);
+                        resolve('');
+                    }
+                    if (response.rows.length === 0) resolve(false);
+                    else resolve(true);
+                })
+        });
+    }
+
+
+    static getAddressDetails(address) {
+        return new Promise((resolve,reject) => {
+
+            vAddidx_ = address.trim().slice(-2); 
+            addTablePartition = vAddidx_.charCodeAt(0) +''+ vAddidx_.charCodeAt(1); 
+            db.query(
+                `SELECT btc_address,SUM((spend*-1) * amount - (spend-1) * amount) as balance, MIN(created_time) as mintime, MAX(created_time) as maxtime
+                FROM  ${'addresses_' + addTablePartition} where btc_address=$1 group by btc_address`,
+                [address],
+                (error,response)=>{
+                    if (error) {
+                        console.log('error 11',error);
+                        resolve('');
+                    }
+                    if (response.rows.length === 0) resolve(false);
+                    else resolve(response.rows);
+                })
+        });
+    }
+
+
+    
+    static removeRichAddress(address) {
+        return new Promise((resolve,reject) => {
+
+            vAddidx_ = address.trim().slice(-2); 
+            addTablePartition = vAddidx_.charCodeAt(0) +''+ vAddidx_.charCodeAt(1); 
+            db.query(
+                `DELETE FROM richestAddresses WHERE btc_address=$1`,
+                [address],
+                (error,response)=>{
+                    if (error) {
+                        console.log('error 11',error);
+                        resolve('');
+                    }
+                    if (response.rows.length === 0) resolve(false);
+                    else resolve(true);
+                })
+        });
+    }
+
+
+    static UpdateRichAddressDetails(addressDetails) {
+        return new Promise((resolve,reject) => {
+            db.query(
+                `UPDATE richestAddresses SET balance=$1, created_at=$2, updated_at=$3 WHERE btc_address=$4`,
+                [addressDetails.balance, addressDetails.mintime, addressDetails.maxtime, addressDetails.btc_address ],
+                (error,response)=>{
+                    if (error) {
+                        console.log('error 11',error);
+                        resolve('');
+                    }
+                    if (response.rows.length === 0) resolve(false);
+                    else resolve(true);
+                })
+        });
+    }
+
+    static getRichestTable() {
+        return new Promise((resolve,reject) => {
+            db.query(
+                `SELECT btc_address,balance,created_at,updated_at  FROM richestAddresses order by balance DESC limit 1000`,
+                [],
+                (error,response)=>{
+                    if (error) {
+                        console.log('error 11',error);
+                        resolve('');
+                    }
+                    if (response.rows.length === 0) resolve(false);
+                    else resolve(response.rows);
+                })
+        });
+    }
+
+
+    static getRichestAddressesBasedOnMinBalance(tblName,minRichBalance) {
+        return new Promise((resolve,reject) => {
+            db.query(`SELECT btc_address,SUM((spend*-1) * amount - (spend-1) * amount) as balance, MIN(created_time) as mintime, MAX(created_time) as maxtime
+             FROM ${tblName} group by btc_address HAVING balance>$1 order by balance DESC limit ${limits}`,
+                [minRichBalance],
+                (error,response)=>{
+                    if (error) {
+                        console.log('error 11',error);
+                        resolve('');
+                    }
+                    if (response.rows.length === 0) resolve([]);
+                    else resolve(response.rows);
+                })
+        });
+    }
+
+    
+
 }
 
 module.exports = BlockChainModel;

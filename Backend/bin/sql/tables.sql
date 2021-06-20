@@ -33,7 +33,7 @@ begin
        <<"FOREACH 3">>
         foreach ch3 in array chars loop
             tbl := CONCAT('transactions_', ch1 , ch2 , ch3);
-            raise info 'Create table %', tbl;
+            raise info 'Create partition table %', tbl;
             EXECUTE format('create table %s ( like transactions including all)',tbl);
         end loop "FOREACH 3";
     end loop "FOREACH 2";
@@ -71,7 +71,7 @@ begin
        <<"FOREACH 3">>
         foreach ch3 in array chars loop
             tbl := CONCAT('outputs_', ch1 , ch2 , ch3);
-            raise info 'Create table %', tbl;
+            raise info 'Create partition table %', tbl;
             EXECUTE format('create table %s ( like outputs including all);',tbl);
         end loop "FOREACH 3";
     end loop "FOREACH 2";
@@ -106,7 +106,7 @@ begin
        <<"FOREACH 3">>
         foreach ch3 in array chars loop
             tbl := CONCAT('inputs_', ch1 , ch2 , ch3);
-            raise info 'Create table %', tbl;
+            raise info 'Create partition table %', tbl;
             EXECUTE format('create table %s ( like inputs including all);',tbl);
         end loop "FOREACH 3";
     end loop "FOREACH 2";
@@ -154,8 +154,8 @@ begin
     <<"FOREACH 2">>
     foreach ch2 in array chars loop
             tbl := CONCAT('addresses_', ch1 , ch2);
-            raise info 'Create table %', tbl;
-            EXECUTE format('create table %s ( like addresses including all);',tbl);
+            raise info 'Create partition table %', tbl;
+            EXECUTE format('Create table %s ( like addresses including all);',tbl);
     end loop "FOREACH 2";
   end loop "FOREACH 1";
 end;

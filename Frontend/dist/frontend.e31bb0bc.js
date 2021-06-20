@@ -33606,7 +33606,7 @@ var Blocks = /*#__PURE__*/function (_Component) {
           width: "".concat(this.props.progress.step4_progress, "%")
         }
       })))), /*#__PURE__*/_react.default.createElement("div", {
-        class: "row p-b-0"
+        class: "row pb-4"
       }, /*#__PURE__*/_react.default.createElement("div", {
         class: "col-auto text-right update-meta"
       }, /*#__PURE__*/_react.default.createElement("p", {
@@ -33625,6 +33625,27 @@ var Blocks = /*#__PURE__*/function (_Component) {
         class: "progress-bar bg-warning",
         style: {
           width: "".concat(this.props.progress.step5_progress, "%")
+        }
+      })))), /*#__PURE__*/_react.default.createElement("div", {
+        class: "row p-b-0"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "col-auto text-right update-meta"
+      }, /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0 d-inline"
+      }, "STEP 6"), /*#__PURE__*/_react.default.createElement("i", {
+        className: "ion ".concat(this.props.progress.step6_icon_class, " update-icon")
+      })), /*#__PURE__*/_react.default.createElement("div", {
+        class: "col"
+      }, /*#__PURE__*/_react.default.createElement("h6", {
+        class: "mb-1"
+      }, "Finalizing - analizing most recent blocks"), /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0"
+      }, this.props.progress.step6_status), /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress-bar bg-warning",
+        style: {
+          width: "".concat(this.props.progress.step6_progress, "%")
         }
       })))))))))))));
     }
@@ -42417,7 +42438,10 @@ var DEFAULT_BLOCK = {
     step4_icon_class: 'ion-ios-code-working bg-secondary',
     step5_status: 'Not Started',
     step5_progress: '0',
-    step5_icon_class: 'ion-md-search bg-secondary'
+    step5_icon_class: 'ion-md-search bg-secondary',
+    step6_status: 'Not Started',
+    step6_progress: '0',
+    step6_icon_class: 'ion-ios-create bg-secondary'
   },
   time: '0000-00-00 00:00:00.000'
 };
@@ -42497,6 +42521,10 @@ var blockReducer = function blockReducer() {
 
       case 5:
         status = 'Finding whales ' + data.currPos + ' of ' + data.finalPos;
+        break;
+
+      case 6:
+        status = 'Reading Block ' + data.currPos + ' of ' + data.finalPos;
         break;
     }
 
@@ -42597,7 +42625,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "3411" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "29574" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -25,7 +25,10 @@ const DEFAULT_BLOCK = {
         step4_icon_class : 'ion-ios-code-working bg-secondary',
         step5_status : 'Not Started',
         step5_progress : '0',
-        step5_icon_class : 'ion-md-search bg-secondary'
+        step5_icon_class : 'ion-md-search bg-secondary',
+        step6_status : 'Not Started',
+        step6_progress : '0',
+        step6_icon_class : 'ion-ios-create bg-secondary'
     },
     time: '0000-00-00 00:00:00.000'
 };
@@ -100,7 +103,10 @@ export const blockReducer = (state = DEFAULT_BLOCK, action) => {
                 break;         
             case 5:                
                 status = 'Finding whales ' + data.currPos + ' of ' + data.finalPos; 
-                break;             
+                break;       
+            case 6:                
+                status = 'Reading Block ' + data.currPos + ' of ' + data.finalPos; 
+                break;               
         }
 
         while (i<parseInt(step)) 

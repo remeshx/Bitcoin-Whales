@@ -28,21 +28,23 @@ const SettingModel = require('../Models/settings');
 const fs = require('fs');
 const path = require('path');  
 const Blockchain = require('./blockChain');
+const Whales = require('./Whales');
 
 class PRELOADING {
   
     static async preloading_stage1_getblockinfo(socket) {
         //phase 1 : read transactions and save to file
 
+        //get Last Mined Block from the BTC Blockchain
         let blockCount  =  await getLastBlock();
-        
+        global.settings['BitcoinNode_blockCount'] = blockCount;
+
         console.log('blockCount',blockCount);
 
+        //Getting the last block we have already Read.
         let ourheight   = global.settings['BitcoinNode_LastBlockHeightRead'];
         let trxTotalCounter = global.settings['BitcoinNode_totalTrxRead'];      
 
-        global.settings['BitcoinNode_currBlockHeightRead'] = ourheight;
-        global.settings['BitcoinNode_blockCount'] = blockCount;
 
         let readHeight  =  ourheight;
         let txcounter = 0;
@@ -196,7 +198,10 @@ class PRELOADING {
         await SettingModel.updateTrxRead(-1);        
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','2');
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','preloading_stage2_ImportFilesToDB');
+        await SettingModel.updateSettingVariable('BitcoinNode','totalTrxRead',trxTotalCounter);
+        global.settings['BitcoinNode_totalTrxRead'] = trxTotalCounter;
         
+
         vinQueryCount =[];
         voutQueryCount =[];
         voutQuery=[];
@@ -466,7 +471,14 @@ class PRELOADING {
         await BlockChainModel.saveRichestAddresses(query);
 
         console.log('DONE');
-        console.log('######################## DONE Step 5');        
+        console.log('######################## DONE Step 5');    
+
+        global.settings['BitcoinNode_CurrentStage']=6;
+        global.settings['BitcoinNode_CurrentStageTitle']='startup';
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','6');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','startup');
+
+        Whales.startup(socket);    
     }
 
     

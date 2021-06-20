@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const http = require("http");
 const PRELOADING = require('./app/Controllers/preloading');
+const Whales = require('./app/Controllers/whales');
 const socketIo = require("socket.io");
 const ApiRouter = require('./app/router/web');
 
@@ -59,6 +60,10 @@ SettingModel.loadSetting('BitcoinNode')
       case '5': 
               console.log('Start App : ', 'preloading_stage5_FindingWhales');
               PRELOADING.preloading_stage5_FindingWhales(io);
+              break;        
+      case '6': 
+              console.log('Start App : ', 'startup');
+              Whales.startup(io);
               break;        
     }
 }).catch(error=>reject(error));
