@@ -28,7 +28,7 @@ const SettingModel = require('../Models/settings');
 const fs = require('fs');
 const path = require('path');  
 const Blockchain = require('./blockChain');
-const Whales = require('./Whales');
+const Whales = require('./whales');
 
 class PRELOADING {
   
