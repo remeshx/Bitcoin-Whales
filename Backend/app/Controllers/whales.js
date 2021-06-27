@@ -50,7 +50,7 @@ class Whales {
                 for await (const vin of tx.vin) {                        
                     vtxidx =  vin.txid.substring(0,3);
                     txid = await BlockChainModel.getTransactionId(vtxidx,vin.txid);
-                    address = await BlockChainModel.getVInAddress(vin.txid,vin.vout);
+                    address = await Blockchain.getVInAddress(vin.txid,vin.vout);
                     vAddidx_ = address.trim().slice(-2); 
                     vAddidx = vAddidx_.charCodeAt(0) +''+ vAddidx_.charCodeAt(1); 
 
