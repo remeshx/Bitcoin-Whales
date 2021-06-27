@@ -33306,11 +33306,17 @@ exports.BLOCKS = BLOCKS;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.URL_PROGRESS_STATUS = exports.BTC_NODE = void 0;
-var BTC_NODE = 'http://136.243.88.216:7400/';
+exports.URL_RICHLIST_STATUS = exports.URL_PROGRESS_STATUS = exports.ENDPOINT = exports.BTC_NODE = void 0;
+//export const BTC_NODE = 'http://136.243.88.216:7400/';
+var BTC_NODE = 'http://localhost:7400/'; //export const ENDPOINT = 'http://136.243.88.216:4331';
+
 exports.BTC_NODE = BTC_NODE;
+var ENDPOINT = 'http://localhost:51332/';
+exports.ENDPOINT = ENDPOINT;
 var URL_PROGRESS_STATUS = BTC_NODE + 'api/getLoadingStatus';
 exports.URL_PROGRESS_STATUS = URL_PROGRESS_STATUS;
+var URL_RICHLIST_STATUS = BTC_NODE + 'api/getRichListStatus';
+exports.URL_RICHLIST_STATUS = URL_RICHLIST_STATUS;
 },{}],"src/actions/blocks.js":[function(require,module,exports) {
 "use strict";
 
@@ -33412,7 +33418,265 @@ var updateStartupProgress = function updateStartupProgress(data) {
 };
 
 exports.updateStartupProgress = updateStartupProgress;
-},{"./types":"src/actions/types.js","../../config":"config.js"}],"src/components/Blocks.js":[function(require,module,exports) {
+},{"./types":"src/actions/types.js","../../config":"config.js"}],"src/actions/richlist.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.updateSocketStatus = exports.updateRichList = exports.fetchRichListStatus = void 0;
+
+var _types = require("./types");
+
+var _config = require("../../config");
+
+var fetchRichListStatus = function fetchRichListStatus() {
+  return function (dispatch) {
+    console.log('fetchRichListStatus');
+    fetch(_config.URL_RICHLIST_STATUS).then(function (response) {
+      return response.json();
+    }).then(function (json) {
+      return dispatch({
+        type: 'FETCH_RICHLIST_STATUS',
+        richlist: json
+      });
+    }).catch(function (error) {
+      return console.log('error', error);
+    });
+  };
+};
+
+exports.fetchRichListStatus = fetchRichListStatus;
+
+var updateRichList = function updateRichList(data) {
+  return function (dispatch) {
+    dispatch({
+      type: 'FETCH_RICHLIST_STATUS',
+      richlist: data
+    });
+  };
+};
+
+exports.updateRichList = updateRichList;
+
+var updateSocketStatus = function updateSocketStatus(data) {
+  return function (dispatch) {
+    dispatch({
+      type: 'UPDAT_SOCKET_STATUS',
+      richlist: data
+    });
+  };
+};
+
+exports.updateSocketStatus = updateSocketStatus;
+},{"./types":"src/actions/types.js","../../config":"config.js"}],"src/actions/socket.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.updateSocketStatus = void 0;
+
+var updateSocketStatus = function updateSocketStatus(data) {
+  return function (dispatch) {
+    dispatch({
+      type: 'UPDAT_SOCKET_STATUS',
+      socket: data
+    });
+  };
+};
+
+exports.updateSocketStatus = updateSocketStatus;
+},{}],"src/components/Whales.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireWildcard(require("react"));
+
+var _reactRedux = require("react-redux");
+
+var _richlist = require("../actions/richlist");
+
+var _socket = require("../actions/socket");
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var Whales = /*#__PURE__*/function (_Component) {
+  _inherits(Whales, _Component);
+
+  var _super = _createSuper(Whales);
+
+  function Whales() {
+    _classCallCheck(this, Whales);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(Whales, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this = this;
+
+      console.log('componentDidMount');
+      this.props.fetchRichListStatus();
+      console.log(this.props.socket);
+      this.props.socket.on("UPDATE_RICH_LIST", function (data) {
+        _this.props.updateRichList(data);
+      });
+      this.props.socket.on("disconnect", function (data) {
+        _this.props.updateSocketStatus({
+          'socketStatus': 'connecting...'
+        });
+
+        console.log('disconnect');
+      });
+      this.props.socket.on("connect", function (data) {
+        _this.props.updateSocketStatus({
+          'socketStatus': 'connected'
+        });
+
+        console.log('connected');
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var counter = 0;
+      var richTBL = this.props.richlist.map(function (rich) {
+        counter++;
+        return /*#__PURE__*/_react.default.createElement(TblRow, {
+          key: rich.address,
+          rich: rich,
+          counter: counter
+        });
+      });
+      return /*#__PURE__*/_react.default.createElement("div", {
+        class: "layout-wrapper layout-1 layout-without-sidenav"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "layout-inner"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "layout-container"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "layout-content"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "container flex-grow-1 container-p-y"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "card mb-4"
+      }, /*#__PURE__*/_react.default.createElement("h4", {
+        class: "card-header bg-warning"
+      }, /*#__PURE__*/_react.default.createElement("i", {
+        class: "ion ion-logo-bitcoin bg-warning"
+      }), "Bitcoin Whales"), /*#__PURE__*/_react.default.createElement("div", {
+        class: "card-body"
+      }, /*#__PURE__*/_react.default.createElement("p", {
+        class: "card-text"
+      }, "This table shows the most richest addresses of Bitcoin (BTC/XBT) blockchain and will update automatically when ever a new block mines."), /*#__PURE__*/_react.default.createElement("p", {
+        class: "card-text"
+      }, /*#__PURE__*/_react.default.createElement("small", {
+        class: "text-muted"
+      }, "Last block mined :  ", this.props.blockInfo.lastBlockHeight, " ", /*#__PURE__*/_react.default.createElement("br", null), "Last block time : ", new Date(this.props.blockInfo.lastBlockTime).toLocaleString('en-GB', {
+        timeZone: 'UTC'
+      }), /*#__PURE__*/_react.default.createElement("br", null), "Socket status : ", /*#__PURE__*/_react.default.createElement("span", {
+        className: "badge ".concat(this.props.socketStatusCol)
+      }, " ", this.props.socketStatus, " "))))), /*#__PURE__*/_react.default.createElement("small", null, /*#__PURE__*/_react.default.createElement("div", {
+        class: "card mb-4"
+      }, /*#__PURE__*/_react.default.createElement("h6", {
+        class: "card-header"
+      }, "Top 100 Richest Bitcoin Addresses"), /*#__PURE__*/_react.default.createElement("div", {
+        class: "card-datatable table-responsive p-4"
+      }, /*#__PURE__*/_react.default.createElement("table", {
+        class: "datatables-demo table table-striped table-bordered",
+        id: "richest"
+      }, /*#__PURE__*/_react.default.createElement("thead", null, /*#__PURE__*/_react.default.createElement("tr", null, /*#__PURE__*/_react.default.createElement("th", null, "No."), /*#__PURE__*/_react.default.createElement("th", null, "BTC Address"), /*#__PURE__*/_react.default.createElement("th", null, "Blance"), /*#__PURE__*/_react.default.createElement("th", null, "First Input"), /*#__PURE__*/_react.default.createElement("th", null, "Last Update"))), /*#__PURE__*/_react.default.createElement("tbody", null, richTBL))))), /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted p-2"
+      }, /*#__PURE__*/_react.default.createElement("small", null, "This application has published online and is completely open source.", /*#__PURE__*/_react.default.createElement("br", null), "It uses following technologies : NodeJS, Express.js, ReactJs, Redux, Socket.io, PostgreSQL ", /*#__PURE__*/_react.default.createElement("br", null), "You can find the source on ", /*#__PURE__*/_react.default.createElement("a", {
+        href: "https://github.com/remeshx/Bitcoin-Whales"
+      }, "https://github.com/remeshx/Bitcoin-Whales"), /*#__PURE__*/_react.default.createElement("br", null), "If you like it you can donate me with your beutiful Bitcoins at : xxx", /*#__PURE__*/_react.default.createElement("br", null), "If you own one of the above addresses, lucky you :)", /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("br", null), "Author : Reza Meshkat @ 2020")))))));
+    }
+  }]);
+
+  return Whales;
+}(_react.Component); //https://jsfiddle.net/wirtaw/ckcf82ct/
+
+
+var TblRow = /*#__PURE__*/function (_React$Component) {
+  _inherits(TblRow, _React$Component);
+
+  var _super2 = _createSuper(TblRow);
+
+  function TblRow() {
+    _classCallCheck(this, TblRow);
+
+    return _super2.apply(this, arguments);
+  }
+
+  _createClass(TblRow, [{
+    key: "render",
+    value: function render() {
+      return /*#__PURE__*/_react.default.createElement("tr", {
+        className: "eachRow"
+      }, /*#__PURE__*/_react.default.createElement("td", null, this.props.counter), /*#__PURE__*/_react.default.createElement("td", null, this.props.rich.address), /*#__PURE__*/_react.default.createElement("td", null, this.props.rich.balance), /*#__PURE__*/_react.default.createElement("td", null, new Date(this.props.rich.created_at).toLocaleString('en-GB', {
+        timeZone: 'UTC'
+      })), /*#__PURE__*/_react.default.createElement("td", null, new Date(this.props.rich.updated_at).toLocaleString('en-GB', {
+        timeZone: 'UTC'
+      })));
+    }
+  }]);
+
+  return TblRow;
+}(_react.default.Component);
+
+var mapStateToProps = function mapStateToProps(state) {
+  var blockInfo = state.richlistReducer.blockInfo;
+  var richlist = state.richlistReducer.richlist;
+  var socketStatus = state.socketReducer.socketStatus;
+  var socketStatusCol = state.socketReducer.socketStatusCol;
+  return {
+    blockInfo: blockInfo,
+    richlist: richlist,
+    socketStatus: socketStatus,
+    socketStatusCol: socketStatusCol
+  };
+};
+
+var componentConnector = (0, _reactRedux.connect)(mapStateToProps, {
+  fetchRichListStatus: _richlist.fetchRichListStatus,
+  updateRichList: _richlist.updateRichList,
+  updateSocketStatus: _socket.updateSocketStatus
+});
+
+var _default = componentConnector(Whales);
+
+exports.default = _default;
+},{"react":"node_modules/react/index.js","react-redux":"node_modules/react-redux/es/index.js","../actions/richlist":"src/actions/richlist.js","../actions/socket":"src/actions/socket.js"}],"src/components/Blocks.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -33427,6 +33691,10 @@ var _reactRedux = require("react-redux");
 var _blocks = require("../actions/blocks");
 
 var _progress = require("../actions/progress");
+
+var _Whales = _interopRequireDefault(require("./Whales"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
@@ -33500,7 +33768,11 @@ var Blocks = /*#__PURE__*/function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      //console.log('rebder');
+      console.log('this.props.progress', this.props.progress);
+      if (this.props.progress.currStep > 6) return /*#__PURE__*/_react.default.createElement(_Whales.default, {
+        socket: this.props.socket
+      }); //console.log('rebder');
+
       return /*#__PURE__*/_react.default.createElement("div", {
         class: "layout-wrapper layout-1 layout-without-sidenav"
       }, /*#__PURE__*/_react.default.createElement("div", {
@@ -33638,7 +33910,7 @@ var Blocks = /*#__PURE__*/function (_Component) {
         class: "col"
       }, /*#__PURE__*/_react.default.createElement("h6", {
         class: "mb-1"
-      }, "Finalizing - analizing most recent blocks"), /*#__PURE__*/_react.default.createElement("p", {
+      }, "Finalizing - Getting most recent blocks"), /*#__PURE__*/_react.default.createElement("p", {
         class: "text-muted mb-0"
       }, this.props.progress.step6_status), /*#__PURE__*/_react.default.createElement("div", {
         class: "progress"
@@ -33655,14 +33927,8 @@ var Blocks = /*#__PURE__*/function (_Component) {
 }(_react.Component);
 
 var mapStateToProps = function mapStateToProps(state) {
-  var blockInfo = state.blockInfo;
-  var trxInfo = state.trxInfo;
-  var progress = state.progress;
-  var time = state.time;
+  var progress = state.blocksReducer.progress;
   return {
-    blockInfo: blockInfo,
-    time: time,
-    trxInfo: trxInfo,
     progress: progress
   };
 };
@@ -33679,7 +33945,7 @@ var componentConnector = (0, _reactRedux.connect)(mapStateToProps, {
 var _default = componentConnector(Blocks);
 
 exports.default = _default;
-},{"react":"node_modules/react/index.js","react-redux":"node_modules/react-redux/es/index.js","../actions/blocks":"src/actions/blocks.js","../actions/progress":"src/actions/progress.js"}],"node_modules/parseuri/index.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","react-redux":"node_modules/react-redux/es/index.js","../actions/blocks":"src/actions/blocks.js","../actions/progress":"src/actions/progress.js","./Whales":"src/components/Whales.js"}],"node_modules/parseuri/index.js":[function(require,module,exports) {
 /**
  * Parses an URI
  *
@@ -42424,6 +42690,7 @@ var DEFAULT_BLOCK = {
     trxRead: 0
   },
   progress: {
+    currStep: '0',
     step1_status: 'Not Started',
     step1_progress: '0',
     step1_icon_class: 'ion-md-analytics bg-secondary',
@@ -42536,6 +42803,7 @@ var blockReducer = function blockReducer() {
     }
 
     if (parseInt(step) == i) {
+      progressResult['currStep'] = i;
       progressResult['step' + i + '_status'] = status;
       progressResult['step' + i + '_progress'] = progress;
       progressResult['step' + i + '_icon_class'] = progressResult['step' + i + '_icon_class'] + ' bg-warning';
@@ -42550,6 +42818,91 @@ var blockReducer = function blockReducer() {
 exports.blockReducer = blockReducer;
 var _default = blockReducer;
 exports.default = _default;
+},{}],"src/reducers/whales.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = exports.richlistReducer = void 0;
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//import {BLOCKS} from '../actions/types';
+//import fetchStates from './fetchStates';
+var DEFAULT_LIST = {
+  blockInfo: {
+    lastBlockHeight: 0,
+    lastBlockTime: 0
+  },
+  richlist: [{
+    'address': '...',
+    'balance': '...',
+    'created_at': '...',
+    'updated_at': '...'
+  }],
+  socketStatus: 'Connecting...'
+};
+
+var richlistReducer = function richlistReducer() {
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_LIST;
+  var action = arguments.length > 1 ? arguments[1] : undefined;
+
+  var newState = _objectSpread({}, state);
+
+  console.log(action.richlist);
+
+  if (action.type == 'FETCH_RICHLIST_STATUS') {
+    newState.blockInfo = _objectSpread({}, action.richlist.blockInfo);
+    newState.richlist = action.richlist.richlisttbl;
+  }
+
+  return newState;
+};
+
+exports.richlistReducer = richlistReducer;
+var _default = richlistReducer;
+exports.default = _default;
+},{}],"src/reducers/socket.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = exports.socketReducer = void 0;
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var DEFAULT_STATUS = {
+  socketStatus: 'Connecting...',
+  socketStatusCol: 'badge-warning'
+};
+
+var socketReducer = function socketReducer() {
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_STATUS;
+  var action = arguments.length > 1 ? arguments[1] : undefined;
+
+  var newState = _objectSpread({}, state);
+
+  if (action.type == 'UPDAT_SOCKET_STATUS') {
+    newState.socketStatus = action.socket.socketStatus;
+    if (action.socket.socketStatus == 'connected') newState.socketStatusCol = 'badge-success';else newState.socketStatusCol = 'badge-warning';
+  }
+
+  return newState;
+};
+
+exports.socketReducer = socketReducer;
+var _default = socketReducer;
+exports.default = _default;
 },{}],"src/reducers/index.js":[function(require,module,exports) {
 "use strict";
 
@@ -42560,14 +42913,23 @@ exports.default = void 0;
 
 var _blocks = _interopRequireDefault(require("./blocks"));
 
+var _whales = _interopRequireDefault(require("./whales"));
+
+var _socket = _interopRequireDefault(require("./socket"));
+
 var _redux = require("redux");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//export default combineReducers({ blocksReducer });
-var _default = _blocks.default;
+var _default = (0, _redux.combineReducers)({
+  blocksReducer: _blocks.default,
+  richlistReducer: _whales.default,
+  socketReducer: _socket.default
+}); // export default blocksReducer;
+
+
 exports.default = _default;
-},{"./blocks":"src/reducers/blocks.js","redux":"node_modules/redux/es/redux.js"}],"index.js":[function(require,module,exports) {
+},{"./blocks":"src/reducers/blocks.js","./whales":"src/reducers/whales.js","./socket":"src/reducers/socket.js","redux":"node_modules/redux/es/redux.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -42586,18 +42948,20 @@ var _socket = _interopRequireDefault(require("socket.io-client"));
 
 var _reducers = _interopRequireDefault(require("./src/reducers"));
 
+var _config = require("./config");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var ENDPOINT = 'http://136.243.88.216:4331';
 var composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || _redux.compose;
 var store = (0, _redux.createStore)(_reducers.default, composeEnhancer((0, _redux.applyMiddleware)(_reduxThunk.default)));
-var socket = (0, _socket.default)(ENDPOINT);
+console.log('ENDPOINT', _config.ENDPOINT);
+var socket = (0, _socket.default)(_config.ENDPOINT);
 (0, _reactDom.render)( /*#__PURE__*/_react.default.createElement(_reactRedux.Provider, {
   store: store
 }, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_Blocks.default, {
   socket: socket
 }))), document.getElementById('root'));
-},{"react":"node_modules/react/index.js","redux":"node_modules/redux/es/redux.js","react-redux":"node_modules/react-redux/es/index.js","redux-thunk":"node_modules/redux-thunk/es/index.js","react-dom":"node_modules/react-dom/index.js","./src/components/Blocks":"src/components/Blocks.js","socket.io-client":"node_modules/socket.io-client/build/index.js","./src/reducers":"src/reducers/index.js"}],"../../../../Users/remesh/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","redux":"node_modules/redux/es/redux.js","react-redux":"node_modules/react-redux/es/index.js","redux-thunk":"node_modules/redux-thunk/es/index.js","react-dom":"node_modules/react-dom/index.js","./src/components/Blocks":"src/components/Blocks.js","socket.io-client":"node_modules/socket.io-client/build/index.js","./src/reducers":"src/reducers/index.js","./config":"config.js"}],"../../../../Users/remesh/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -42625,7 +42989,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "29574" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "2080" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -1,6 +1,7 @@
 const {getBlockByHeight,getLastBlock} = require('../helpers/btcnode');
 const BlockChainModel = require('../Models/blockchain');
 const SettingModel = require('../Models/settings');
+const {socketUpdateRichListStatus} = require('../helpers/soket');
 
 class Whales {
 
@@ -14,10 +15,14 @@ class Whales {
         //update clients        
 
         let trxTotalCounter = global.settings['BitcoinNode_totalTrxRead']; 
+        let trxread = global.settings['BitcoinNode_trxRead']; 
+        
 
         //geting block information
         const block = await getBlockByHeight(readHeight); 
         let txs = block.result.tx;
+        console.log('trx found : ', txs.length);
+        console.log('trx id in tbl : ', trxTotalCounter);
         let txcounter=-1;
         let vtxidx='';
         let txid=0;
@@ -27,9 +32,13 @@ class Whales {
         let queryDB=[];
 
         for await (const tx of txs) {
+            txcounter++;
+            if (txcounter>10) break;
+            while (trxread>=txcounter) continue;
+            
             trxTotalCounter++;
-            txidx = tx.txid.substring(0,3);         
-            await BlockChainModel.insertTransaction(txidx,trxTotalCounter,readHeight,tx.txid,txcounter);
+                        
+            
             console.log('txidx:',tx.txid);
             //mark older transaction as spent where exists in the input
             if (txcounter>0) {
@@ -84,39 +93,51 @@ class Whales {
             try {
                 await BlockChainModel.BeginTransaction();
                 for await (const sql of queryDB) {
+                    console.log('queryDB:' , sql);
                     await BlockChainModel.query(sql);
                 }
                 await BlockChainModel.EndTransaction();
+           
+
+                txidx = tx.txid.substring(0,3);   
+                console.log('insertTransaction:' , `${txidx},${trxTotalCounter},${readHeight},${tx.txid},${txcounter})`);
+                await BlockChainModel.insertTransaction(txidx,trxTotalCounter,readHeight,tx.txid,txcounter);            
+                await SettingModel.updateSettingVariable('BitcoinNode','totalTrxRead',trxTotalCounter);            
+                await SettingModel.updateSettingVariable('BitcoinNode','trxRead',txcounter);            
+
+                global.settings['BitcoinNode_totalTrxRead'] = trxTotalCounter;           
+                global.settings['BitcoinNode_trxRead'] = txcounter;   
             } catch(e) {
                 await BlockChainModel.RollBack();
                 throw error('error : ' + e);
-            }
-
-            await BlockChainModel.SaveBulkBlock(`( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `);
-            await SettingModel.updateSettingVariable('BitcoinNode','totalTrxRead',trxTotalCounter);
-            await SettingModel.updateSettingVariable('BitcoinNode','LastBlockHeightRead',readHeight-1);
-
-            global.settings['BitcoinNode_totalTrxRead'] = trxTotalCounter;
-            global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight-1;
+            }        
             queryDB.length=0;
             queryDB = [];
         }
+        
+        console.log('SaveBulkBlock:' , `${readHeight},${block.result.time},${block.result.hash},${txs.length})`);
+        await BlockChainModel.SaveBulkBlock(`( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `);
+        await SettingModel.updateSettingVariable('BitcoinNode','LastBlockHeightRead',readHeight-1);
+        await SettingModel.updateSettingVariable('BitcoinNode','trxRead',-1);
+        global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight-1;
+        global.settings['BitcoinNode_trxRead'] = -1;
     }
 
-    static async startup(socket) {
+    static async startup(socket,step=6) {
         /* preloading would take several days to complete during this period we would have couple of blocks that have not been analized.
         startup function is going to load those blocks one by one to reach the last mined block. 
         we could use these startup from the first block . However despite Preloading Class, this method is not optimized for analyzing 
         tousands of block and it may lead to longer preloading step.*/
-        process.exit(0);
-        if (this.LastRead+60<Date.now()) setTimeout(startup(socket), 10000);
-        this.LastRead = Date.now();
+        console.log('startup : ',step);
+
+        // if (this.LastRead+60<Date.now()) setTimeout(startup(socket,7), 10000);
+        // this.LastRead = Date.now();
         
         this.updatedTbls  =  [];
 
-        global.settings['BitcoinNode_CurrentStage']=6;
+        global.settings['BitcoinNode_CurrentStage']=step;
         global.settings['BitcoinNode_CurrentStageTitle']='startup';
-        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','6');
+        await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage',step);
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','startup');
 
         //Get Last Mined Block from the BTC Blockchain
@@ -133,7 +154,8 @@ class Whales {
         while(readHeight<blockCount) {
             readHeight ++;
             console.log('readHeight:',readHeight);
-            socketUpdateProgress(socket,6,readHeight,blockCount);
+            if (step==6) socketUpdateProgress(socket,6,readHeight,blockCount);
+            socketUpdateProgress(socket,step,readHeight,blockCount);
             this.insertBlockData(readHeight);
 
             let blockCount  =  await getLastBlock(); 
@@ -143,7 +165,10 @@ class Whales {
         //update richest list
         await this.checkForRichest();
 
-        startup(socket);
+        if (step==6) socketUpdateProgress(socket,6,readHeight,blockCount);
+        else socketUpdateRichListStatus(socket);
+        process.exit(0);
+        startup(socket,step);
     }
 
 
@@ -161,6 +186,7 @@ class Whales {
         let richestUpdated = false;
 
         //check if updated addresses exists inthe richest trable
+        console.log('this.updatedAddrs : ',this.updatedAddrs);
         for await (const address of this.updatedAddrs) {
             addressIsRich = await BlockChainModel.addressIsRich(address);
             if (addressIsRich) {
@@ -174,6 +200,7 @@ class Whales {
 
         richest = await BlockChainModel.getRichestTable();
 
+        console.log('this.updatedTbls : ',this.updatedTbls);
         for await (const tbl of this.updatedTbls) {
             Object.keys(addresses).forEach(function(key) { delete addresses[key]; });                
             addresses = await BlockChainModel.getRichestAddressesBasedOnMinBalance(tbl,minRichBalance);

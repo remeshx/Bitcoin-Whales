@@ -1,3 +1,5 @@
+const BlockChainModel = require('../Models/blockchain');
+
 function socketUpdateProgress(socket,step,currPos,finalPos) {
     let progressStatus = {
         'step' : step,
@@ -7,4 +9,18 @@ function socketUpdateProgress(socket,step,currPos,finalPos) {
     socket.emit("UPDATE_STARTUP_PROGRESS", progressStatus);
 }
 
-module.exports = {socketUpdateProgress}
+
+async function socketUpdateRichListStatus(socket) {
+    
+    let richlistTbl = await BlockChainModel.getRichListTable(100);
+    let getLastBlock = await  BlockChainModel.getLastBlockDetail();
+
+    let richlist = {
+        'richlisttbl' : richlistTbl,
+        'blockInfo' : getLastBlock
+    }
+
+    socket.emit("UPDATE_RICH_LIST", richlist);
+}
+
+module.exports = {socketUpdateProgress,socketUpdateRichListStatus}

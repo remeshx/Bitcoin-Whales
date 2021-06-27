@@ -385,7 +385,7 @@ class PRELOADING {
                 key = ch + '' + ch2;
                 tblName = 'addresses_' + key;
                 
-                console.log('import:',  4000 + '/' + i + '   >> '+ tblName);
+                console.log('import:',  3844 + '/' + i + '   >> '+ tblName);
                 filepath = path.dirname(require.main.filename) + '/outputs/'  + tblName + '.csv'; 
                 console.log('key:', key);
                 console.log('filepath:', filepath);
@@ -475,8 +475,11 @@ class PRELOADING {
 
         global.settings['BitcoinNode_CurrentStage']=6;
         global.settings['BitcoinNode_CurrentStageTitle']='startup';
+        global.settings['BitcoinNode_trxRead'] = -1;     
+
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','6');
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','startup');
+        await SettingModel.updateSettingVariable('BitcoinNode','trxRead',-1);           
 
         Whales.startup(socket);    
     }

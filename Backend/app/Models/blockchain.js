@@ -2,6 +2,7 @@ const db = require('./db');
 
 class BlockChainModel {
 
+    
     static SaveBulkBlock(sql) {
         return new Promise((resolve,reject)=> {
             db.query(
@@ -135,6 +136,43 @@ class BlockChainModel {
                 resolve(true);
             });
         })
+    }
+
+    static getLastBlockDetail()
+    {
+        return new Promise((resolve,reject) => {
+            // db.query(`SELECT btc_address,SUM((spend*-1) * amount - (spend-1) * amount) as balance, 0 as mintime, 0 as maxtime
+            db.query(`SELECT block_height as "lastBlockHeight", to_timestamp(block_time) as "lastBlockTime"
+             FROM block_details order by id DESC limit 1`,
+                [],
+                (error,response)=>{
+                    if (error) {
+                        console.log('error 11',error);
+                        resolve('');
+                    }
+                    if (response.rows.length === 0) resolve('');
+                    else resolve(response.rows[0]);
+                })
+        });
+    }
+
+
+    static getRichListTable(limits)
+    {
+        return new Promise((resolve,reject) => {
+            // db.query(`SELECT btc_address,SUM((spend*-1) * amount - (spend-1) * amount) as balance, 0 as mintime, 0 as maxtime
+            db.query(`SELECT btc_address as address, balance, to_timestamp(created_at) as created_at, to_timestamp(updated_at) as updated_at
+             FROM richestAddresses order by balance DESC limit ${limits}`,
+                [],
+                (error,response)=>{
+                    if (error) {
+                        console.log('error 11',error);
+                        resolve('');
+                    }
+                    if (response.rows.length === 0) resolve('');
+                    else resolve(response.rows);
+                })
+        });
     }
 
     static getRichestAddresses(tblName,limits)

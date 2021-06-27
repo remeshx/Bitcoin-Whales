@@ -1,5 +1,7 @@
 import blocksReducer from './blocks';
-import {combineReducers} from 'redux';
+import richlistReducer from './whales';
+import socketReducer from './socket';
+import { combineReducers } from 'redux';
 
-//export default combineReducers({ blocksReducer });
-export default blocksReducer;
+export default combineReducers({ blocksReducer, richlistReducer, socketReducer });
+// export default blocksReducer;

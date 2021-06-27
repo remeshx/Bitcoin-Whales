@@ -11,6 +11,7 @@ const DEFAULT_BLOCK = {
         trxRead : 0
     },
     progress : {
+        currStep : '0',
         step1_status : 'Not Started',
         step1_progress : '0',
         step1_icon_class : 'ion-md-analytics bg-secondary',
@@ -119,6 +120,8 @@ export const blockReducer = (state = DEFAULT_BLOCK, action) => {
 
         if (parseInt(step)==i) 
         {
+
+            progressResult['currStep'] = i;
             progressResult['step'+i+'_status'] = status;
             progressResult['step'+i+'_progress'] = progress;
             progressResult['step'+i+'_icon_class'] =progressResult['step'+i+'_icon_class'] +  ' bg-warning';

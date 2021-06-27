@@ -8,6 +8,15 @@ router.get('/getLoadingStatus', (req,res, next)=> {
     })
 });
 
+router.get('/getRichListStatus', (req,res, next)=> {
+    Api.getRichListStatus(res.io).then(str=>{
+        res.json(str);
+    })
+});
+
+
+
+
 module.exports = router;
 
 

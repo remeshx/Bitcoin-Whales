@@ -1,6 +1,25 @@
 const settingModel = require('../../Models/settings');
+const BlockChainModel = require('../../Models/blockchain');
 
 class Api {
+    static async getRichListStatus() {
+        let richlistTbl = await BlockChainModel.getRichListTable(100);
+        let getLastBlock = await  BlockChainModel.getLastBlockDetail();
+
+        return new Promise((resolve,reject) => {
+               
+               
+                console.log('getLastBlock: ', getLastBlock);
+                let richlist = {
+                        'richlisttbl' : richlistTbl,
+                        'blockInfo' : getLastBlock
+                    }   
+
+                console.log('getRichListStatus Result: ', richlist);
+                resolve(richlist); 
+        });
+    }
+
     static getLoadingStatus(){
 
         return new Promise((resolve,reject) => {
@@ -38,7 +57,18 @@ class Api {
                             step=5;
                             currPos = 0;
                             finalPos = 3844;
-                            break;        
+                            break;      
+                    case '6': 
+                            step=6;
+                            currPos = 0;
+                            finalPos = 3844;
+                            break;  
+                    case '7': 
+                    case '10': 
+                            step=10;
+                            currPos = 0;
+                            finalPos = 0;
+                            break;   
                 }
 
                 let progressStatus = {
