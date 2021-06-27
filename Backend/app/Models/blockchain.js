@@ -399,7 +399,7 @@ class BlockChainModel {
                 [],
                 (error,response)=>{
                     if (error) {
-                        console.log('error 12',error);
+                        console.log('error 121',error);
                         reject(error);
                     }
                     resolve(true);
