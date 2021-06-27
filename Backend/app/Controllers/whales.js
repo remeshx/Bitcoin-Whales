@@ -32,6 +32,7 @@ class Whales {
         let address='';
         let vAddidx_='';
         let vAddidx='';
+        let txidx='';
         let queryDB=[];
 
         for await (const tx of txs) {
