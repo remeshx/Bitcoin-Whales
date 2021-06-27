@@ -563,7 +563,7 @@ class BlockChainModel {
     static getRichestAddressesBasedOnMinBalance(tblName,minRichBalance) {
         return new Promise((resolve,reject) => {
             db.query(`SELECT btc_address,SUM((spend*-1) * amount - (spend-1) * amount) as balance, MIN(created_time) as mintime, MAX(created_time) as maxtime
-             FROM ${tblName} group by btc_address HAVING balance>$1 order by balance DESC limit ${limits}`,
+             FROM ${tblName} group by btc_address HAVING balance>$1 order by balance DESC`,
                 [minRichBalance],
                 (error,response)=>{
                     if (error) {

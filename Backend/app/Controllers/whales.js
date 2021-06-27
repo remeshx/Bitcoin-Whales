@@ -192,7 +192,7 @@ class Whales {
         let addresses = [];
         let richest = [];
         let richestUpdated = false;
-
+        let shuoldUpdate = true;
         //check if updated addresses exists inthe richest trable
         console.log('this.updatedAddrs : ',this.updatedAddrs);
         for await (const address of this.updatedAddrs) {
@@ -217,9 +217,22 @@ class Whales {
                 console.log('getRichestAddressesBasedOnMinBalance: ',minRichBalance);
                 temp = [...richest];
 
+                shuoldUpdate = ture;
                 for await(const address of addresses) 
                 {
-                    temp = [ ...temp , [address.btc_address,address.balance,address.maxtime,address.mintime]];
+                    for await(const rich of temp) 
+                    {
+                        if (rich.btc_address==address.btc_address) {
+                            huoldUpdate = false;
+                            break;
+                        }
+                    }   
+
+                    if (shuoldUpdate)
+                    {
+                        console.info('inserted: ',`${address.btc_address} , ${address.balance} `);
+                        temp = [ ...temp , [address.btc_address,address.balance,address.maxtime,address.mintime]];
+                    }
                 }
 
                 temp.sort((a,b)=>{
