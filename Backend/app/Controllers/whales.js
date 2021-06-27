@@ -220,12 +220,14 @@ class Whales {
                 console.log('new richest addresses: ',addresses);
                 temp = [...richest];
 
-                shuoldUpdate = true;
+                
                 for await(const address of addresses) 
                 {
+                    shuoldUpdate = true;
                     for await(const rich of temp) 
                     {
                         if (rich.btc_address==address.btc_address) {
+                            console.info('btc addess already in richest: ',address.btc_address);
                             shuoldUpdate = false;
                             break;
                         }
@@ -247,6 +249,7 @@ class Whales {
                 richest = temp.slice(0,addCount);
                 console.log('richest.length: ',richest.length);
                 minRichBalance = richest[richest.length -1][1];                
+                console.log('richest[richest.length -1]: ',richest[richest.length -1]);
                 console.log('minRichBalance: ',minRichBalance);
             }
         }
