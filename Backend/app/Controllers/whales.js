@@ -93,6 +93,7 @@ class Whales {
             } 
 
             try {
+                console.log('try');
                 await BlockChainModel.BeginTransaction();
                 console.log('BeginTransaction');
                 for await (const sql of queryDB) {

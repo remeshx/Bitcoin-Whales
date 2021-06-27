@@ -410,36 +410,45 @@ class BlockChainModel {
 
     static  BeginTransaction() {
         return new Promise((resolve,reject) => {
-            this.query('BEGIN').then(
+            db.query(`BEGIN`,
+                [],
                 (error,response)=>{
-                    if (error) reject (error);
-                    resolve(true);
-                }
-            );
+                    if (error) {
+                        console.log('error 111',error);
+                        resolve('');
+                    }
+                   resolve(true);
+                });                     
         });
-
         
     }
 
     static  EndTransaction() {
         return new Promise((resolve,reject) => {
-            this.query('COMMIT').then(
+            db.query(`COMMIT`,
+                [],
                 (error,response)=>{
-                    if (error) reject (error);
-                    resolve(true);
-                }
-            );
+                    if (error) {
+                        console.log('error 111',error);
+                        resolve('');
+                    }
+                   resolve(true);
+                });                     
         });
     }
 
     static async RollBack() {
-        return new Promise((resolve,reject) => {
-            this.query('ROLLBACK').then(
-                ()=>{
-                    resolve(true);
-                }
-            );
-        });
+                return new Promise((resolve,reject) => {
+                    db.query(`ROLLBACK`,
+                        [],
+                        (error,response)=>{
+                            if (error) {
+                                console.log('error 111',error);
+                                resolve('');
+                            }
+                           resolve(true);
+                        });                     
+                });
     }
 
 
