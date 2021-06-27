@@ -245,12 +245,14 @@ class Whales {
                     return (parseFloat(a[1]) > parseFloat(b[1])) ? -1 : 1;
                 });
 
-                richest.length=0;
-                richest = temp.slice(0,addCount);
-                console.log('richest.length: ',richest.length);
-                minRichBalance = richest[richest.length -1][1];                
-                console.log('richest[richest.length -1]: ',richest[richest.length -1]);
-                console.log('minRichBalance: ',minRichBalance);
+                if (temp.length>addCount) {
+                    richest.length=0;
+                    richest = temp.slice(0,addCount);
+                    console.log('richest.length: ',richest.length);
+                    minRichBalance = richest[richest.length -1].balance;                
+                    console.log('richest[richest.length -1]: ',richest[richest.length -1]);
+                    console.log('minRichBalance: ',minRichBalance);
+                }
             }
         }
 
