@@ -157,10 +157,11 @@ class Whales {
             console.log('readHeight:',readHeight);
             if (step==6) socketUpdateProgress(socket,6,readHeight,blockCount);
             socketUpdateProgress(socket,step,readHeight,blockCount);
-            this.insertBlockData(readHeight);
+            await this.insertBlockData(readHeight);
 
             blockCount  =  await getLastBlock(); 
             global.settings['BitcoinNode_blockCount'] = blockCount;
+            break;
         }
 
         //update richest list
