@@ -219,7 +219,7 @@ class Whales {
                 console.log('getRichestAddressesBasedOnMinBalance: ',minRichBalance);
                 temp = [...richest];
 
-                shuoldUpdate = ture;
+                shuoldUpdate = true;
                 for await(const address of addresses) 
                 {
                     for await(const rich of temp) 
