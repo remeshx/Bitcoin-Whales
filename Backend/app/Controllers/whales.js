@@ -113,7 +113,7 @@ class Whales {
                 global.settings['BitcoinNode_trxRead'] = txcounter;   
             } catch(e) {
                 await BlockChainModel.RollBack();
-                throw error('error : ' + e);
+                throw e;
             }        
             queryDB.length=0;
             queryDB = [];
