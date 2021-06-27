@@ -41,7 +41,7 @@ class Whales {
             if (trxread>=txcounter) continue;
             
             trxTotalCounter++;
-            if (txcounter>10) break;         
+            
             
             console.log('txidx:',tx.txid);
             //mark older transaction as spent where exists in the input
@@ -136,8 +136,8 @@ class Whales {
         tousands of block and it may lead to longer preloading step.*/
         console.log('startup : ',step);
 
-        // if (this.LastRead+60<Date.now()) setTimeout(startup(socket,7), 10000);
-        // this.LastRead = Date.now();
+         if (this.LastRead+60<Date.now()) setTimeout(startup(socket,7), 10000);
+         this.LastRead = Date.now();
         
         this.updatedTbls  =  [];
         this.updatedAddrs  =  [];
@@ -175,7 +175,7 @@ class Whales {
 
         if (step==6) socketUpdateProgress(socket,6,readHeight,blockCount);
         else socketUpdateRichListStatus(socket);
-        process.exit(0);
+    
         startup(socket,step);
     }
 
@@ -195,7 +195,7 @@ class Whales {
         let shuoldUpdate = true;
         let temp=[];
         //check if updated addresses exists inthe richest trable
-        console.log('this.updatedAddrs : ',this.updatedAddrs);
+        console.log('this.updatedAddrs : ',this.updatedAddrs.length);
         for await (const address of this.updatedAddrs) {
             addressIsRich = await BlockChainModel.addressIsRich(address);
             if (addressIsRich) {
@@ -209,11 +209,11 @@ class Whales {
 
         richest = await BlockChainModel.getRichestTable();
 
-        console.log('this.updatedTbls : ',this.updatedTbls);
+        console.log('this.updatedTbls : ',this.updatedTbls.length);
     
         for await (const tbl of this.updatedTbls) {
             Object.keys(addresses).forEach(function(key) { delete addresses[key]; });                
-            console.log('getRichestAddressesBasedOnMinBalance: ',minRichBalance);
+            console.log('richest in tbl: ',`${tbl} >> ${minRichBalance}` );
             addresses = await BlockChainModel.getRichestAddressesBasedOnMinBalance(tbl,minRichBalance);
             if(addresses.length>0) 
             {
