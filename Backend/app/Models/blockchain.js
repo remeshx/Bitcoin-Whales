@@ -570,7 +570,7 @@ class BlockChainModel {
                         console.log('error 11',error);
                         resolve('');
                     }
-                    if (response.rows.length === 0) resolve([]);
+                    if (!response || response.rows.length === 0) resolve([]);
                     else resolve(response.rows);
                 })
         });
