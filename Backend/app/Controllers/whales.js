@@ -79,8 +79,7 @@ class Whales {
                 vAddidx = vAddidx_.charCodeAt(0) +''+ vAddidx_.charCodeAt(1); 
 
                 //insert output as new address transaction
-                queryDB.push(`INSERT INTO ${'addresses_' + vAddidx} (blockheight,btc_address,created_time,amount,txid,vout) 
-                VALUES (${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter})`);
+                queryDB.push(`INSERT INTO ${'addresses_' + vAddidx} (blockheight,btc_address,created_time,amount,txid,vout) VALUES (${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter})`);
                 
                 if (!this.updatedTbls.includes(vAddidx))
                 {
@@ -95,10 +94,12 @@ class Whales {
 
             try {
                 await BlockChainModel.BeginTransaction();
+                console.log('BeginTransaction');
                 for await (const sql of queryDB) {
                     console.log('queryDB:' , sql);
                     await BlockChainModel.query(sql);
                 }
+                console.log('EndTransaction');
                 await BlockChainModel.EndTransaction();
            
 
