@@ -27,6 +27,7 @@ class Whales {
         let txcounter=-1;
         let vtxidx='';
         let txid=0;
+        let voutCounter=0;
         let address='';
         let vAddidx_='';
         let vAddidx='';
