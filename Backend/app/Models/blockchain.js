@@ -560,14 +560,14 @@ class BlockChainModel {
     }
 
 
-    static getRichestAddressesBasedOnMinBalance(tblName,minRichBalance) {
+    static getRichestAddressesBasedOnMinBalance(tblPartition,minRichBalance) {
         return new Promise((resolve,reject) => {
             db.query(`SELECT btc_address,SUM((spend*-1) * amount - (spend-1) * amount) as balance, MIN(created_time) as mintime, MAX(created_time) as maxtime
-             FROM ${tblName} group by btc_address HAVING balance>$1 order by balance DESC`,
+             FROM ${'addresses_' + tblPartition} group by btc_address HAVING balance>$1 order by balance DESC`,
                 [minRichBalance],
                 (error,response)=>{
                     if (error) {
-                        console.log('error 11',error);
+                        console.log('error 12',error);
                         resolve('');
                     }
                     if (!response || response.rows.length === 0) resolve([]);
