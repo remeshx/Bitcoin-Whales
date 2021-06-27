@@ -412,6 +412,7 @@ class BlockChainModel {
         return new Promise((resolve,reject) => {
             this.query('BEGIN').then(
                 (error,response)=>{
+                    if (error) reject (error);
                     resolve(true);
                 }
             );
@@ -424,6 +425,7 @@ class BlockChainModel {
         return new Promise((resolve,reject) => {
             this.query('COMMIT').then(
                 (error,response)=>{
+                    if (error) reject (error);
                     resolve(true);
                 }
             );
