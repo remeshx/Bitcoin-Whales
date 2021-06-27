@@ -213,10 +213,11 @@ class Whales {
     
         for await (const tbl of this.updatedTbls) {
             Object.keys(addresses).forEach(function(key) { delete addresses[key]; });                
+            console.log('getRichestAddressesBasedOnMinBalance: ',minRichBalance);
             addresses = await BlockChainModel.getRichestAddressesBasedOnMinBalance(tbl,minRichBalance);
             if(addresses.length>0) 
             {
-                console.log('getRichestAddressesBasedOnMinBalance: ',minRichBalance);
+                console.log('new richest addresses: ',addresses);
                 temp = [...richest];
 
                 shuoldUpdate = true;
@@ -234,6 +235,7 @@ class Whales {
                     {
                         console.info('inserted: ',`${address.btc_address} , ${address.balance} `);
                         temp = [ ...temp , [address.btc_address,address.balance,address.maxtime,address.mintime]];
+                        richestUpdated = true;
                     }
                 }
 
@@ -243,8 +245,8 @@ class Whales {
 
                 richest.length=0;
                 richest = temp.slice(0,addCount);
-                minRichBalance = richest[richest.length -1][1];
-                richestUpdated = true;
+                console.log('richest.length: ',richest.length);
+                minRichBalance = richest[richest.length -1][1];                
                 console.log('minRichBalance: ',minRichBalance);
             }
         }
