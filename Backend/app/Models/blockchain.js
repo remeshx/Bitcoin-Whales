@@ -411,7 +411,7 @@ class BlockChainModel {
     static  BeginTransaction() {
         return new Promise((resolve,reject) => {
             this.query('BEGIN').then(
-                ()=>{
+                (error,response)=>{
                     resolve(true);
                 }
             );
@@ -423,7 +423,7 @@ class BlockChainModel {
     static  EndTransaction() {
         return new Promise((resolve,reject) => {
             this.query('COMMIT').then(
-                ()=>{
+                (error,response)=>{
                     resolve(true);
                 }
             );
