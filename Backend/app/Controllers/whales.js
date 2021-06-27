@@ -183,7 +183,7 @@ class Whales {
     static async checkForRichest(){
 
         //get richest minimum balance
-        
+        console.log('checkForRichest:');
         let minRichBalance = await BlockChainModel.getRichestMinimumBlance();
         console.log('minRichBalance 1: ',minRichBalance);
         var addCount = 1000;

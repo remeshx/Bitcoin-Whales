@@ -456,7 +456,7 @@ class BlockChainModel {
     static getRichestMinimumBlance() {
         return new Promise((resolve,reject) => {
             db.query(`SELECT balance FROM richestAddresses order by balance limit 1`,
-                [txid],
+                [],
                 (error,response)=>{
                     if (error) {
                         console.log('error 11',error);
