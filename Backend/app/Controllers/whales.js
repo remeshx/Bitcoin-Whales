@@ -9,8 +9,6 @@ class Whales {
 
     constructor() {
         this.LastRead = Date.now();
-        this.updatedTbls = [];
-        this.updatedAddrs = [];
     }
 
     
@@ -139,6 +137,7 @@ class Whales {
         // this.LastRead = Date.now();
         
         this.updatedTbls  =  [];
+        this.updatedAddrs  =  [];
 
         global.settings['BitcoinNode_CurrentStage']=step;
         global.settings['BitcoinNode_CurrentStageTitle']='startup';
