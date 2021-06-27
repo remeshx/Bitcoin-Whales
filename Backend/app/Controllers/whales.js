@@ -225,7 +225,7 @@ class Whales {
                     for await(const rich of temp) 
                     {
                         if (rich.btc_address==address.btc_address) {
-                            huoldUpdate = false;
+                            shuoldUpdate = false;
                             break;
                         }
                     }   
