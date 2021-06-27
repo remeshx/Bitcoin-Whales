@@ -159,7 +159,7 @@ class Whales {
             socketUpdateProgress(socket,step,readHeight,blockCount);
             this.insertBlockData(readHeight);
 
-            let blockCount  =  await getLastBlock(); 
+            blockCount  =  await getLastBlock(); 
             global.settings['BitcoinNode_blockCount'] = blockCount;
         }
 
