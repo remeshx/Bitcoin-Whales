@@ -37,11 +37,11 @@ class Whales {
 
         for await (const tx of txs) {
             txcounter++;
-            if (txcounter>10) break;
-            while (trxread>=txcounter) continue;
+            
+            if (trxread>=txcounter) continue;
             
             trxTotalCounter++;
-                        
+            if (txcounter>10) break;         
             
             console.log('txidx:',tx.txid);
             //mark older transaction as spent where exists in the input
