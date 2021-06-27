@@ -1,4 +1,5 @@
 const {getBlockByHeight,getLastBlock} = require('../helpers/btcnode');
+const {socketUpdateProgress} = require('../helpers/soket');
 const BlockChainModel = require('../Models/blockchain');
 const SettingModel = require('../Models/settings');
 const {socketUpdateRichListStatus} = require('../helpers/soket');
