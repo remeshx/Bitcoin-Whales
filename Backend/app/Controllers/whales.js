@@ -9,6 +9,8 @@ class Whales {
 
     constructor() {
         this.LastRead = Date.now();
+        this.updatedTbls = [];
+        this.updatedAddrs = [];
     }
 
     
