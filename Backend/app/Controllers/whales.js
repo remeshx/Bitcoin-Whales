@@ -193,6 +193,7 @@ class Whales {
         let richest = [];
         let richestUpdated = false;
         let shuoldUpdate = true;
+        let temp=[];
         //check if updated addresses exists inthe richest trable
         console.log('this.updatedAddrs : ',this.updatedAddrs);
         for await (const address of this.updatedAddrs) {
@@ -209,6 +210,7 @@ class Whales {
         richest = await BlockChainModel.getRichestTable();
 
         console.log('this.updatedTbls : ',this.updatedTbls);
+    
         for await (const tbl of this.updatedTbls) {
             Object.keys(addresses).forEach(function(key) { delete addresses[key]; });                
             addresses = await BlockChainModel.getRichestAddressesBasedOnMinBalance(tbl,minRichBalance);
