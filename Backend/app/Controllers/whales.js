@@ -139,11 +139,18 @@ class Whales {
         tousands of block and it may lead to longer preloading step.*/
         console.log('startup : ',step);
 
+         //Getting the last block we have already Read.
+         let readHeight   = global.settings['BitcoinNode_LastBlockHeightRead'];        
+       
+
          //Get Last Mined Block from the BTC Blockchain
          let blockCount  =  await getLastBlock();
          global.settings['BitcoinNode_blockCount'] = blockCount;
 
          
+        console.log('blockCount',blockCount);
+         
+        
          if (readHeight==blockCount) {
             setTimeout(this.startup(socket,7), 10000);
             return;
@@ -159,12 +166,6 @@ class Whales {
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','startup');
 
        
-        console.log('blockCount',blockCount);
-        
-
-        //Getting the last block we have already Read.
-        let readHeight   = global.settings['BitcoinNode_LastBlockHeightRead'];        
-        
 
         while(readHeight<blockCount) {
             readHeight ++;
