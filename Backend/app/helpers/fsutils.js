@@ -7,7 +7,7 @@ async function writeAllAddresses(fileStream,addQueries,addQueriesKeys) {
         if (!key) continue;
         i++;
         sql = addQueries[key];
-        sql = sql.replace(/(^,)|(,$)/g, "");
+        //sql = sql.replace(/(^,)|(,$)/g, "");
         await writeout(fileStream,'addresses',sql,key);
       }
 }
@@ -22,7 +22,7 @@ async function writeAllAddresses(fileStream,addQueries,addQueriesKeys) {
                 if (!key) continue;
                 i++;
                 sql = vinQuery[key];
-                sql = sql.replace(/(^,)|(,$)/g, "");
+               // sql = sql.replace(/(^,)|(,$)/g, "");
                 await writeout(fileStream,'inputs',sql,key);
             }
 
@@ -31,7 +31,7 @@ async function writeAllAddresses(fileStream,addQueries,addQueriesKeys) {
                 if (!key) continue;
                 i++;
                 sql = voutQuery[key];
-                sql = sql.replace(/(^,)|(,$)/g, "");
+                //sql = sql.replace(/(^,)|(,$)/g, "");
                 await writeout(fileStream,'outputs',sql,key);
             }   
 
@@ -41,7 +41,7 @@ async function writeAllAddresses(fileStream,addQueries,addQueriesKeys) {
                 if (!key) continue;
                 i++;
                 sql = txQuery[key];
-                sql = sql.replace(/(^,)|(,$)/g, "");            
+                //sql = sql.replace(/(^,)|(,$)/g, "");            
                 await writeout(fileStream,'trx',sql,key);
             }
       

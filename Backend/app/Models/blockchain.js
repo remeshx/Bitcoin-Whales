@@ -203,10 +203,6 @@ class BlockChainModel {
             [],
             (error,response)=>{
                 if (error) {
-                    console.log('error',error);
-                    
-                    console.log('values',values);
-                    console.log('key',key);
                     reject(error);
                 }
                 resolve(true);
@@ -247,7 +243,6 @@ class BlockChainModel {
 
     static importInputFile(file,table) {
         return new Promise((resolve,reject)=> {
-            this.truncateTable(table);
             db.query(
                 `COPY ${table} ( txid, vouttx, vout, created_time)  FROM '${file}'
                 DELIMITER ','  CSV QUOTE '"';
@@ -264,7 +259,6 @@ class BlockChainModel {
 
     static importOutputFile(file,table) {
         return new Promise((resolve,reject)=> {
-            this.truncateTable(table);
             db.query(
                 `COPY ${table}(txid,outaddress,vout,amount,created_time) FROM '${file}'
                 DELIMITER ','  CSV QUOTE '"';
@@ -282,7 +276,6 @@ class BlockChainModel {
     
     static importTrxFile(file,table) {
         return new Promise((resolve,reject)=> {
-            this.truncateTable(table);
             db.query(
                 `COPY ${table}(id,block_height,txid,txseq) FROM '${file}'
                 DELIMITER ',' CSV QUOTE '"';
