@@ -196,7 +196,7 @@ class PRELOADING {
 
         blksql = blksql.replace(/(^,)|(,$)/g, "");
         await BlockChainModel.SaveBulkBlock(blksql);
-        await writeAllTransaction(this.fileStream,vinQuery,voutQuery,txQuery,vinQueryKeys,voutQueryKeys,txQueryKeys,socket,fs);
+        await writeAllTransaction(this.fileStream,vinQuery,voutQuery,txQuery,vinQueryKeys,voutQueryKeys,txQueryKeys);
         await SettingModel.updateCurrentBlock(readHeight);
         await SettingModel.updateTrxRead(-1);        
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','2');
@@ -290,6 +290,7 @@ class PRELOADING {
         await SettingModel.updateCurrentFile(0);
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','3');
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','preloading_stage3_ExtractAddresses');
+        process.exit(0);
         console.log('######################## DONE Step 2');
         this.preloading_stage3_ExtractAddresses(socket);
     }
