@@ -126,9 +126,9 @@ class Whales {
         
         console.log('SaveBulkBlock:' , `${readHeight},${block.result.time},${block.result.hash},${txs.length})`);
         await BlockChainModel.SaveBulkBlock(`( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `);
-        await SettingModel.updateSettingVariable('BitcoinNode','LastBlockHeightRead',readHeight-1);
+        await SettingModel.updateSettingVariable('BitcoinNode','LastBlockHeightRead',readHeight);
         await SettingModel.updateSettingVariable('BitcoinNode','trxRead',-1);
-        global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight-1;
+        global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
         global.settings['BitcoinNode_trxRead'] = -1;
     }
 
@@ -139,7 +139,15 @@ class Whales {
         tousands of block and it may lead to longer preloading step.*/
         console.log('startup : ',step);
 
-         if (this.LastRead+60<Date.now()) setTimeout(this.startup(socket,7), 10000);
+         //Get Last Mined Block from the BTC Blockchain
+         let blockCount  =  await getLastBlock();
+         global.settings['BitcoinNode_blockCount'] = blockCount;
+
+         
+         if (readHeight==blockCount) {
+            setTimeout(this.startup(socket,7), 10000);
+            return;
+         }
          this.LastRead = Date.now();
         
         this.updatedTbls  =  [];
@@ -150,10 +158,7 @@ class Whales {
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage',step);
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','startup');
 
-        //Get Last Mined Block from the BTC Blockchain
-        let blockCount  =  await getLastBlock();
-        global.settings['BitcoinNode_blockCount'] = blockCount;
-
+       
         console.log('blockCount',blockCount);
         
 
