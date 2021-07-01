@@ -139,7 +139,7 @@ class Whales {
         tousands of block and it may lead to longer preloading step.*/
         console.log('startup : ',step);
 
-         if (this.LastRead+60<Date.now()) setTimeout(startup(socket,7), 10000);
+         if (this.LastRead+60<Date.now()) setTimeout(this.startup(socket,7), 10000);
          this.LastRead = Date.now();
         
         this.updatedTbls  =  [];
