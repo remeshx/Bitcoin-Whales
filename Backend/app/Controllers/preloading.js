@@ -120,7 +120,6 @@ class PRELOADING {
                 //update blockcount to the latest block
                 blockCount  =  await getLastBlock();
             }
-            if (readHeight>160000) break; 
             global.transactions.length=0;
             global.transactions=[];            
 
