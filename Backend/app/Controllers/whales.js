@@ -109,10 +109,11 @@ class Whales {
            
 
                 txidx = tx.txid.substring(0,3);   
+                await SettingModel.updateSettingVariable('BitcoinNode','totalTrxRead',trxTotalCounter);            
+                await SettingModel.updateSettingVariable('BitcoinNode','trxRead',txcounter);  
                 console.log('insertTransaction:' , `${txidx},${trxTotalCounter},${readHeight},${tx.txid},${txcounter})`);
                 await BlockChainModel.insertTransaction(txidx,trxTotalCounter,readHeight,tx.txid,txcounter);            
-                await SettingModel.updateSettingVariable('BitcoinNode','totalTrxRead',trxTotalCounter);            
-                await SettingModel.updateSettingVariable('BitcoinNode','trxRead',txcounter);            
+                          
 
                 global.settings['BitcoinNode_totalTrxRead'] = trxTotalCounter;           
                 global.settings['BitcoinNode_trxRead'] = txcounter;   

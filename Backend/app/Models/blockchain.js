@@ -481,8 +481,8 @@ class BlockChainModel {
     static getAddressDetails(address) {
         return new Promise((resolve,reject) => {
 
-            vAddidx_ = address.trim().slice(-2); 
-            addTablePartition = vAddidx_.charCodeAt(0) +''+ vAddidx_.charCodeAt(1); 
+            let vAddidx_ = address.trim().slice(-2); 
+            let addTablePartition = vAddidx_.charCodeAt(0) +''+ vAddidx_.charCodeAt(1); 
             db.query(
                 `SELECT btc_address,SUM((spend*-1) * amount - (spend-1) * amount) as balance, MIN(created_time) as mintime, MAX(created_time) as maxtime
                 FROM  ${'addresses_' + addTablePartition} where btc_address=$1 group by btc_address`,
@@ -502,9 +502,6 @@ class BlockChainModel {
     
     static removeRichAddress(address) {
         return new Promise((resolve,reject) => {
-
-            vAddidx_ = address.trim().slice(-2); 
-            addTablePartition = vAddidx_.charCodeAt(0) +''+ vAddidx_.charCodeAt(1); 
             db.query(
                 `DELETE FROM richestAddresses WHERE btc_address=$1`,
                 [address],
