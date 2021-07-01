@@ -83,7 +83,7 @@ class PRELOADING {
             readHeight ++;
             console.log('b: ',readHeight);
             socketUpdateProgress(socket,1,readHeight,blockCount);
-
+            
             if ((readHeight % 500)==0 && readHeight>(Number(ourheight)+1)){
                 //writing block and transaction details to files
                 console.log('writing trxs');
@@ -120,6 +120,7 @@ class PRELOADING {
                 //update blockcount to the latest block
                 blockCount  =  await getLastBlock();
             }
+            if (readHeight>160000) break;//temp break 
             global.transactions.length=0;
             global.transactions=[];            
 
