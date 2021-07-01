@@ -474,7 +474,7 @@ class PRELOADING {
             query= query + `,('${rich[0]}',${rich[3]},${rich[2]},${rich[1]})`;
         }
         query = query.replace(/(^,)|(,$)/g, "");
-        if (query!='');
+        if (query!='')
             await BlockChainModel.saveRichestAddresses(query);
 
         console.log('DONE');
