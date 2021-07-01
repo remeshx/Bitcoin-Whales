@@ -129,7 +129,7 @@ class PRELOADING {
             txcounter=0;
 
             for await (const tx of txs) {
-                trxTotalCounter++;/
+                trxTotalCounter++;
                 txidx_ = tx.txid.substring(0,3);
                 txidx = 'a' + txidx_;                
                 sql =  `${trxTotalCounter},${readHeight},${tx.txid},${txcounter}` + "\n";
