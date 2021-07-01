@@ -204,6 +204,8 @@ class Whales {
         let richestUpdated = false;
         let shuoldUpdate = true;
         let temp=[];
+        let addressDetails = {};
+
         //check if updated addresses exists inthe richest trable
         console.log('this.updatedAddrs : ',this.updatedAddrs.length);
         for await (const address of this.updatedAddrs) {
