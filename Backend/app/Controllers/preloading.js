@@ -291,7 +291,6 @@ class PRELOADING {
         await SettingModel.updateCurrentFile(0);
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','3');
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','preloading_stage3_ExtractAddresses');
-        process.exit(0);
         console.log('######################## DONE Step 2');
         this.preloading_stage3_ExtractAddresses(socket);
     }
