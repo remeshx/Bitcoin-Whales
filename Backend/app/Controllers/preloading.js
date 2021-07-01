@@ -89,7 +89,7 @@ class PRELOADING {
                 console.log('writing trxs');
                 blksql = blksql.replace(/(^,)|(,$)/g, "");
                 await BlockChainModel.SaveBulkBlock(blksql);
-                await writeAllTransaction(this.fileStream,vinQuery,voutQuery,txQuery,vinQueryKeys,voutQueryKeys,txQueryKeys,socket,fs);
+                await writeAllTransaction(this.fileStream,vinQuery,voutQuery,txQuery,vinQueryKeys,voutQueryKeys,txQueryKeys);
                 await SettingModel.updateCurrentBlock(readHeight-1);              
                 await SettingModel.updateTrxRead(-1);            
                 await SettingModel.updateTotalTrxRead(trxTotalCounter);
@@ -120,7 +120,7 @@ class PRELOADING {
                 //update blockcount to the latest block
                 blockCount  =  await getLastBlock();
             }
-            if (readHeight>160000) break;//temp break 
+           
             global.transactions.length=0;
             global.transactions=[];            
 
@@ -129,7 +129,7 @@ class PRELOADING {
             txcounter=0;
 
             for await (const tx of txs) {
-                trxTotalCounter++;
+                trxTotalCounter++;/
                 txidx_ = tx.txid.substring(0,3);
                 txidx = 'a' + txidx_;                
                 sql =  `${trxTotalCounter},${readHeight},${tx.txid},${txcounter}` + "\n";
@@ -186,7 +186,8 @@ class PRELOADING {
                   voutCounter++;                  
                 };
 
-                txcounter++;                
+                txcounter++;  
+                break;             
             };
             blksql = blksql + `,( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `;  
             global.settings['BitcoinNode_currBlockHeightRead'] = readHeight;
@@ -210,6 +211,7 @@ class PRELOADING {
         voutQueryKeys=[];
         vinQueryKeys=[];
 
+        process.exit(0);
         console.log('######################## DONE Step 1');
         this.preloading_stage2_ImportFilesToDB(socket);
     }

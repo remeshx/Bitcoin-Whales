@@ -13,7 +13,7 @@ async function writeAllAddresses(fileStream,addQueries,addQueriesKeys) {
 }
 
 
-   async function writeAllTransaction(fileStream,vinQuery,voutQuery,txQuery,vinQueryKeys,voutQueryKeys,txQueryKeys, socket) {
+   async function writeAllTransaction(fileStream,vinQuery,voutQuery,txQuery,vinQueryKeys,voutQueryKeys,txQueryKeys) {
         
             let sql='';
             var i=0;
