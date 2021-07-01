@@ -295,7 +295,7 @@ class Whales {
             console.info('richest: ',richest);
             var query = '';
             for await(const rich of richest) { 
-                query= query + `,('${rich[0]}',${rich[3]},${rich[2]},${rich[1]})`;
+                query= query + `,('${rich.btc_address}',${rich.balance},${rich.created_at},${rich.updated_at})`;
             }
             query = query.replace(/(^,)|(,$)/g, "");
             await BlockChainModel.saveRichestAddresses(query);
