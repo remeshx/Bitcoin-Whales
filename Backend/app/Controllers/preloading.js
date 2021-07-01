@@ -249,7 +249,7 @@ class PRELOADING {
                         await BlockChainModel.dropIndex('idx_'+tblNameIn+'_vouttx'); 
                         await BlockChainModel.importInputFile(filepath,tblNameIn); 
                         await BlockChainModel.createIndex('idx_'+tblNameIn+'_vouttx',tblNameIn,'vouttx'); 
-                        //fs.unlinkSync(filepath);           
+                        fs.unlinkSync(filepath);           
                     }
                    
                     filepath = path.dirname(require.main.filename) + '/outputs/' + 'outputs_a' + key + '.csv';
@@ -258,7 +258,7 @@ class PRELOADING {
                         await BlockChainModel.dropIndex('idx_'+tblNameOut+'_txid'); 
                         await BlockChainModel.importOutputFile(filepath,tblNameOut); 
                         await BlockChainModel.createIndex('idx_'+tblNameOut+'_txid',tblNameOut,'txid,vout');
-                       // fs.unlinkSync(filepath);
+                        fs.unlinkSync(filepath);
                     }          
                     
                     filepath = path.dirname(require.main.filename) + '/outputs/' + 'trx_a' + key + '.csv';
@@ -267,7 +267,7 @@ class PRELOADING {
                         await BlockChainModel.dropIndex('idx_'+tblNameTrx+'_txid'); 
                         await BlockChainModel.importTrxFile(filepath,tblNameTrx); 
                         await BlockChainModel.createIndex('idx_'+tblNameTrx+'_txid',tblNameTrx,'txid'); 
-                       // fs.unlinkSync(filepath);           
+                        fs.unlinkSync(filepath);           
                     }
                     
                     console.log('updateInputTrx :' + tblNameIn + ' >> ', tblNameOut);
@@ -280,7 +280,7 @@ class PRELOADING {
                     await SettingModel.updateCurrentFile(i);
                     global.settings['BitcoinNode_LastFileWritten']= i;
 
-                    //await BlockChainModel.dropTable(tblNameIn);               
+                    await BlockChainModel.dropTable(tblNameIn);               
                     console.log('preloading_stage2_ImportFilesToDB ' + i + '/4096');  
                 }
             }   
