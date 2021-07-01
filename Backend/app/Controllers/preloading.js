@@ -390,7 +390,7 @@ class PRELOADING {
                 key = ch + '' + ch2;
                 tblName = 'addresses_' + key;
                 
-                console.log('import:',  3844 + '/' + i + '   >> '+ tblName);
+                console.log('import: ',  i + '/3844' + '   >> '+ tblName);
                 filepath = path.dirname(require.main.filename) + '/outputs/'  + tblName + '.csv'; 
                 console.log('key:', key);
                 console.log('filepath:', filepath);

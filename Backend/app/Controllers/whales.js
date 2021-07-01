@@ -179,7 +179,7 @@ class Whales {
         if (step==6) socketUpdateProgress(socket,6,readHeight,blockCount);
         else socketUpdateRichListStatus(socket);
     
-        startup(socket,step);
+        this.startup(socket,step);
     }
 
 
