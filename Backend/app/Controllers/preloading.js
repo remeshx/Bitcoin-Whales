@@ -120,7 +120,7 @@ class PRELOADING {
                 //update blockcount to the latest block
                 blockCount  =  await getLastBlock();
             }
-           
+            if (readHeight>160000) break; 
             global.transactions.length=0;
             global.transactions=[];            
 
@@ -191,7 +191,7 @@ class PRELOADING {
             };
             blksql = blksql + `,( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `;  
             global.settings['BitcoinNode_currBlockHeightRead'] = readHeight;
-            if (readHeight>155600) break;  
+             
         }        
 
         blksql = blksql.replace(/(^,)|(,$)/g, "");
@@ -202,7 +202,9 @@ class PRELOADING {
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStage','2');
         await SettingModel.updateSettingVariable('BitcoinNode','CurrentStageTitle','preloading_stage2_ImportFilesToDB');
         await SettingModel.updateSettingVariable('BitcoinNode','totalTrxRead',trxTotalCounter);
+        await SettingModel.updateCurrentFile(0);
         global.settings['BitcoinNode_totalTrxRead'] = trxTotalCounter;
+        global.settings['BitcoinNode_LastFileWritten']=0;
         
 
         vinQueryCount =[];
@@ -212,7 +214,6 @@ class PRELOADING {
         voutQueryKeys=[];
         vinQueryKeys=[];
 
-        process.exit(0);
         console.log('######################## DONE Step 1');
         this.preloading_stage2_ImportFilesToDB(socket);
     }
@@ -248,7 +249,7 @@ class PRELOADING {
                         await BlockChainModel.dropIndex('idx_'+tblNameIn+'_vouttx'); 
                         await BlockChainModel.importInputFile(filepath,tblNameIn); 
                         await BlockChainModel.createIndex('idx_'+tblNameIn+'_vouttx',tblNameIn,'vouttx'); 
-                        fs.unlinkSync(filepath);           
+                        //fs.unlinkSync(filepath);           
                     }
                    
                     filepath = path.dirname(require.main.filename) + '/outputs/' + 'outputs_a' + key + '.csv';
@@ -257,7 +258,7 @@ class PRELOADING {
                         await BlockChainModel.dropIndex('idx_'+tblNameOut+'_txid'); 
                         await BlockChainModel.importOutputFile(filepath,tblNameOut); 
                         await BlockChainModel.createIndex('idx_'+tblNameOut+'_txid',tblNameOut,'txid,vout');
-                        fs.unlinkSync(filepath);
+                       // fs.unlinkSync(filepath);
                     }          
                     
                     filepath = path.dirname(require.main.filename) + '/outputs/' + 'trx_a' + key + '.csv';
@@ -266,7 +267,7 @@ class PRELOADING {
                         await BlockChainModel.dropIndex('idx_'+tblNameTrx+'_txid'); 
                         await BlockChainModel.importTrxFile(filepath,tblNameTrx); 
                         await BlockChainModel.createIndex('idx_'+tblNameTrx+'_txid',tblNameTrx,'txid'); 
-                        fs.unlinkSync(filepath);           
+                       // fs.unlinkSync(filepath);           
                     }
                     
                     console.log('updateInputTrx :' + tblNameIn + ' >> ', tblNameOut);
