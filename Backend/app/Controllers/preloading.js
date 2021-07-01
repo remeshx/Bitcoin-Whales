@@ -191,7 +191,7 @@ class PRELOADING {
             };
             blksql = blksql + `,( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `;  
             global.settings['BitcoinNode_currBlockHeightRead'] = readHeight;
-            break;  
+            if (readHeight>155600) break;  
         }        
 
         blksql = blksql.replace(/(^,)|(,$)/g, "");
