@@ -6,7 +6,7 @@ const SettingModel = require('../Models/settings');
 const { socketUpdateRichListStatus } = require('../helpers/soket');
 const { writeout } = require('../helpers/fsutils');
 const path = require('path');
-
+const fs = require('fs');
 class Whales {
 
     constructor() {
@@ -162,11 +162,11 @@ class Whales {
 
             trxTotalCounter++;
 
-
+            console.log(txcounter);
             console.log('txidx:', tx.txid);
             //mark older transaction as spent where exists in the input
             if (txcounter > 0) {
-                console.log(txcounter);
+
                 //skiping coainBase input
                 for await (const vin of tx.vin) {
                     vtxidx = vin.txid.substring(0, 3);
@@ -228,7 +228,7 @@ class Whales {
         await SettingModel.updateSettingVariable('BitcoinNode', 'LastBlockHeightRead', readHeight);
         await SettingModel.updateSettingVariable('BitcoinNode', 'trxRead', -1);
         await SettingModel.updateSettingVariable('BitcoinNode', 'totalTrxRead', trxTotalCounter);
-
+        fs.unlinkSync(filepath);
         global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
         global.settings['BitcoinNode_trxRead'] = -1;
     }
