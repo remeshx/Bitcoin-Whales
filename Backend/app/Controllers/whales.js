@@ -173,6 +173,7 @@ class Whales {
                     console.log('vtxidx:', vtxidx);
                     console.log('vin.txid:', vin.txid);
                     txid = await BlockChainModel.getTransactionId(vtxidx, vin.txid);
+                    console.log('2');
                     if (!txid) {
                         //txid = 1;
                         //%% the trx may be in current block and we should save current block tx ids.
@@ -180,12 +181,14 @@ class Whales {
                         throw 'TXid not found for ' + vin.txid;
                     }
                     address = await Blockchain.getVInAddress(vin.txid, vin.vout);
+                    console.log('3');
                     if (address == '' || address == undefined) continue;
                     //console.log(`${vtxidx}, ${txid}, ${vin.vout}`);
                     //address = await BlockChainModel.getVInAddress(vtxidx, txid, vin.vout);
                     vAddidx_ = address.trim().slice(-2);
                     vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
 
+                    console.log('5');
                     //mark input transaction as spend in addresses table
                     queryDB = queryDB + `update ${'addresses_' + vAddidx} set spend=1,spend_time=${block.result.time} where txid=${txid} and vout=${vin.vout};\n`;
 
@@ -197,6 +200,8 @@ class Whales {
                     if (!this.updatedAddrs.includes(address)) {
                         this.updatedAddrs.push(address);
                     }
+
+                    console.log('6');
                 };
             }
 
