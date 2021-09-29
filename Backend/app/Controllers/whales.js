@@ -173,6 +173,7 @@ class Whales {
                     txid = await BlockChainModel.getTransactionId(vtxidx, vin.txid);
                     if (!txid) {
                         //txid = 1;
+                        continue;
                         throw 'TXid not found for ' + vin.txid;
                     }
                     //address = await Blockchain.getVInAddress(vin.txid, vin.vout);
