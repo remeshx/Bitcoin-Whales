@@ -241,8 +241,11 @@ class BlockChainModel {
         })
     }
 
-    static importFile(sql) {
+    static importFile(file) {
         return new Promise((resolve, reject) => {
+
+            var fsm = require('fs');
+            var sql = fsm.readFileSync(file).toString();
             db.connect(function (err, client, done) {
                 if (err) {
                     console.log('error: ', err);
