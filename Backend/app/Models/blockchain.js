@@ -249,11 +249,14 @@ class BlockChainModel {
             db.connect(function (err, client, done) {
                 if (err) {
                     console.log('error: ', err);
+                    resolve(false);
                 }
                 client.query(sql, function (err, result) {
                     if (err) {
                         console.log('error: ', err);
+                        resolve(false);
                     }
+                    resolve(true);
                 });
             });
         })
