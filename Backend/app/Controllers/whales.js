@@ -220,18 +220,20 @@ class Whales {
 
             txidx = tx.txid.substring(0, 3);
             queryDB = queryDB + `INSERT INTO ${'transactions_' + txidx} (id,block_height,txid,txseq) VALUES (${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter});\n`;
-            await writeout(fileStream, 'query', queryDB, 'db', 'sql');
+            //await writeout(fileStream, 'query', queryDB, 'db', 'sql');
+            //filepath = path.dirname(require.main.filename) + '/outputs/' + 'query_db' + '.sql';
+            console.log('writing to db');
+            await BlockChainModel.importFile(queryDB);
             queryDB = '';
+
         }
 
-        filepath = path.dirname(require.main.filename) + '/outputs/' + 'query_db' + '.sql';
 
-        await BlockChainModel.importFile(filepath);
         await BlockChainModel.SaveBulkBlock(`( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `);
         await SettingModel.updateSettingVariable('BitcoinNode', 'LastBlockHeightRead', readHeight);
         await SettingModel.updateSettingVariable('BitcoinNode', 'trxRead', -1);
         await SettingModel.updateSettingVariable('BitcoinNode', 'totalTrxRead', trxTotalCounter);
-        fs.unlinkSync(filepath);
+        //fs.unlinkSync(filepath);
         global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
         global.settings['BitcoinNode_trxRead'] = -1;
     }
