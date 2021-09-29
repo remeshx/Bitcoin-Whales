@@ -204,19 +204,19 @@ class Whales {
                     console.log('6');
                 };
             }
-
+            console.log('7');
             voutCounter = 0;
             for await (const vout of tx.vout) {
                 if (vout.value > 0)
                     address = await Blockchain.getAddressFromVOUT(vout, readHeight);
                 else continue;
-
+                console.log('8');
                 vAddidx_ = address.trim().slice(-2);
                 vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
 
                 //insert output as new address transaction
                 queryDB = queryDB + `INSERT INTO ${'addresses_' + vAddidx} (blockheight,btc_address,created_time,amount,txid,vout) VALUES (${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter});\n`;
-
+                console.log('9');
                 if (!this.updatedTbls.includes(vAddidx)) {
                     this.updatedTbls.push(vAddidx);
                 }
@@ -225,11 +225,12 @@ class Whales {
                     this.updatedAddrs.push(address);
                 }
             }
-
+            console.log('10');
             txidx = tx.txid.substring(0, 3);
             queryDB = queryDB + `INSERT INTO ${'transactions_' + txidx} (id,block_height,txid,txseq) VALUES (${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter});\n`;
             await writeout(fileStream, 'query', queryDB, 'db', 'sql');
             queryDB = '';
+            console.log('11');
         }
 
         filepath = path.dirname(require.main.filename) + '/outputs/' + 'query_db' + '.sql';
