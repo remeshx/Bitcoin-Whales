@@ -170,9 +170,12 @@ class Whales {
                 //skiping coainBase input
                 for await (const vin of tx.vin) {
                     vtxidx = vin.txid.substring(0, 3);
+                    console.log('vtxidx:', vtxidx);
+                    console.log('vin.txid:', vin.txid);
                     txid = await BlockChainModel.getTransactionId(vtxidx, vin.txid);
                     if (!txid) {
                         //txid = 1;
+                        //%% the trx may be in current block and we should save current block tx ids.
                         continue;
                         throw 'TXid not found for ' + vin.txid;
                     }
