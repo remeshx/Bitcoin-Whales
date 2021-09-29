@@ -156,6 +156,7 @@ class Whales {
         var filepath = '';
         let fileStream = [];
         for await (const tx of txs) {
+            console.log('21');
             txcounter++;
 
             if (trxread >= txcounter) continue;
@@ -232,11 +233,13 @@ class Whales {
             queryDB = '';
             console.log('11');
         }
-
+        console.log('12');
         filepath = path.dirname(require.main.filename) + '/outputs/' + 'query_db' + '.sql';
 
         await BlockChainModel.importFile(filepath);
+        console.log('12');
         await BlockChainModel.SaveBulkBlock(`( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `);
+        console.log('13');
         await SettingModel.updateSettingVariable('BitcoinNode', 'LastBlockHeightRead', readHeight);
         await SettingModel.updateSettingVariable('BitcoinNode', 'trxRead', -1);
         await SettingModel.updateSettingVariable('BitcoinNode', 'totalTrxRead', trxTotalCounter);
