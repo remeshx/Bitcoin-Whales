@@ -246,15 +246,11 @@ class BlockChainModel {
             db.connect(function (err, client, done) {
                 if (err) {
                     console.log('error: ', err);
-                    process.exit(1);
                 }
                 client.query(sql, function (err, result) {
-
                     if (err) {
                         console.log('error: ', err);
-                        process.exit(1);
                     }
-                    process.exit(0);
                 });
             });
         })
