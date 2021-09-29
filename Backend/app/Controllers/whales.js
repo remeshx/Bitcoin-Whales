@@ -176,9 +176,10 @@ class Whales {
                         continue;
                         throw 'TXid not found for ' + vin.txid;
                     }
-                    //address = await Blockchain.getVInAddress(vin.txid, vin.vout);
-                    console.log(`${vtxidx}, ${txid}, ${vin.vout}`);
-                    address = await BlockChainModel.getVInAddress(vtxidx, txid, vin.vout);
+                    address = await Blockchain.getVInAddress(vin.txid, vin.vout);
+                    if (address == '' || address == undefined) continue;
+                    //console.log(`${vtxidx}, ${txid}, ${vin.vout}`);
+                    //address = await BlockChainModel.getVInAddress(vtxidx, txid, vin.vout);
                     vAddidx_ = address.trim().slice(-2);
                     vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
 
@@ -218,14 +219,14 @@ class Whales {
             }
 
             txidx = tx.txid.substring(0, 3);
-            queryDB = queryDB + `INSERT INTO ${'transactions_' + txidx} (id,block_height,txid,txseq) VALUES (${trxTotalCounter},${readHeight},${tx.txid},${txcounter});\n`;
+            queryDB = queryDB + `INSERT INTO ${'transactions_' + txidx} (id,block_height,txid,txseq) VALUES (${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter});\n`;
             await writeout(fileStream, 'query', queryDB, 'db', 'sql');
             queryDB = '';
         }
 
-        filepath = path.dirname(require.main.filename) + '/outputs/' + 'querydb' + '.sql';
+        filepath = path.dirname(require.main.filename) + '/outputs/' + 'query_db' + '.sql';
 
-        await BlockChainModel.importInputFile(filepath);
+        await BlockChainModel.importFile(filepath);
         await BlockChainModel.SaveBulkBlock(`( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `);
         await SettingModel.updateSettingVariable('BitcoinNode', 'LastBlockHeightRead', readHeight);
         await SettingModel.updateSettingVariable('BitcoinNode', 'trxRead', -1);
