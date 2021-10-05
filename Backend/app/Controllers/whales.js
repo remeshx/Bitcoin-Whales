@@ -155,8 +155,8 @@ class Whales {
         let queryDB = '';
         var filepath = '';
         let fileStream = [];
+        let tempTrxIds = [];
         for await (const tx of txs) {
-            console.log('21');
             txcounter++;
 
             if (trxread >= txcounter) continue;
@@ -173,23 +173,23 @@ class Whales {
                     vtxidx = vin.txid.substring(0, 3);
                     console.log('vtxidx:', vtxidx);
                     console.log('vin.txid:', vin.txid);
+
                     txid = await BlockChainModel.getTransactionId(vtxidx, vin.txid);
-                    console.log('2');
+
                     if (!txid) {
                         //txid = 1;
                         //%% the trx may be in current block and we should save current block tx ids.
-                        continue;
-                        throw 'TXid not found for ' + vin.txid;
+                        if (tempTrxIds[vin.txid]) txid = tempTrxIds[vin.txid];
+                        else throw 'TXid not found for ' + vin.txid;
                     }
                     address = await Blockchain.getVInAddress(vin.txid, vin.vout);
-                    console.log('3');
+
                     if (address == '' || address == undefined) continue;
                     //console.log(`${vtxidx}, ${txid}, ${vin.vout}`);
                     //address = await BlockChainModel.getVInAddress(vtxidx, txid, vin.vout);
                     vAddidx_ = address.trim().slice(-2);
                     vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
 
-                    console.log('5');
                     //mark input transaction as spend in addresses table
                     queryDB = queryDB + `update ${'addresses_' + vAddidx} set spend=1,spend_time=${block.result.time} where txid=${txid} and vout=${vin.vout};\n`;
 
@@ -202,22 +202,19 @@ class Whales {
                         this.updatedAddrs.push(address);
                     }
 
-                    console.log('6');
                 };
             }
-            console.log('7');
             voutCounter = 0;
             for await (const vout of tx.vout) {
                 if (vout.value > 0)
                     address = await Blockchain.getAddressFromVOUT(vout, readHeight);
                 else continue;
-                console.log('8');
                 vAddidx_ = address.trim().slice(-2);
                 vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
 
                 //insert output as new address transaction
                 queryDB = queryDB + `INSERT INTO ${'addresses_' + vAddidx} (blockheight,btc_address,created_time,amount,txid,vout) VALUES (${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter});\n`;
-                console.log('9');
+
                 if (!this.updatedTbls.includes(vAddidx)) {
                     this.updatedTbls.push(vAddidx);
                 }
@@ -226,20 +223,16 @@ class Whales {
                     this.updatedAddrs.push(address);
                 }
             }
-            console.log('10');
             txidx = tx.txid.substring(0, 3);
             queryDB = queryDB + `INSERT INTO ${'transactions_' + txidx} (id,block_height,txid,txseq) VALUES (${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter});\n`;
+            tempTrxIds[tx.txid] = trxTotalCounter;
             await writeout(fileStream, 'query', queryDB, 'db', 'sql');
             queryDB = '';
-            console.log('11');
         }
-        console.log('12');
         filepath = path.dirname(require.main.filename) + '/outputs/' + 'query_db' + '.sql';
 
         await BlockChainModel.importFile(filepath);
-        console.log('12');
         await BlockChainModel.SaveBulkBlock(`( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `);
-        console.log('13');
         await SettingModel.updateSettingVariable('BitcoinNode', 'LastBlockHeightRead', readHeight);
         await SettingModel.updateSettingVariable('BitcoinNode', 'trxRead', -1);
         await SettingModel.updateSettingVariable('BitcoinNode', 'totalTrxRead', trxTotalCounter);
