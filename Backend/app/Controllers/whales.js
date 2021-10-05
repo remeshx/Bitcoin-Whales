@@ -266,29 +266,31 @@ class Whales {
 
         console.log('trx read. importing to db ...');
         //write queries to file
-        sql = '';
+        console.log('updateing  addresses ...');
         for await (var key of queryTxt_addresses_update_keys) {
             if (!key) continue;
-            sql = sql + `update ${'addresses_' + key} set spend=1,spend_time=${block.result.time} where ${queryTxt_addresses_update[key]};\n`;
+            sql = `update ${'addresses_' + key} set spend=1,spend_time=${block.result.time} where ${queryTxt_addresses_update[key]};`;
+            console.log(sql);
+            await BlockChainModel.query(sql);
         }
-        console.log('updateing  addresses ...');
-        await BlockChainModel.importSQL(sql);
 
-        sql = '';
+        console.log('inserting transactions ...');
         for await (var key of queryTxt_transaction_insert_keys) {
             if (!key) continue;
-            sql = sql + `INSERT INTO ${'transactions_' + key} (id,block_height,txid,txseq) VALUES ${queryTxt_transaction_insert[key]};\n`;
+            sql = `INSERT INTO ${'transactions_' + key} (id,block_height,txid,txseq) VALUES ${queryTxt_transaction_insert[key]};`;
+            console.log(sql);
+            await BlockChainModel.query(sql);
         }
-        console.log('inserting transactions ...');
-        await BlockChainModel.importSQL(sql);
 
-        sql = '';
+        console.log('inserting addresses ...');
         for await (var key of queryTxt_addresses_insert_keys) {
             if (!key) continue;
-            sql = sql + `INSERT INTO ${'addresses_' + key} (blockheight,btc_address,created_time,amount,txid,vout) VALUES ${queryTxt_addresses_insert[key]};\n`;
+            sql = `INSERT INTO ${'addresses_' + key} (blockheight,btc_address,created_time,amount,txid,vout) VALUES ${queryTxt_addresses_insert[key]};`;
+            console.log(sql);
+            await BlockChainModel.query(sql);
         }
-        console.log('inserting addresses ...');
-        await BlockChainModel.importSQL(sql);
+
+        //await BlockChainModel.importSQL(sql);
 
         // filepath = path.dirname(require.main.filename) + '/outputs/' + 'query_db' + '.sql';
         // await BlockChainModel.importFile(filepath);
