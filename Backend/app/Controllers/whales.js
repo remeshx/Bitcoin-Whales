@@ -156,6 +156,15 @@ class Whales {
         var filepath = '';
         let fileStream = [];
         let tempTrxIds = [];
+        let queryTxt_addresses_insert = [];
+        let queryTxt_addresses_update = [];
+        let queryTxt_transaction_insert = [];
+
+        let queryTxt_addresses_insert_keys = [];
+        let queryTxt_addresses_update_keys = [];
+        let queryTxt_transaction_insert_keys = [];
+
+        let sql = '';
         for await (const tx of txs) {
             txcounter++;
 
@@ -191,7 +200,15 @@ class Whales {
                     vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
 
                     //mark input transaction as spend in addresses table
-                    queryDB = queryDB + `update ${'addresses_' + vAddidx} set spend=1,spend_time=${block.result.time} where txid=${txid} and vout=${vin.vout};\n`;
+                    sql = `(txid=${txid} and vout=${vin.vout})`;
+                    if (typeof queryTxt_addresses_update[vAddidx] !== 'undefined' && queryTxt_addresses_update[vAddidx] !== null) {
+                        queryTxt_addresses_update[vAddidx] = queryTxt_addresses_update[vAddidx] + ' or ' + sql;
+                    } else {
+                        queryTxt_addresses_update[vAddidx] = sql;
+                        queryTxt_addresses_update_keys.push(vAddidx);
+                    }
+
+                    // queryDB = queryDB + `update ${'addresses_' + vAddidx} set spend=1,spend_time=${block.result.time} where txid=${txid} and vout=${vin.vout};\n`;
 
 
                     if (!this.updatedTbls.includes(vAddidx)) {
@@ -213,7 +230,15 @@ class Whales {
                 vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
 
                 //insert output as new address transaction
-                queryDB = queryDB + `INSERT INTO ${'addresses_' + vAddidx} (blockheight,btc_address,created_time,amount,txid,vout) VALUES (${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter});\n`;
+                sql = `(${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter})`;
+                if (typeof queryTxt_addresses_insert[vAddidx] !== 'undefined' && queryTxt_addresses_insert[vAddidx] !== null) {
+                    queryTxt_addresses_insert[vAddidx] = queryTxt_addresses_insert[vAddidx] + ',' + sql;
+                } else {
+                    queryTxt_addresses_insert[vAddidx] = sql;
+                    queryTxt_addresses_insert_keys.push(vAddidx);
+                }
+
+                // queryDB = queryDB + `INSERT INTO ${'addresses_' + vAddidx} (blockheight,btc_address,created_time,amount,txid,vout) VALUES (${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter});\n`;
 
                 if (!this.updatedTbls.includes(vAddidx)) {
                     this.updatedTbls.push(vAddidx);
@@ -224,14 +249,49 @@ class Whales {
                 }
             }
             txidx = tx.txid.substring(0, 3);
-            queryDB = queryDB + `INSERT INTO ${'transactions_' + txidx} (id,block_height,txid,txseq) VALUES (${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter});\n`;
+
+            sql = `(${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter})`;
+            if (typeof queryTxt_transaction_insert[txidx] !== 'undefined' && queryTxt_transaction_insert[txidx] !== null) {
+                queryTxt_transaction_insert[txidx] = queryTxt_transaction_insert[txidx] + ',' + sql;
+            } else {
+                queryTxt_transaction_insert[txidx] = sql;
+                queryTxt_transaction_insert_keys.push(txidx);
+            }
+            // queryDB = queryDB + `INSERT INTO ${'transactions_' + txidx} (id,block_height,txid,txseq) VALUES (${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter});\n`;
+
             tempTrxIds[tx.txid] = trxTotalCounter;
-            await writeout(fileStream, 'query', queryDB, 'db', 'sql');
+            //await writeout(fileStream, 'query', queryDB, 'db', 'sql');
             queryDB = '';
         }
-        filepath = path.dirname(require.main.filename) + '/outputs/' + 'query_db' + '.sql';
+
         console.log('trx read. importing to db ...');
-        await BlockChainModel.importFile(filepath);
+        //write queries to file
+        sql = '';
+        for await (var key of queryTxt_addresses_update_keys) {
+            if (!key) continue;
+            sql = sql + `update ${'addresses_' + key} set spend=1,spend_time=${block.result.time} where ${queryTxt_addresses_update[key]};\n`;
+        }
+        console.log('updateing  addresses ...');
+        await BlockChainModel.importSQL(sql);
+
+        sql = '';
+        for await (var key of queryTxt_transaction_insert_keys) {
+            if (!key) continue;
+            sql = sql + `INSERT INTO ${'transactions_' + key} (id,block_height,txid,txseq) VALUES ${queryTxt_transaction_insert[key]};\n`;
+        }
+        console.log('inserting transactions ...');
+        await BlockChainModel.importSQL(sql);
+
+        sql = '';
+        for await (var key of queryTxt_addresses_insert_keys) {
+            if (!key) continue;
+            sql = sql + `INSERT INTO ${'addresses_' + key} (blockheight,btc_address,created_time,amount,txid,vout) VALUES ${queryTxt_addresses_insert[key]};\n`;
+        }
+        console.log('inserting addresses ...');
+        await BlockChainModel.importSQL(sql);
+
+        // filepath = path.dirname(require.main.filename) + '/outputs/' + 'query_db' + '.sql';
+        // await BlockChainModel.importFile(filepath);
         await BlockChainModel.SaveBulkBlock(`( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `);
         await SettingModel.updateSettingVariable('BitcoinNode', 'LastBlockHeightRead', readHeight);
         await SettingModel.updateSettingVariable('BitcoinNode', 'trxRead', -1);

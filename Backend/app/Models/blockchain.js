@@ -262,6 +262,25 @@ class BlockChainModel {
         })
     }
 
+    static importSQL(sql) {
+        return new Promise((resolve, reject) => {
+
+            db.connect(function (err, client, done) {
+                if (err) {
+                    console.log('error: ', err);
+                    resolve(false);
+                }
+                client.query(sql, function (err, result) {
+                    if (err) {
+                        console.log('error: ', err);
+                        resolve(false);
+                    }
+                    resolve(true);
+                });
+            });
+        })
+    }
+
     static truncateTable(table) {
         return new Promise((resolve, reject) => {
             db.query(
