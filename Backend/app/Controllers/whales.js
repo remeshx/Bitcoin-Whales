@@ -230,7 +230,7 @@ class Whales {
             queryDB = '';
         }
         filepath = path.dirname(require.main.filename) + '/outputs/' + 'query_db' + '.sql';
-
+        console.log('trx read. importing to db ...');
         await BlockChainModel.importFile(filepath);
         await BlockChainModel.SaveBulkBlock(`( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `);
         await SettingModel.updateSettingVariable('BitcoinNode', 'LastBlockHeightRead', readHeight);
@@ -273,7 +273,7 @@ class Whales {
         global.settings['BitcoinNode_CurrentStageTitle'] = 'startup';
         await SettingModel.updateSettingVariable('BitcoinNode', 'CurrentStage', step);
         await SettingModel.updateSettingVariable('BitcoinNode', 'CurrentStageTitle', 'startup');
-
+        if (step == 6) socketUpdateProgress(socket, 6, readHeight, blockCount);
 
 
         while (readHeight < blockCount) {
@@ -286,7 +286,7 @@ class Whales {
 
             blockCount = await getLastBlock();
             global.settings['BitcoinNode_blockCount'] = blockCount;
-            break;
+
         }
 
         //update richest list
