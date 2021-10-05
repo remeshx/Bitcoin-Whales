@@ -296,7 +296,7 @@ class Whales {
         await SettingModel.updateSettingVariable('BitcoinNode', 'LastBlockHeightRead', readHeight);
         await SettingModel.updateSettingVariable('BitcoinNode', 'trxRead', -1);
         await SettingModel.updateSettingVariable('BitcoinNode', 'totalTrxRead', trxTotalCounter);
-        fs.unlinkSync(filepath);
+        //fs.unlinkSync(filepath);
         global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
         global.settings['BitcoinNode_trxRead'] = -1;
     }
