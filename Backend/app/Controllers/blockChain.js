@@ -59,7 +59,7 @@ class Blockchain {
                 vinValue: addDetail.amount
             });
         } else {
-            //console.log('gettransaction txid :',txid);
+            //console.log('gettransaction txid :', txid);
             let tx = await gettransaction(txid);
             if (tx) {
                 const address = await this.getAddressFromVOUT(tx.result.vout[vout]);
