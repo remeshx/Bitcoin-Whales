@@ -348,10 +348,12 @@ class Whales {
             readHeight++;
             socketUpdateProgress(socket, step, readHeight, blockCount);
 
-
-            console.log('queryTxt_addresses_insert_len', this.findmax(queryTxt_addresses_insert_len, queryTxt_addresses_insert_keys));
-            console.log('queryTxt_addresses_update_len', this.findmax(queryTxt_addresses_update_len, queryTxt_addresses_update_keys));
-            console.log('queryTxt_transaction_insert_keys', this.findmax(queryTxt_transaction_insert_len, queryTxt_transaction_insert_keys));
+            var xx = await this.findmax(queryTxt_addresses_insert_len, queryTxt_addresses_insert_keys);
+            var yy = await this.findmax(queryTxt_addresses_update_len, queryTxt_addresses_update_keys);
+            var zz = await this.findmax(queryTxt_transaction_insert_len, queryTxt_transaction_insert_keys);
+            console.log('queryTxt_addresses_insert_len', xx);
+            console.log('queryTxt_addresses_update_len', yy)
+            console.log('queryTxt_transaction_insert_keys', zz);
         }
 
         console.log('blocked read. importing to db ...');
