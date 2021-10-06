@@ -168,7 +168,7 @@ class Whales {
         while (readHeight <= blockCount) {
 
             block = await getBlockByHeight(parseInt(readHeight));
-            console.log(block);
+            //console.log(block);
             txs = block.result.tx;
             console.log('trx found : ', txs.length);
             console.log('trx id in tbl : ', trxTotalCounter);
@@ -347,10 +347,10 @@ class Whales {
 
             readHeight++;
             socketUpdateProgress(socket, step, readHeight, blockCount);
+            console.log('queryTxt_addresses_insert_len', Math.max(...queryTxt_addresses_insert_len));
+            console.log('queryTxt_addresses_update_len', Math.max(...queryTxt_addresses_update_len));
+            console.log('queryTxt_transaction_insert_keys', Math.max(...queryTxt_transaction_insert_keys));
         }
-        console.log('queryTxt_addresses_insert_len', Math.max(...queryTxt_addresses_insert_len));
-        console.log('queryTxt_addresses_update_len', Math.max(...queryTxt_addresses_update_len));
-        console.log('queryTxt_transaction_insert_keys', Math.max(...queryTxt_transaction_insert_keys));
 
         console.log('blocked read. importing to db ...');
         //write queries to file
