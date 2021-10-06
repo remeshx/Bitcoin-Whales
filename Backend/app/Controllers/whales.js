@@ -159,9 +159,9 @@ class Whales {
         let queryTxt_addresses_update_keys = [];
         let queryTxt_transaction_insert_keys = [];
 
-        let queryTxt_addresses_insert_len = [];
-        let queryTxt_addresses_update_len = [];
-        let queryTxt_transaction_insert_len = [];
+        let queryTxt_addresses_insert_len = 0;
+        let queryTxt_addresses_update_len = 0;
+        let queryTxt_transaction_insert_len = 0;
         socketUpdateProgress(socket, 6, readHeight, blockCount);
         socketUpdateProgress(socket, step, readHeight, blockCount);
 
@@ -197,8 +197,8 @@ class Whales {
                     //skiping coainBase input
                     for await (const vin of tx.vin) {
                         vtxidx = vin.txid.substring(0, 3);
-                        console.log('vtxidx:', vtxidx);
-                        console.log('vin.txid:', vin.txid);
+                        //console.log('vtxidx:', vtxidx);
+                        //console.log('vin.txid:', vin.txid);
 
                         txid = await BlockChainModel.getTransactionId(vtxidx, vin.txid);
 
@@ -350,6 +350,9 @@ class Whales {
             socketUpdateProgress(socket, step, readHeight, blockCount);
             socketUpdateProgress(socket, 6, readHeight, blockCount);
         }
+        console.log('queryTxt_addresses_insert_len', Math.max(...queryTxt_addresses_insert_len));
+        console.log('queryTxt_addresses_update_len', Math.max(...queryTxt_addresses_update_len));
+        console.log('queryTxt_transaction_insert_keys', Math.max(...queryTxt_transaction_insert_keys));
 
         console.log('blocked read. importing to db ...');
         //write queries to file
@@ -414,16 +417,14 @@ class Whales {
         if (step == 6) socketUpdateProgress(socket, 6, readHeight, blockCount);
 
 
-        while (readHeight < blockCount) {
-            readHeight++;
-            console.log('readHeight:', readHeight);
-            socketUpdateProgress(socket, step, readHeight, blockCount);
-            //await this.insertBlockData(readHeight);
-            await this.insertBlockData_bulk(socket, step, readHeight, blockCount);
 
-            blockCount = await getLastBlock();
-            global.settings['BitcoinNode_blockCount'] = blockCount;
-        }
+        console.log('readHeight:', readHeight);
+        socketUpdateProgress(socket, step, readHeight, blockCount);
+        //await this.insertBlockData(readHeight);
+        await this.insertBlockData_bulk(socket, step, readHeight, blockCount);
+
+        blockCount = await getLastBlock();
+        global.settings['BitcoinNode_blockCount'] = blockCount;
 
         //update richest list
         await this.checkForRichest();
