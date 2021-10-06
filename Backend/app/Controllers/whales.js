@@ -293,7 +293,7 @@ class Whales {
                 //queryDB = '';
 
             }
-            blockSQL += `( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `;
+            blockSQL += `,( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0)`;
 
             //await BlockChainModel.importSQL(sql);
             if (write) {
@@ -301,7 +301,7 @@ class Whales {
                 for await (var key of queryTxt_addresses_update_keys) {
                     if (!key) continue;
                     sql = `update ${'addresses_' + key} as a set spend=1,spend_time=b.spendtime from (values ${queryTxt_addresses_update[key]}) as b(txid,vout,spendtime) where  a.txid=b.txid and a.vout=b.vout;`;
-                    console.log(sql);
+                    //console.log(sql);
                     await BlockChainModel.query(sql);
                 }
 
@@ -309,7 +309,7 @@ class Whales {
                 for await (var key of queryTxt_transaction_insert_keys) {
                     if (!key) continue;
                     sql = `INSERT INTO ${'transactions_' + key} (id,block_height,txid,txseq) VALUES ${queryTxt_transaction_insert[key]};`;
-                    console.log(sql);
+                    //console.log(sql);
                     await BlockChainModel.query(sql);
                 }
 
@@ -317,12 +317,13 @@ class Whales {
                 for await (var key of queryTxt_addresses_insert_keys) {
                     if (!key) continue;
                     sql = `INSERT INTO ${'addresses_' + key} (blockheight,btc_address,created_time,amount,txid,vout) VALUES ${queryTxt_addresses_insert[key]};`;
-                    console.log(sql);
+                    //console.log(sql);
                     await BlockChainModel.query(sql);
                 }
 
                 // filepath = path.dirname(require.main.filename) + '/outputs/' + 'query_db' + '.sql';
                 // await BlockChainModel.importFile(filepath);
+                blockSQL = blockSQL.replace(/(^,)|(,$)/g, "");
                 await BlockChainModel.SaveBulkBlock(blockSQL);
                 await SettingModel.updateSettingVariable('BitcoinNode', 'LastBlockHeightRead', readHeight);
                 await SettingModel.updateSettingVariable('BitcoinNode', 'trxRead', -1);
@@ -369,7 +370,7 @@ class Whales {
         for await (var key of queryTxt_transaction_insert_keys) {
             if (!key) continue;
             sql = `INSERT INTO ${'transactions_' + key} (id,block_height,txid,txseq) VALUES ${queryTxt_transaction_insert[key]};`;
-            console.log(sql);
+            // console.log(sql);
             await BlockChainModel.query(sql);
         }
 
@@ -377,9 +378,18 @@ class Whales {
         for await (var key of queryTxt_addresses_insert_keys) {
             if (!key) continue;
             sql = `INSERT INTO ${'addresses_' + key} (blockheight,btc_address,created_time,amount,txid,vout) VALUES ${queryTxt_addresses_insert[key]};`;
-            console.log(sql);
+            //console.log(sql);
             await BlockChainModel.query(sql);
         }
+
+        blockSQL = blockSQL.replace(/(^,)|(,$)/g, "");
+        await BlockChainModel.SaveBulkBlock(blockSQL);
+        await SettingModel.updateSettingVariable('BitcoinNode', 'LastBlockHeightRead', readHeight);
+        await SettingModel.updateSettingVariable('BitcoinNode', 'trxRead', -1);
+        await SettingModel.updateSettingVariable('BitcoinNode', 'totalTrxRead', trxTotalCounter);
+        //fs.unlinkSync(filepath);
+        global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
+        global.settings['BitcoinNode_trxRead'] = -1;
         console.log('Done.');
     }
 
