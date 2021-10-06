@@ -131,19 +131,13 @@ class Whales {
         global.settings['BitcoinNode_trxRead'] = -1;
     }
 
-    static async insertBlockData_bulk(readHeight) {
+    static async insertBlockData_bulk(readHeight, blockCount) {
         console.log('b: ', readHeight);
         //update clients        
 
         let trxTotalCounter = global.settings['BitcoinNode_totalTrxRead'];
         let trxread = global.settings['BitcoinNode_trxRead'];
-
-
-        //geting block information
-        const block = await getBlockByHeight(readHeight);
-        let txs = block.result.tx;
-        console.log('trx found : ', txs.length);
-        console.log('trx id in tbl : ', trxTotalCounter);
+        let block;
         let txcounter = -1;
         let vtxidx = '';
         let txid = 0;
@@ -152,9 +146,8 @@ class Whales {
         let vAddidx_ = '';
         let vAddidx = '';
         let txidx = '';
-        let queryDB = '';
-        var filepath = '';
-        let fileStream = [];
+        let blockSQL = '';
+        //geting block information
         let tempTrxIds = [];
         let queryTxt_addresses_insert = [];
         let queryTxt_addresses_update = [];
@@ -164,52 +157,110 @@ class Whales {
         let queryTxt_addresses_update_keys = [];
         let queryTxt_transaction_insert_keys = [];
 
-        let sql = '';
-        for await (const tx of txs) {
-            txcounter++;
+        let queryTxt_addresses_insert_len = [];
+        let queryTxt_addresses_update_len = [];
+        let queryTxt_transaction_insert_len = [];
 
-            if (trxread >= txcounter) continue;
 
-            trxTotalCounter++;
+        let write = false;
+        while (readHeight <= blockCount) {
 
-            console.log(txcounter);
-            console.log('txidx:', tx.txid);
-            //mark older transaction as spent where exists in the input
-            if (txcounter > 0) {
+            block = await getBlockByHeight(readHeight);
+            txs = block.result.tx;
+            console.log('trx found : ', txs.length);
+            console.log('trx id in tbl : ', trxTotalCounter);
+            txcounter = -1;
+            vtxidx = '';
+            txid = 0;
+            voutCounter = 0;
+            address = '';
+            vAddidx_ = '';
+            vAddidx = '';
+            txidx = '';
 
-                //skiping coainBase input
-                for await (const vin of tx.vin) {
-                    vtxidx = vin.txid.substring(0, 3);
-                    console.log('vtxidx:', vtxidx);
-                    console.log('vin.txid:', vin.txid);
+            for await (const tx of txs) {
 
-                    txid = await BlockChainModel.getTransactionId(vtxidx, vin.txid);
+                txcounter++;
 
-                    if (!txid) {
-                        //txid = 1;
-                        //%% the trx may be in current block and we should save current block tx ids.
-                        if (tempTrxIds[vin.txid]) txid = tempTrxIds[vin.txid];
-                        else throw 'TXid not found for ' + vin.txid;
-                    }
-                    address = await Blockchain.getVInAddress(vin.txid, vin.vout);
+                if (trxread >= txcounter) continue;
 
-                    if (address == '' || address == undefined) continue;
-                    //console.log(`${vtxidx}, ${txid}, ${vin.vout}`);
-                    //address = await BlockChainModel.getVInAddress(vtxidx, txid, vin.vout);
+                trxTotalCounter++;
+
+                console.log(txcounter);
+                console.log('txidx:', tx.txid);
+                //mark older transaction as spent where exists in the input
+                if (txcounter > 0) {
+
+                    //skiping coainBase input
+                    for await (const vin of tx.vin) {
+                        vtxidx = vin.txid.substring(0, 3);
+                        console.log('vtxidx:', vtxidx);
+                        console.log('vin.txid:', vin.txid);
+
+                        txid = await BlockChainModel.getTransactionId(vtxidx, vin.txid);
+
+                        if (!txid) {
+                            //txid = 1;
+                            //%% the trx may be in current block and we should save current block tx ids.
+                            if (tempTrxIds[vin.txid]) txid = tempTrxIds[vin.txid];
+                            else throw 'TXid not found for ' + vin.txid;
+                        }
+                        address = await Blockchain.getVInAddress(vin.txid, vin.vout);
+
+                        if (address == '' || address == undefined) continue;
+                        //console.log(`${vtxidx}, ${txid}, ${vin.vout}`);
+                        //address = await BlockChainModel.getVInAddress(vtxidx, txid, vin.vout);
+                        vAddidx_ = address.trim().slice(-2);
+                        vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
+
+                        //mark input transaction as spend in addresses table
+                        sql = `(${txid},${vin.vout},${block.result.time})`;
+                        if (typeof queryTxt_addresses_update[vAddidx] !== 'undefined' && queryTxt_addresses_update[vAddidx] !== null) {
+                            queryTxt_addresses_update[vAddidx] = queryTxt_addresses_update[vAddidx] + ' or ' + sql;
+                            queryTxt_addresses_update_len[vAddidx] += 1;
+                        } else {
+                            queryTxt_addresses_update[vAddidx] = sql;
+                            queryTxt_addresses_update_keys.push(vAddidx);
+                            queryTxt_addresses_update_len[vAddidx] = 1;
+                        }
+
+                        if (queryTxt_addresses_update_len[vAddidx] > 500) write = true;
+                        // queryDB = queryDB + `update ${'addresses_' + vAddidx} set spend=1,spend_time=${block.result.time} where txid=${txid} and vout=${vin.vout};\n`;
+
+
+                        if (!this.updatedTbls.includes(vAddidx)) {
+                            this.updatedTbls.push(vAddidx);
+                        }
+
+                        if (!this.updatedAddrs.includes(address)) {
+                            this.updatedAddrs.push(address);
+                        }
+
+                    };
+                }
+                voutCounter = 0;
+                for await (const vout of tx.vout) {
+                    if (vout.value > 0)
+                        address = await Blockchain.getAddressFromVOUT(vout, readHeight);
+                    else continue;
                     vAddidx_ = address.trim().slice(-2);
                     vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
 
-                    //mark input transaction as spend in addresses table
-                    sql = `(txid=${txid} and vout=${vin.vout})`;
-                    if (typeof queryTxt_addresses_update[vAddidx] !== 'undefined' && queryTxt_addresses_update[vAddidx] !== null) {
-                        queryTxt_addresses_update[vAddidx] = queryTxt_addresses_update[vAddidx] + ' or ' + sql;
+                    //insert output as new address transaction
+                    sql = `(${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter})`;
+                    if (typeof queryTxt_addresses_insert[vAddidx] !== 'undefined' && queryTxt_addresses_insert[vAddidx] !== null) {
+                        queryTxt_addresses_insert[vAddidx] = queryTxt_addresses_insert[vAddidx] + ',' + sql;
+                        queryTxt_addresses_insert_len[vAddidx] += 1;
                     } else {
-                        queryTxt_addresses_update[vAddidx] = sql;
-                        queryTxt_addresses_update_keys.push(vAddidx);
+                        queryTxt_addresses_insert[vAddidx] = sql;
+                        queryTxt_addresses_insert_keys.push(vAddidx);
+                        queryTxt_addresses_insert_len[vAddidx] = 1;
                     }
 
-                    // queryDB = queryDB + `update ${'addresses_' + vAddidx} set spend=1,spend_time=${block.result.time} where txid=${txid} and vout=${vin.vout};\n`;
+                    if (queryTxt_addresses_insert_len[vAddidx] > 500) write = true;
 
+
+                    // queryDB = queryDB + `INSERT INTO ${'addresses_' + vAddidx} (blockheight,btc_address,created_time,amount,txid,vout) VALUES (${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter});\n`;
 
                     if (!this.updatedTbls.includes(vAddidx)) {
                         this.updatedTbls.push(vAddidx);
@@ -218,59 +269,87 @@ class Whales {
                     if (!this.updatedAddrs.includes(address)) {
                         this.updatedAddrs.push(address);
                     }
+                }
+                txidx = tx.txid.substring(0, 3);
 
-                };
-            }
-            voutCounter = 0;
-            for await (const vout of tx.vout) {
-                if (vout.value > 0)
-                    address = await Blockchain.getAddressFromVOUT(vout, readHeight);
-                else continue;
-                vAddidx_ = address.trim().slice(-2);
-                vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
-
-                //insert output as new address transaction
-                sql = `(${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter})`;
-                if (typeof queryTxt_addresses_insert[vAddidx] !== 'undefined' && queryTxt_addresses_insert[vAddidx] !== null) {
-                    queryTxt_addresses_insert[vAddidx] = queryTxt_addresses_insert[vAddidx] + ',' + sql;
+                sql = `(${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter})`;
+                if (typeof queryTxt_transaction_insert[txidx] !== 'undefined' && queryTxt_transaction_insert[txidx] !== null) {
+                    queryTxt_transaction_insert[txidx] = queryTxt_transaction_insert[txidx] + ',' + sql;
+                    queryTxt_transaction_insert_len[txidx] += 1;
                 } else {
-                    queryTxt_addresses_insert[vAddidx] = sql;
-                    queryTxt_addresses_insert_keys.push(vAddidx);
+                    queryTxt_transaction_insert[txidx] = sql;
+                    queryTxt_transaction_insert_keys.push(txidx);
+                    queryTxt_transaction_insert_len[txidx] = 1;
                 }
 
-                // queryDB = queryDB + `INSERT INTO ${'addresses_' + vAddidx} (blockheight,btc_address,created_time,amount,txid,vout) VALUES (${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter});\n`;
+                if (queryTxt_transaction_insert_len[txidx] > 500) write = true;
+                // queryDB = queryDB + `INSERT INTO ${'transactions_' + txidx} (id,block_height,txid,txseq) VALUES (${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter});\n`;
 
-                if (!this.updatedTbls.includes(vAddidx)) {
-                    this.updatedTbls.push(vAddidx);
-                }
+                tempTrxIds[tx.txid] = trxTotalCounter;
+                //await writeout(fileStream, 'query', queryDB, 'db', 'sql');
+                queryDB = '';
 
-                if (!this.updatedAddrs.includes(address)) {
-                    this.updatedAddrs.push(address);
-                }
             }
-            txidx = tx.txid.substring(0, 3);
+            blockSQL += `( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `;
 
-            sql = `(${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter})`;
-            if (typeof queryTxt_transaction_insert[txidx] !== 'undefined' && queryTxt_transaction_insert[txidx] !== null) {
-                queryTxt_transaction_insert[txidx] = queryTxt_transaction_insert[txidx] + ',' + sql;
-            } else {
-                queryTxt_transaction_insert[txidx] = sql;
-                queryTxt_transaction_insert_keys.push(txidx);
+            //await BlockChainModel.importSQL(sql);
+            if (write) {
+                console.log('updateing  addresses ...');
+                for await (var key of queryTxt_addresses_update_keys) {
+                    if (!key) continue;
+                    sql = `update ${'addresses_' + key} as A set A.spend=1,A.spend_time=B.spendtime from (values ${queryTxt_addresses_update[key]}) as B(txid,vout,spendtime) where  A.txid=B.txid and A.vout=B.vout;`;
+                    console.log(sql);
+                    await BlockChainModel.query(sql);
+                }
+
+                console.log('inserting transactions ...');
+                for await (var key of queryTxt_transaction_insert_keys) {
+                    if (!key) continue;
+                    sql = `INSERT INTO ${'transactions_' + key} (id,block_height,txid,txseq) VALUES ${queryTxt_transaction_insert[key]};`;
+                    console.log(sql);
+                    await BlockChainModel.query(sql);
+                }
+
+                console.log('inserting addresses ...');
+                for await (var key of queryTxt_addresses_insert_keys) {
+                    if (!key) continue;
+                    sql = `INSERT INTO ${'addresses_' + key} (blockheight,btc_address,created_time,amount,txid,vout) VALUES ${queryTxt_addresses_insert[key]};`;
+                    console.log(sql);
+                    await BlockChainModel.query(sql);
+                }
+
+                // filepath = path.dirname(require.main.filename) + '/outputs/' + 'query_db' + '.sql';
+                // await BlockChainModel.importFile(filepath);
+                await BlockChainModel.SaveBulkBlock(blockSQL);
+                await SettingModel.updateSettingVariable('BitcoinNode', 'LastBlockHeightRead', readHeight);
+                await SettingModel.updateSettingVariable('BitcoinNode', 'trxRead', -1);
+                await SettingModel.updateSettingVariable('BitcoinNode', 'totalTrxRead', trxTotalCounter);
+                //fs.unlinkSync(filepath);
+                global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
+                global.settings['BitcoinNode_trxRead'] = -1;
+                write = false;
+                blockSQL = '';
+                queryTxt_addresses_insert = [];
+                queryTxt_addresses_update = [];
+                queryTxt_transaction_insert = [];
+
+                queryTxt_addresses_insert_keys = [];
+                queryTxt_addresses_update_keys = [];
+                queryTxt_transaction_insert_keys = [];
+
+                queryTxt_addresses_insert_len = 0;
+                queryTxt_addresses_update_len = 0;
+                queryTxt_transaction_insert_len = 0;
             }
-            // queryDB = queryDB + `INSERT INTO ${'transactions_' + txidx} (id,block_height,txid,txseq) VALUES (${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter});\n`;
-
-            tempTrxIds[tx.txid] = trxTotalCounter;
-            //await writeout(fileStream, 'query', queryDB, 'db', 'sql');
-            queryDB = '';
+            readHeight++;
         }
 
-        console.log('trx read. importing to db ...');
+        console.log('blocked read. importing to db ...');
         //write queries to file
         console.log('updateing  addresses ...');
         for await (var key of queryTxt_addresses_update_keys) {
             if (!key) continue;
-            sql = `update ${'addresses_' + key} set spend=1,spend_time=${block.result.time} where ${queryTxt_addresses_update[key]};`;
-            console.log(sql);
+            ql = `update ${'addresses_' + vAddidx} as A set A.spend=1,A.spend_time=B.spendtime from (values ${queryTxt_addresses_update[vAddidx]}) as B(txid,vout,spendtime) where  A.txid=B.txid and A.vout=B.vout;`;
             await BlockChainModel.query(sql);
         }
 
@@ -289,19 +368,9 @@ class Whales {
             console.log(sql);
             await BlockChainModel.query(sql);
         }
-
-        //await BlockChainModel.importSQL(sql);
-
-        // filepath = path.dirname(require.main.filename) + '/outputs/' + 'query_db' + '.sql';
-        // await BlockChainModel.importFile(filepath);
-        await BlockChainModel.SaveBulkBlock(`( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `);
-        await SettingModel.updateSettingVariable('BitcoinNode', 'LastBlockHeightRead', readHeight);
-        await SettingModel.updateSettingVariable('BitcoinNode', 'trxRead', -1);
-        await SettingModel.updateSettingVariable('BitcoinNode', 'totalTrxRead', trxTotalCounter);
-        //fs.unlinkSync(filepath);
-        global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
-        global.settings['BitcoinNode_trxRead'] = -1;
+        console.log('Done.');
     }
+
 
     static async startup(socket, step = 6) {
         /* preloading would take several days to complete during this period we would have couple of blocks that have not been analized.
@@ -344,11 +413,10 @@ class Whales {
             if (step == 6) socketUpdateProgress(socket, 6, readHeight, blockCount);
             socketUpdateProgress(socket, step, readHeight, blockCount);
             //await this.insertBlockData(readHeight);
-            await this.insertBlockData_bulk(readHeight);
+            await this.insertBlockData_bulk(readHeight, blockCount);
 
             blockCount = await getLastBlock();
             global.settings['BitcoinNode_blockCount'] = blockCount;
-
         }
 
         //update richest list
