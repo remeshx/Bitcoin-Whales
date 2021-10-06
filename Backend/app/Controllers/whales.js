@@ -131,7 +131,7 @@ class Whales {
         global.settings['BitcoinNode_trxRead'] = -1;
     }
 
-    static async insertBlockData_bulk(readHeight, blockCount) {
+    static async insertBlockData_bulk(socket, step, readHeight, blockCount) {
         console.log('b: ', readHeight);
         //update clients        
 
@@ -343,6 +343,7 @@ class Whales {
                 queryTxt_addresses_update_len = 0;
                 queryTxt_transaction_insert_len = 0;
             }
+            socketUpdateProgress(socket, step, readHeight, blockCount);
             readHeight++;
         }
 
@@ -412,10 +413,9 @@ class Whales {
         while (readHeight < blockCount) {
             readHeight++;
             console.log('readHeight:', readHeight);
-            if (step == 6) socketUpdateProgress(socket, 6, readHeight, blockCount);
             socketUpdateProgress(socket, step, readHeight, blockCount);
             //await this.insertBlockData(readHeight);
-            await this.insertBlockData_bulk(readHeight, blockCount);
+            await this.insertBlockData_bulk(socket, step, readHeight, blockCount);
 
             blockCount = await getLastBlock();
             global.settings['BitcoinNode_blockCount'] = blockCount;
