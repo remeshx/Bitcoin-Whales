@@ -163,6 +163,7 @@ class Whales {
         let queryTxt_addresses_update_len = [];
         let queryTxt_transaction_insert_len = [];
         socketUpdateProgress(socket, 6, readHeight, blockCount);
+        socketUpdateProgress(socket, step, readHeight, blockCount);
 
         let write = false;
         while (readHeight <= blockCount) {
@@ -345,6 +346,8 @@ class Whales {
             }
 
             readHeight++;
+            socketUpdateProgress(socket, 6, readHeight, blockCount);
+            socketUpdateProgress(socket, step, readHeight, blockCount);
             socketUpdateProgress(socket, 6, readHeight, blockCount);
         }
 
