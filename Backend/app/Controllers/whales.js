@@ -159,9 +159,9 @@ class Whales {
         let queryTxt_addresses_update_keys = [];
         let queryTxt_transaction_insert_keys = [];
 
-        let queryTxt_addresses_insert_len = 0;
-        let queryTxt_addresses_update_len = 0;
-        let queryTxt_transaction_insert_len = 0;
+        let queryTxt_addresses_insert_len = [];
+        let queryTxt_addresses_update_len = [];
+        let queryTxt_transaction_insert_len = [];
         socketUpdateProgress(socket, 6, readHeight, blockCount);
         socketUpdateProgress(socket, step, readHeight, blockCount);
 
@@ -341,9 +341,9 @@ class Whales {
                 queryTxt_addresses_update_keys = [];
                 queryTxt_transaction_insert_keys = [];
 
-                queryTxt_addresses_insert_len = 0;
-                queryTxt_addresses_update_len = 0;
-                queryTxt_transaction_insert_len = 0;
+                queryTxt_addresses_insert_len = [];
+                queryTxt_addresses_update_len = [];
+                queryTxt_transaction_insert_len = [];
             }
 
             readHeight++;
