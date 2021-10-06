@@ -219,7 +219,7 @@ class Whales {
                         //mark input transaction as spend in addresses table
                         sql = `(${txid},${vin.vout},${block.result.time})`;
                         if (typeof queryTxt_addresses_update[vAddidx] !== 'undefined' && queryTxt_addresses_update[vAddidx] !== null) {
-                            queryTxt_addresses_update[vAddidx] = queryTxt_addresses_update[vAddidx] + ' or ' + sql;
+                            queryTxt_addresses_update[vAddidx] = queryTxt_addresses_update[vAddidx] + ',' + sql;
                             queryTxt_addresses_update_len[vAddidx] += 1;
                         } else {
                             queryTxt_addresses_update[vAddidx] = sql;
