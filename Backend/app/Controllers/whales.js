@@ -162,7 +162,7 @@ class Whales {
         let queryTxt_addresses_insert_len = [];
         let queryTxt_addresses_update_len = [];
         let queryTxt_transaction_insert_len = [];
-
+        socketUpdateProgress(socket, 6, readHeight, blockCount);
 
         let write = false;
         while (readHeight <= blockCount) {
@@ -343,8 +343,9 @@ class Whales {
                 queryTxt_addresses_update_len = 0;
                 queryTxt_transaction_insert_len = 0;
             }
-            socketUpdateProgress(socket, step, readHeight, blockCount);
+
             readHeight++;
+            socketUpdateProgress(socket, 6, readHeight, blockCount);
         }
 
         console.log('blocked read. importing to db ...');
