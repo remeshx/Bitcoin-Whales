@@ -168,7 +168,7 @@ class Whales {
         let write = false;
         while (readHeight <= blockCount) {
 
-            block = await getBlockByHeight(readHeight);
+            block = await getBlockByHeight(parseInt(readHeight));
             console.log(block);
             txs = block.result.tx;
             console.log('trx found : ', txs.length);
