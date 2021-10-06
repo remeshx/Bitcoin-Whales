@@ -289,7 +289,7 @@ class Whales {
 
                 tempTrxIds[tx.txid] = trxTotalCounter;
                 //await writeout(fileStream, 'query', queryDB, 'db', 'sql');
-                queryDB = '';
+                //queryDB = '';
 
             }
             blockSQL += `( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0) `;
