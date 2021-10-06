@@ -89,7 +89,7 @@ class Blockchain {
     }
 
     static async getVInAddress(txid, vout) {
-        console.log('gettransaction txid :', txid);
+        //console.log('gettransaction txid :', txid);
         let tx = await gettransaction(txid);
         if (tx) {
             const address = await this.getAddressFromVOUT(tx.result.vout[vout]);

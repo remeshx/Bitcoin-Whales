@@ -138,7 +138,7 @@ function callNode(method, params = [], retries = 10, timout = 5000) {
     const nodeurl = 'http://' + BTCNodeConfig.BTCNODE_USERNAME + ':' + BTCNodeConfig.BTCNODE_PASSWORD + '@' + BTCNodeConfig.BTCNODE_IPPORT;
     //let parameters = {"jsonrpc": "1.0", "id":method, "method": method, "params": null};
     let parameters = { "jsonrpc": "1.0", "id": method, "method": method, "params": params };
-    console.log('parameters', parameters);
+    //console.log('parameters', parameters);
     return new Promise((resolve, reject) => {
         fetch(nodeurl, {
             method: "POST",

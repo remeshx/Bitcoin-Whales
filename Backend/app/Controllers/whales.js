@@ -162,7 +162,6 @@ class Whales {
         let queryTxt_addresses_insert_len = [];
         let queryTxt_addresses_update_len = [];
         let queryTxt_transaction_insert_len = [];
-        socketUpdateProgress(socket, 6, readHeight, blockCount);
         socketUpdateProgress(socket, step, readHeight, blockCount);
 
         let write = false;
@@ -191,7 +190,7 @@ class Whales {
                 trxTotalCounter++;
 
                 console.log(txcounter);
-                console.log('txidx:', tx.txid);
+                //console.log('txidx:', tx.txid);
                 //mark older transaction as spent where exists in the input
                 if (txcounter > 0) {
 
@@ -347,9 +346,7 @@ class Whales {
             }
 
             readHeight++;
-            socketUpdateProgress(socket, 6, readHeight, blockCount);
             socketUpdateProgress(socket, step, readHeight, blockCount);
-            socketUpdateProgress(socket, 6, readHeight, blockCount);
         }
         console.log('queryTxt_addresses_insert_len', Math.max(...queryTxt_addresses_insert_len));
         console.log('queryTxt_addresses_update_len', Math.max(...queryTxt_addresses_update_len));
