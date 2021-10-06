@@ -300,7 +300,7 @@ class Whales {
                 console.log('updateing  addresses ...');
                 for await (var key of queryTxt_addresses_update_keys) {
                     if (!key) continue;
-                    sql = `update ${'addresses_' + key} as A set A.spend=1,A.spend_time=B.spendtime from (values ${queryTxt_addresses_update[key]}) as B(txid,vout,spendtime) where  A.txid=B.txid and A.vout=B.vout;`;
+                    sql = `update ${'addresses_' + key} as a set spend=1,spend_time=b.spendtime from (values ${queryTxt_addresses_update[key]}) as b(txid,vout,spendtime) where  a.txid=b.txid and a.vout=b.vout;`;
                     console.log(sql);
                     await BlockChainModel.query(sql);
                 }
@@ -361,7 +361,7 @@ class Whales {
         console.log('updateing  addresses ...');
         for await (var key of queryTxt_addresses_update_keys) {
             if (!key) continue;
-            ql = `update ${'addresses_' + vAddidx} as A set A.spend=1,A.spend_time=B.spendtime from (values ${queryTxt_addresses_update[vAddidx]}) as B(txid,vout,spendtime) where  A.txid=B.txid and A.vout=B.vout;`;
+            ql = `update ${'addresses_' + vAddidx} as a set spend=1,spend_time=b.spendtime from (values ${queryTxt_addresses_update[vAddidx]}) as b(txid,vout,spendtime) where  a.txid=b.txid and a.vout=b.vout;`;
             await BlockChainModel.query(sql);
         }
 
