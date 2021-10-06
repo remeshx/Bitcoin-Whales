@@ -347,9 +347,11 @@ class Whales {
 
             readHeight++;
             socketUpdateProgress(socket, step, readHeight, blockCount);
-            console.log('queryTxt_addresses_insert_len', Math.max(...queryTxt_addresses_insert_len));
-            console.log('queryTxt_addresses_update_len', Math.max(...queryTxt_addresses_update_len));
-            console.log('queryTxt_transaction_insert_keys', Math.max(...queryTxt_transaction_insert_keys));
+
+
+            console.log('queryTxt_addresses_insert_len', findmax(queryTxt_addresses_insert_len, queryTxt_addresses_insert_key));
+            console.log('queryTxt_addresses_update_len', findmax(queryTxt_addresses_update_len, queryTxt_addresses_update_key));
+            console.log('queryTxt_transaction_insert_keys', findmax(queryTxt_transaction_insert_len, queryTxt_transaction_insert_key));
         }
 
         console.log('blocked read. importing to db ...');
@@ -380,6 +382,14 @@ class Whales {
     }
 
 
+
+    static async findmax(arr, arrkey) {
+        let max = 0;
+        for await (var key of arrkey) {
+            if (arr[key] > max) max = arr[key];
+        }
+        return max;
+    }
     static async startup(socket, step = 6) {
         /* preloading would take several days to complete during this period we would have couple of blocks that have not been analized.
         startup function is going to load those blocks one by one to reach the last mined block. 
