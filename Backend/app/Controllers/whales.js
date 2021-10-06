@@ -169,6 +169,7 @@ class Whales {
         while (readHeight <= blockCount) {
 
             block = await getBlockByHeight(readHeight);
+            console.log(block);
             txs = block.result.tx;
             console.log('trx found : ', txs.length);
             console.log('trx id in tbl : ', trxTotalCounter);
