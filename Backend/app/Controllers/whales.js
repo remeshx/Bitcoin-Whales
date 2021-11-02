@@ -298,7 +298,7 @@ class Whales {
             //await BlockChainModel.importSQL(sql);
             if (write) {
                 console.log('updateing  addresses ...');
-                for await (var key of queryTxt_addresses_update_keys) {
+                for await (const key of queryTxt_addresses_update_keys) {
                     if (!key) continue;
                     sql = `update ${'addresses_' + key} as a set spend=1,spend_time=b.spendtime from (values ${queryTxt_addresses_update[key]}) as b(txid,vout,spendtime) where  a.txid=b.txid and a.vout=b.vout;`;
                     //console.log(sql);
@@ -306,7 +306,7 @@ class Whales {
                 }
 
                 console.log('inserting transactions ...');
-                for await (var key of queryTxt_transaction_insert_keys) {
+                for await (const key of queryTxt_transaction_insert_keys) {
                     if (!key) continue;
                     sql = `INSERT INTO ${'transactions_' + key} (id,block_height,txid,txseq) VALUES ${queryTxt_transaction_insert[key]};`;
                     //console.log(sql);
@@ -314,7 +314,7 @@ class Whales {
                 }
 
                 console.log('inserting addresses ...');
-                for await (var key of queryTxt_addresses_insert_keys) {
+                for await (const key of queryTxt_addresses_insert_keys) {
                     if (!key) continue;
                     sql = `INSERT INTO ${'addresses_' + key} (blockheight,btc_address,created_time,amount,txid,vout) VALUES ${queryTxt_addresses_insert[key]};`;
                     //console.log(sql);
@@ -333,42 +333,47 @@ class Whales {
                 global.settings['BitcoinNode_trxRead'] = -1;
                 write = false;
                 blockSQL = '';
+                queryTxt_addresses_insert.length = 0;
+                queryTxt_addresses_update.length = 0;
+                queryTxt_transaction_insert.length = 0;
                 queryTxt_addresses_insert = [];
                 queryTxt_addresses_update = [];
                 queryTxt_transaction_insert = [];
 
+                queryTxt_addresses_insert_keys.length = 0;
+                queryTxt_addresses_update_keys.length = 0;
+                queryTxt_transaction_insert_keys.length = 0;
                 queryTxt_addresses_insert_keys = [];
                 queryTxt_addresses_update_keys = [];
                 queryTxt_transaction_insert_keys = [];
 
+                queryTxt_addresses_insert_len.length = 0;
+                queryTxt_addresses_update_len.length = 0;
+                queryTxt_transaction_insert_len.length = 0;
                 queryTxt_addresses_insert_len = [];
                 queryTxt_addresses_update_len = [];
                 queryTxt_transaction_insert_len = [];
+
+                tempTrxIds.length = 0;
                 tempTrxIds = [];
             }
 
             readHeight++;
             socketUpdateProgress(socket, step, readHeight, blockCount);
 
-            var xx = await this.findmax(queryTxt_addresses_insert_len, queryTxt_addresses_insert_keys);
-            var yy = await this.findmax(queryTxt_addresses_update_len, queryTxt_addresses_update_keys);
-            var zz = await this.findmax(queryTxt_transaction_insert_len, queryTxt_transaction_insert_keys);
-            console.log('queryTxt_addresses_insert_len', xx);
-            console.log('queryTxt_addresses_update_len', yy)
-            console.log('queryTxt_transaction_insert_keys', zz);
         }
 
         console.log('blocked read. importing to db ...');
         //write queries to file
         console.log('updateing  addresses ...');
-        for await (var key of queryTxt_addresses_update_keys) {
+        for await (const key of queryTxt_addresses_update_keys) {
             if (!key) continue;
             ql = `update ${'addresses_' + vAddidx} as a set spend=1,spend_time=b.spendtime from (values ${queryTxt_addresses_update[vAddidx]}) as b(txid,vout,spendtime) where  a.txid=b.txid and a.vout=b.vout;`;
             await BlockChainModel.query(sql);
         }
 
         console.log('inserting transactions ...');
-        for await (var key of queryTxt_transaction_insert_keys) {
+        for await (const key of queryTxt_transaction_insert_keys) {
             if (!key) continue;
             sql = `INSERT INTO ${'transactions_' + key} (id,block_height,txid,txseq) VALUES ${queryTxt_transaction_insert[key]};`;
             // console.log(sql);
@@ -376,7 +381,7 @@ class Whales {
         }
 
         console.log('inserting addresses ...');
-        for await (var key of queryTxt_addresses_insert_keys) {
+        for await (const key of queryTxt_addresses_insert_keys) {
             if (!key) continue;
             sql = `INSERT INTO ${'addresses_' + key} (blockheight,btc_address,created_time,amount,txid,vout) VALUES ${queryTxt_addresses_insert[key]};`;
             //console.log(sql);
@@ -398,7 +403,7 @@ class Whales {
 
     static async findmax(arr, arrkey) {
         let max = 0;
-        for await (var key of arrkey) {
+        for await (let key of arrkey) {
             if (arr[key] > max) max = arr[key];
         }
         return max;
