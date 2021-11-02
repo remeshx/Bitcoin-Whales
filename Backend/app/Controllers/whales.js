@@ -227,17 +227,17 @@ class Whales {
                             queryTxt_addresses_update_len[vAddidx] = 1;
                         }
 
-                        if (queryTxt_addresses_update_len[vAddidx] > 500) write = true;
+                        if (queryTxt_addresses_update_len[vAddidx] > 250) write = true;
                         // queryDB = queryDB + `update ${'addresses_' + vAddidx} set spend=1,spend_time=${block.result.time} where txid=${txid} and vout=${vin.vout};\n`;
 
 
-                        if (!this.updatedTbls.includes(vAddidx)) {
-                            this.updatedTbls.push(vAddidx);
-                        }
+                        // if (!this.updatedTbls.includes(vAddidx)) {
+                        //     this.updatedTbls.push(vAddidx);
+                        // }
 
-                        if (!this.updatedAddrs.includes(address)) {
-                            this.updatedAddrs.push(address);
-                        }
+                        // if (!this.updatedAddrs.includes(address)) {
+                        //     this.updatedAddrs.push(address);
+                        // }
 
                     };
                 }
@@ -260,18 +260,18 @@ class Whales {
                         queryTxt_addresses_insert_len[vAddidx] = 1;
                     }
 
-                    if (queryTxt_addresses_insert_len[vAddidx] > 500) write = true;
+                    if (queryTxt_addresses_insert_len[vAddidx] > 250) write = true;
 
 
                     // queryDB = queryDB + `INSERT INTO ${'addresses_' + vAddidx} (blockheight,btc_address,created_time,amount,txid,vout) VALUES (${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter});\n`;
 
-                    if (!this.updatedTbls.includes(vAddidx)) {
-                        this.updatedTbls.push(vAddidx);
-                    }
+                    // if (!this.updatedTbls.includes(vAddidx)) {
+                    //     this.updatedTbls.push(vAddidx);
+                    // }
 
-                    if (!this.updatedAddrs.includes(address)) {
-                        this.updatedAddrs.push(address);
-                    }
+                    // if (!this.updatedAddrs.includes(address)) {
+                    //     this.updatedAddrs.push(address);
+                    // }
                 }
                 txidx = tx.txid.substring(0, 3);
 
@@ -285,7 +285,7 @@ class Whales {
                     queryTxt_transaction_insert_len[txidx] = 1;
                 }
 
-                if (queryTxt_transaction_insert_len[txidx] > 500) write = true;
+                if (queryTxt_transaction_insert_len[txidx] > 250) write = true;
                 // queryDB = queryDB + `INSERT INTO ${'transactions_' + txidx} (id,block_height,txid,txseq) VALUES (${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter});\n`;
 
                 tempTrxIds[tx.txid] = trxTotalCounter;
@@ -344,6 +344,7 @@ class Whales {
                 queryTxt_addresses_insert_len = [];
                 queryTxt_addresses_update_len = [];
                 queryTxt_transaction_insert_len = [];
+                tempTrxIds = [];
             }
 
             readHeight++;
@@ -447,7 +448,8 @@ class Whales {
         global.settings['BitcoinNode_blockCount'] = blockCount;
 
         //update richest list
-        await this.checkForRichest();
+        // await this.checkForRichest();
+        await this.checkForRichest_new();
 
         if (step == 6) socketUpdateProgress(socket, 6, readHeight, blockCount);
         else socketUpdateRichListStatus(socket);
@@ -455,6 +457,58 @@ class Whales {
         this.startup(socket, step);
     }
 
+
+    static async checkForRichest_new() {
+        console.log('######################## checkForRichest_new');
+        var addCount = 1000;
+        var i = 0;
+        var chs = [...range(48, 57), ...range(65, 90), ...range(97, 122)];
+        var key = '';
+        var tblName = '';
+        var addresses = {};
+        var richest = [];
+        var temp = [];
+
+        for await (const ch of chs) {
+            for await (const ch2 of chs) {
+                i++;
+                //socketUpdateProgress(socket, 5, i, 3844);
+                console.info('======== i: ', i);
+                key = ch + '' + ch2;
+                tblName = 'addresses_' + key;
+
+                Object.keys(addresses).forEach(function (key) { delete addresses[key]; });
+                addresses = await BlockChainModel.getRichestAddresses(tblName, addCount);
+
+                temp = [...richest];
+                for await (const address of addresses) {
+                    temp = [...temp, [address.btc_address, address.balance, address.maxtime, address.mintime]];
+                }
+
+                temp.sort((a, b) => {
+                    return (parseFloat(a[1]) > parseFloat(b[1])) ? -1 : 1;
+                });
+
+                richest.length = 0;
+                richest = temp.slice(0, addCount);
+                temp.length = 0;
+            }
+        }
+
+        console.info('richest:', richest);
+
+        var query = '';
+        for await (const rich of richest) {
+            query = query + `,('${rich[0]}',${rich[3]},${rich[2]},${rich[1]})`;
+        }
+        query = query.replace(/(^,)|(,$)/g, "");
+        if (query != '')
+            await BlockChainModel.saveRichestAddresses(query);
+
+        console.log('DONE');
+        console.log('######################## DONE checkForRichest_new');
+
+    }
 
     static async checkForRichest() {
 
