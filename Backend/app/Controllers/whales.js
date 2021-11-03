@@ -242,37 +242,37 @@ class Whales {
                     // };
                 }
                 voutCounter = 0;
-                // for await (const vout of tx.vout) {
-                //     if (vout.value > 0)
-                //         address = await Blockchain.getAddressFromVOUT(vout, readHeight);
-                //     else continue;
-                //     vAddidx_ = address.trim().slice(-2);
-                //     vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
+                for await (const vout of tx.vout) {
+                    if (vout.value > 0)
+                        address = await Blockchain.getAddressFromVOUT(vout, readHeight);
+                    else continue;
+                    vAddidx_ = address.trim().slice(-2);
+                    vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
 
-                //     //insert output as new address transaction
-                //     sql = `(${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter})`;
-                //     if (typeof queryTxt_addresses_insert[vAddidx] !== 'undefined' && queryTxt_addresses_insert[vAddidx] !== null) {
-                //         queryTxt_addresses_insert[vAddidx] = queryTxt_addresses_insert[vAddidx] + ',' + sql;
-                //         queryTxt_addresses_insert_len[vAddidx] += 1;
-                //     } else {
-                //         queryTxt_addresses_insert[vAddidx] = sql;
-                //         queryTxt_addresses_insert_keys.push(vAddidx);
-                //         queryTxt_addresses_insert_len[vAddidx] = 1;
-                //     }
+                    //insert output as new address transaction
+                    sql = `(${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter})`;
+                    if (typeof queryTxt_addresses_insert[vAddidx] !== 'undefined' && queryTxt_addresses_insert[vAddidx] !== null) {
+                        queryTxt_addresses_insert[vAddidx] = queryTxt_addresses_insert[vAddidx] + ',' + sql;
+                        queryTxt_addresses_insert_len[vAddidx] += 1;
+                    } else {
+                        queryTxt_addresses_insert[vAddidx] = sql;
+                        queryTxt_addresses_insert_keys.push(vAddidx);
+                        queryTxt_addresses_insert_len[vAddidx] = 1;
+                    }
 
-                //     if (queryTxt_addresses_insert_len[vAddidx] > 250) write = true;
+                    if (queryTxt_addresses_insert_len[vAddidx] > 250) write = true;
 
 
-                //     // queryDB = queryDB + `INSERT INTO ${'addresses_' + vAddidx} (blockheight,btc_address,created_time,amount,txid,vout) VALUES (${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter});\n`;
+                    // queryDB = queryDB + `INSERT INTO ${'addresses_' + vAddidx} (blockheight,btc_address,created_time,amount,txid,vout) VALUES (${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter});\n`;
 
-                //     // if (!this.updatedTbls.includes(vAddidx)) {
-                //     //     this.updatedTbls.push(vAddidx);
-                //     // }
+                    // if (!this.updatedTbls.includes(vAddidx)) {
+                    //     this.updatedTbls.push(vAddidx);
+                    // }
 
-                //     // if (!this.updatedAddrs.includes(address)) {
-                //     //     this.updatedAddrs.push(address);
-                //     // }
-                // }
+                    // if (!this.updatedAddrs.includes(address)) {
+                    //     this.updatedAddrs.push(address);
+                    // }
+                }
                 txidx = tx.txid.substring(0, 3);
 
                 sql = `(${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter})`;
