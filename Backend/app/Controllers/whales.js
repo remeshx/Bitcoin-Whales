@@ -195,84 +195,84 @@ class Whales {
                 if (txcounter > 0) {
 
                     //skiping coainBase input
-                    for await (const vin of tx.vin) {
-                        vtxidx = vin.txid.substring(0, 3);
-                        //console.log('vtxidx:', vtxidx);
-                        //console.log('vin.txid:', vin.txid);
+                    // for await (const vin of tx.vin) {
+                    //     vtxidx = vin.txid.substring(0, 3);
+                    //     //console.log('vtxidx:', vtxidx);
+                    //     //console.log('vin.txid:', vin.txid);
 
-                        txid = await BlockChainModel.getTransactionId(vtxidx, vin.txid);
+                    //     txid = await BlockChainModel.getTransactionId(vtxidx, vin.txid);
 
-                        if (!txid) {
-                            //txid = 1;
-                            //%% the trx may be in current block and we should save current block tx ids.
-                            if (tempTrxIds[vin.txid]) txid = tempTrxIds[vin.txid];
-                            else throw 'TXid not found for ' + vin.txid;
-                        }
-                        address = await Blockchain.getVInAddress(vin.txid, vin.vout);
+                    //     if (!txid) {
+                    //         //txid = 1;
+                    //         //%% the trx may be in current block and we should save current block tx ids.
+                    //         if (tempTrxIds[vin.txid]) txid = tempTrxIds[vin.txid];
+                    //         else throw 'TXid not found for ' + vin.txid;
+                    //     }
+                    //     address = await Blockchain.getVInAddress(vin.txid, vin.vout);
 
-                        if (address == '' || address == undefined) continue;
-                        //console.log(`${vtxidx}, ${txid}, ${vin.vout}`);
-                        //address = await BlockChainModel.getVInAddress(vtxidx, txid, vin.vout);
-                        vAddidx_ = address.trim().slice(-2);
-                        vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
+                    //     if (address == '' || address == undefined) continue;
+                    //     //console.log(`${vtxidx}, ${txid}, ${vin.vout}`);
+                    //     //address = await BlockChainModel.getVInAddress(vtxidx, txid, vin.vout);
+                    //     vAddidx_ = address.trim().slice(-2);
+                    //     vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
 
-                        //mark input transaction as spend in addresses table
-                        sql = `(${txid},${vin.vout},${block.result.time})`;
-                        if (typeof queryTxt_addresses_update[vAddidx] !== 'undefined' && queryTxt_addresses_update[vAddidx] !== null) {
-                            queryTxt_addresses_update[vAddidx] = queryTxt_addresses_update[vAddidx] + ',' + sql;
-                            queryTxt_addresses_update_len[vAddidx] += 1;
-                        } else {
-                            queryTxt_addresses_update[vAddidx] = sql;
-                            queryTxt_addresses_update_keys.push(vAddidx);
-                            queryTxt_addresses_update_len[vAddidx] = 1;
-                        }
+                    //     //mark input transaction as spend in addresses table
+                    //     sql = `(${txid},${vin.vout},${block.result.time})`;
+                    //     if (typeof queryTxt_addresses_update[vAddidx] !== 'undefined' && queryTxt_addresses_update[vAddidx] !== null) {
+                    //         queryTxt_addresses_update[vAddidx] = queryTxt_addresses_update[vAddidx] + ',' + sql;
+                    //         queryTxt_addresses_update_len[vAddidx] += 1;
+                    //     } else {
+                    //         queryTxt_addresses_update[vAddidx] = sql;
+                    //         queryTxt_addresses_update_keys.push(vAddidx);
+                    //         queryTxt_addresses_update_len[vAddidx] = 1;
+                    //     }
 
-                        if (queryTxt_addresses_update_len[vAddidx] > 250) write = true;
-                        // queryDB = queryDB + `update ${'addresses_' + vAddidx} set spend=1,spend_time=${block.result.time} where txid=${txid} and vout=${vin.vout};\n`;
+                    //     if (queryTxt_addresses_update_len[vAddidx] > 250) write = true;
+                    //     // queryDB = queryDB + `update ${'addresses_' + vAddidx} set spend=1,spend_time=${block.result.time} where txid=${txid} and vout=${vin.vout};\n`;
 
 
-                        // if (!this.updatedTbls.includes(vAddidx)) {
-                        //     this.updatedTbls.push(vAddidx);
-                        // }
+                    //     // if (!this.updatedTbls.includes(vAddidx)) {
+                    //     //     this.updatedTbls.push(vAddidx);
+                    //     // }
 
-                        // if (!this.updatedAddrs.includes(address)) {
-                        //     this.updatedAddrs.push(address);
-                        // }
+                    //     // if (!this.updatedAddrs.includes(address)) {
+                    //     //     this.updatedAddrs.push(address);
+                    //     // }
 
-                    };
+                    // };
                 }
                 voutCounter = 0;
-                for await (const vout of tx.vout) {
-                    if (vout.value > 0)
-                        address = await Blockchain.getAddressFromVOUT(vout, readHeight);
-                    else continue;
-                    vAddidx_ = address.trim().slice(-2);
-                    vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
+                // for await (const vout of tx.vout) {
+                //     if (vout.value > 0)
+                //         address = await Blockchain.getAddressFromVOUT(vout, readHeight);
+                //     else continue;
+                //     vAddidx_ = address.trim().slice(-2);
+                //     vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
 
-                    //insert output as new address transaction
-                    sql = `(${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter})`;
-                    if (typeof queryTxt_addresses_insert[vAddidx] !== 'undefined' && queryTxt_addresses_insert[vAddidx] !== null) {
-                        queryTxt_addresses_insert[vAddidx] = queryTxt_addresses_insert[vAddidx] + ',' + sql;
-                        queryTxt_addresses_insert_len[vAddidx] += 1;
-                    } else {
-                        queryTxt_addresses_insert[vAddidx] = sql;
-                        queryTxt_addresses_insert_keys.push(vAddidx);
-                        queryTxt_addresses_insert_len[vAddidx] = 1;
-                    }
+                //     //insert output as new address transaction
+                //     sql = `(${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter})`;
+                //     if (typeof queryTxt_addresses_insert[vAddidx] !== 'undefined' && queryTxt_addresses_insert[vAddidx] !== null) {
+                //         queryTxt_addresses_insert[vAddidx] = queryTxt_addresses_insert[vAddidx] + ',' + sql;
+                //         queryTxt_addresses_insert_len[vAddidx] += 1;
+                //     } else {
+                //         queryTxt_addresses_insert[vAddidx] = sql;
+                //         queryTxt_addresses_insert_keys.push(vAddidx);
+                //         queryTxt_addresses_insert_len[vAddidx] = 1;
+                //     }
 
-                    if (queryTxt_addresses_insert_len[vAddidx] > 250) write = true;
+                //     if (queryTxt_addresses_insert_len[vAddidx] > 250) write = true;
 
 
-                    // queryDB = queryDB + `INSERT INTO ${'addresses_' + vAddidx} (blockheight,btc_address,created_time,amount,txid,vout) VALUES (${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter});\n`;
+                //     // queryDB = queryDB + `INSERT INTO ${'addresses_' + vAddidx} (blockheight,btc_address,created_time,amount,txid,vout) VALUES (${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter});\n`;
 
-                    // if (!this.updatedTbls.includes(vAddidx)) {
-                    //     this.updatedTbls.push(vAddidx);
-                    // }
+                //     // if (!this.updatedTbls.includes(vAddidx)) {
+                //     //     this.updatedTbls.push(vAddidx);
+                //     // }
 
-                    // if (!this.updatedAddrs.includes(address)) {
-                    //     this.updatedAddrs.push(address);
-                    // }
-                }
+                //     // if (!this.updatedAddrs.includes(address)) {
+                //     //     this.updatedAddrs.push(address);
+                //     // }
+                // }
                 txidx = tx.txid.substring(0, 3);
 
                 sql = `(${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter})`;
