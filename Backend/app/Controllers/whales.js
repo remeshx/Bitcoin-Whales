@@ -208,8 +208,8 @@ class Whales {
                             if (tempTrxIds[vin.txid]) txid = tempTrxIds[vin.txid];
                             else throw 'TXid not found for ' + vin.txid;
                         }
-                        //address = await Blockchain.getVInAddress(vin.txid, vin.vout);
-                        address = 'sss';
+                        address = await Blockchain.getVInAddress(vin.txid, vin.vout);
+
                         if (address == '' || address == undefined) continue;
                         //console.log(`${vtxidx}, ${txid}, ${vin.vout}`);
                         //address = await BlockChainModel.getVInAddress(vtxidx, txid, vin.vout);
@@ -356,6 +356,8 @@ class Whales {
 
                 tempTrxIds.length = 0;
                 tempTrxIds = [];
+                global.transactions.length = 0;
+                global.transactions = [];
             }
 
             readHeight++;
@@ -397,6 +399,8 @@ class Whales {
         global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
         global.settings['BitcoinNode_trxRead'] = -1;
         console.log('Done.');
+        global.transactions.length = 0;
+        global.transactions = [];
     }
 
 
