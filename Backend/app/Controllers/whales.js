@@ -7,6 +7,7 @@ const { socketUpdateRichListStatus } = require('../helpers/soket');
 const { writeout } = require('../helpers/fsutils');
 const path = require('path');
 const fs = require('fs');
+const { range } = require('../helpers/math');
 class Whales {
 
     constructor() {
@@ -358,7 +359,7 @@ class Whales {
                 tempTrxIds = [];
             }
 
-            let blockCount = await getLastBlock();
+            blockCount = await getLastBlock();
             global.settings['BitcoinNode_blockCount'] = blockCount;
 
             readHeight++;
