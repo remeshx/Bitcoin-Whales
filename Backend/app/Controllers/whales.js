@@ -227,7 +227,7 @@ class Whales {
                             queryTxt_addresses_update_len[vAddidx] = 1;
                         }
 
-                        if (queryTxt_addresses_update_len[vAddidx] > 250) write = true;
+                        if (queryTxt_addresses_update_len[vAddidx] > 500) write = true;
                         // queryDB = queryDB + `update ${'addresses_' + vAddidx} set spend=1,spend_time=${block.result.time} where txid=${txid} and vout=${vin.vout};\n`;
 
 
@@ -260,7 +260,7 @@ class Whales {
                         queryTxt_addresses_insert_len[vAddidx] = 1;
                     }
 
-                    if (queryTxt_addresses_insert_len[vAddidx] > 250) write = true;
+                    if (queryTxt_addresses_insert_len[vAddidx] > 500) write = true;
 
 
                     // queryDB = queryDB + `INSERT INTO ${'addresses_' + vAddidx} (blockheight,btc_address,created_time,amount,txid,vout) VALUES (${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter});\n`;
@@ -285,7 +285,7 @@ class Whales {
                     queryTxt_transaction_insert_len[txidx] = 1;
                 }
 
-                if (queryTxt_transaction_insert_len[txidx] > 250) write = true;
+                if (queryTxt_transaction_insert_len[txidx] > 500) write = true;
                 // queryDB = queryDB + `INSERT INTO ${'transactions_' + txidx} (id,block_height,txid,txseq) VALUES (${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter});\n`;
 
                 tempTrxIds[tx.txid] = trxTotalCounter;
@@ -356,13 +356,12 @@ class Whales {
 
                 tempTrxIds.length = 0;
                 tempTrxIds = [];
-                global.transactions.length = 0;
-                global.transactions = [];
             }
 
             readHeight++;
             socketUpdateProgress(socket, step, readHeight, blockCount);
-
+            global.transactions.length = 0;
+            global.transactions = [];
         }
 
         console.log('blocked read. importing to db ...');
