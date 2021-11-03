@@ -166,7 +166,7 @@ class Whales {
 
         let write = false;
         while (readHeight <= blockCount) {
-
+            Object.keys(block).forEach(function (key) { delete block[key]; });
             block = await getBlockByHeight(parseInt(readHeight));
             //console.log(block);
             txs = block.result.tx;
@@ -291,7 +291,7 @@ class Whales {
                 tempTrxIds[tx.txid] = trxTotalCounter;
                 //await writeout(fileStream, 'query', queryDB, 'db', 'sql');
                 //queryDB = '';
-
+                Object.keys(tx).forEach(function (key) { delete tx[key]; });
             }
             blockSQL += `,( ${readHeight},${block.result.time}, '${block.result.hash}',${txs.length},0,0,0)`;
 
