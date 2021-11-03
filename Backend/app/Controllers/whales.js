@@ -137,7 +137,7 @@ class Whales {
 
         let trxTotalCounter = global.settings['BitcoinNode_totalTrxRead'];
         let trxread = global.settings['BitcoinNode_trxRead'];
-        let block;
+        let block = {};
         let txs;
         let sql = '';
         let txcounter = -1;
