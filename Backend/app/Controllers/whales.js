@@ -436,7 +436,7 @@ class Whales {
 
 
         if (readHeight == blockCount) {
-            setTimeout(function () { this.startup(socket, 7) }, 10000);
+            setTimeout(function () { Whales.startup(socket, 7) }, 10000);
             return;
         }
         this.LastRead = Date.now();
