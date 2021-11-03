@@ -435,7 +435,7 @@ class Whales {
         console.log('blockCount', blockCount);
 
 
-        if (readHeight == blockCount) {
+        if (readHeight >= blockCount) {
             setTimeout(function () { Whales.startup(socket, 7) }, 10000);
             return;
         }
