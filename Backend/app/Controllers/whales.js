@@ -362,10 +362,11 @@ class Whales {
             blockCount = await getLastBlock();
             global.settings['BitcoinNode_blockCount'] = blockCount;
 
-            readHeight++;
+
             socketUpdateProgress(socket, step, readHeight, blockCount);
             global.transactions.length = 0;
             global.transactions = [];
+            readHeight++;
         }
 
         console.log('blocked read. importing to db ...');
@@ -435,7 +436,7 @@ class Whales {
 
 
         if (readHeight == blockCount) {
-            setTimeout(this.startup(socket, 7), 10000);
+            setTimeout(function () { this.startup(socket, 7) }, 10000);
             return;
         }
         this.LastRead = Date.now();
