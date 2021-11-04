@@ -435,6 +435,8 @@ class Whales {
 
         console.log('blockCount', blockCount);
 
+        socketUpdateProgress(socket, step, readHeight - 1, blockCount);
+
 
         if (readHeight >= blockCount) {
             setTimeout(function () { Whales.startup(socket, 7) }, 10000);
