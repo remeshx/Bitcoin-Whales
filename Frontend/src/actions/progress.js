@@ -1,6 +1,6 @@
 import { Blocks } from './types';
 import { URL_PROGRESS_STATUS } from '../../config';
-
+var progressForTheFirstTime = true;
 
 export const fetchProgressStatus = () => dispatch => {
     console.log('fetchProgressStatus');
@@ -16,7 +16,7 @@ export const updateStartupProgress = (data) => dispatch => {
         let i = 2;
         let json = {};
         json.step = i;
-
+        progressForTheFirstTime = false;
         dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: json });
         while (i < parseInt(data.step)) {
             json.step++;

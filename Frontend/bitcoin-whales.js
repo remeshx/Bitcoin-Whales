@@ -15,7 +15,7 @@ const store = createStore(
 );
 
 const socket = socketIOClient(ENDPOINT);
-var progressForTheFirstTime = true;
+window.progressForTheFirstTime = true;
 
 render(
     <Provider store={store}>
