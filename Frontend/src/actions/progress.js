@@ -31,7 +31,7 @@ export const fetchProgressStatus = () => dispatch => {
                         console.log('STOPPED');
                         progressForTheFirstTime = false;
                     }
-                }, (i - 2) * 1000);
+                }, j);
             }
             //dispatch({ type: 'FETCH_PROGRESS_STATUS', progress: data });
 
