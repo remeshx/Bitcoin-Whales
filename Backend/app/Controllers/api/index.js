@@ -24,6 +24,7 @@ class Api {
 
                 return new Promise((resolve, reject) => {
                         let action = global.settings['BitcoinNode_CurrentStage'];
+                        let readHeight = global.settings['BitcoinNode_LastBlockHeightRead']
                         // let action = 2;
                         // global.settings['BitcoinNode_LastFileWritten']=2090;
 
@@ -66,8 +67,8 @@ class Api {
                                 case '7':
                                 case '10':
                                         step = 7;
-                                        currPos = 0;
-                                        finalPos = 0;
+                                        currPos = readHeight;
+                                        finalPos = -;
                                         break;
                         }
 
