@@ -16,7 +16,7 @@ const store = createStore(
 
 console.log('ENDPOINT', ENDPOINT);
 const socket = socketIOClient(ENDPOINT);
-
+var progressForTheFirstTime = true;
 
 render(
     <Provider store={store}>

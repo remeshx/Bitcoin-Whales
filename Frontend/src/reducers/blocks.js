@@ -133,6 +133,10 @@ export const blockReducer = (state = DEFAULT_BLOCK, action) => {
     return newState;
 }
 
-
+function sleep(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}
 
 export default blockReducer;
