@@ -435,7 +435,7 @@ class Whales {
 
         console.log('blockCount', blockCount);
 
-        socketUpdateProgress(socket, step, readHeight - 1, blockCount);
+        socketUpdateProgress(socket, 6, readHeight - 1, blockCount);
 
 
         if (readHeight >= blockCount) {
