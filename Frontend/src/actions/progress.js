@@ -7,7 +7,7 @@ export const updateStartupProgress = (data) => dispatch => {
 
     if (! typeof progressForTheFirstTime !== 'undefined') var progressForTheFirstTime = true;
     if (! typeof progressRunning !== 'undefined') var progressRunning = false;
-    if (progressForTheFirstTime || progressRunning) return false;
+    if (progressRunning) return false;
 
     if (!progressRunning && progressForTheFirstTime) {
         progressRunning = true;
