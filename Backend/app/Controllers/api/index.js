@@ -68,7 +68,7 @@ class Api {
                                 case '10':
                                         step = 7;
                                         currPos = readHeight;
-                                        finalPos = -;
+                                        finalPos = '-';
                                         break;
                         }
 
