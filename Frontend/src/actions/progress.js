@@ -24,8 +24,8 @@ export const updateStartupProgress = (data) => dispatch => {
         console.log('dispatch', json);
         dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: json });
         while (i <= parseInt(data.step)) {
-            json.step++;
-            i++;
+            i += 1;
+            json.step = i;
             setTimeout(() => {
                 console.log('dispatch', json);
                 dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: json });
