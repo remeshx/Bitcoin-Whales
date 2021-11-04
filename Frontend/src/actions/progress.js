@@ -1,7 +1,10 @@
 import { Blocks } from './types';
 import { URL_PROGRESS_STATUS } from '../../config';
+global.x = 0;
 
 export const updateStartupProgress = (data) => dispatch => {
+    console.log('global.x', global.x);
+    global.x += 1;
     console.log('updateStartupProgress', data);
     if (! typeof progressForTheFirstTime !== 'undefined') var progressForTheFirstTime = true;
     if (! typeof progressRunning !== 'undefined') var progressRunning = false;
