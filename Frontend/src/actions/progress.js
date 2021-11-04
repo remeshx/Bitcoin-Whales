@@ -17,25 +17,25 @@ export const updateStartupProgress = (data) => dispatch => {
     if (! typeof progressRunning !== 'undefined') var progressRunning = false;
 
     if (!progressRunning && progressForTheFirstTime && data.step > 2) {
-        progressRunning = true;
-        let i = 2;
-        let json = {};
-        json.step = i;
-        console.log('dispatch', json);
-        dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: json });
-        while (i <= parseInt(data.step)) {
-            i += 1;
-            json.step = i;
-            setTimeout(() => {
-                console.log('dispatch', json);
-                dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: json });
-                if (i == parseInt(data.step)) {
-                    console.log('STOPPED');
-                    progressForTheFirstTime = false;
-                }
-            }, (i - 2) * 1000);
+        // progressRunning = true;
+        // let i = 2;
+        // let json = {};
+        // json.step = i;
+        // console.log('dispatch', json);
+        // dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: json });
+        // while (i <= parseInt(data.step)) {
+        //     i += 1;
+        //     json.step = i;
+        //     setTimeout(() => {
+        //         console.log('dispatch', json);
+        //         dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: json });
+        //         if (i == parseInt(data.step)) {
+        //             console.log('STOPPED');
+        //             progressForTheFirstTime = false;
+        //         }
+        //     }, (i - 2) * 1000);
 
-        }
+        // }
     } else if (!progressForTheFirstTime) {
         //dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: data });
     }
