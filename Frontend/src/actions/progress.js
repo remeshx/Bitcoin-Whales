@@ -11,22 +11,22 @@ export const fetchProgressStatus = () => dispatch => {
 }
 
 
-export const updateStartupProgress = async (data) => async (dispatch) => {
-    if (progressForTheFirstTime) {
+export const updateStartupProgress = (data) => dispatch => {
+    if (progressForTheFirstTime && data.step > 2) {
         let i = 2;
         let json = {};
         json.step = i;
+
+        dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: json });
         while (i < parseInt(data.step)) {
             json.step++;
             i++;
-            dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: json });
-            await sleep(500);
+            setTimeout(() => {
+                dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: json });
+            }, (i - 2) * 500);
         }
+    } else {
+        dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: data });
     }
-    dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: data });
-}
-
-function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
