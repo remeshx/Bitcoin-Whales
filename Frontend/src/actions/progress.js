@@ -13,9 +13,9 @@ export const fetchProgressStatus = () => dispatch => {
 
 export const updateStartupProgress = (data) => dispatch => {
 
-    if (typeof this.progressForTheFirstTime !== 'undefined') this.progressForTheFirstTime = true;
+    if (typeof progressForTheFirstTime !== 'undefined') var progressForTheFirstTime = true;
 
-    if (this.progressForTheFirstTime && data.step > 2) {
+    if (progressForTheFirstTime && data.step > 2) {
         let i = 2;
         let json = {};
         json.step = i;
