@@ -42,7 +42,9 @@ export const fetchProgressStatus = () => dispatch => {
     console.log('fetchProgressStatus');
     fetch(URL_PROGRESS_STATUS)
         .then(response => response.json())
-        .then(data => updateStartupProgress)
+        .then(data => {
+            updateStartupProgress(data);
+        })
         .catch(error => console.log('error', error));
 }
 
