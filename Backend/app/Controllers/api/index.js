@@ -28,7 +28,7 @@ class Api {
                         // global.settings['BitcoinNode_LastFileWritten']=2090;
 
                         console.log('getLoadingStatus : ', action);
-                        let step = 0;
+                        let step = action;
                         let currPos = 0;
                         let finalPos = 0;
 
