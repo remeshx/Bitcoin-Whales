@@ -21,13 +21,18 @@ export const updateStartupProgress = (data) => dispatch => {
         let i = 2;
         let json = {};
         json.step = i;
+        console.log('dispatch', json);
         dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: json });
         while (i <= parseInt(data.step)) {
             json.step++;
             i++;
             setTimeout(() => {
+                console.log('dispatch', json);
                 dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: json });
-                if (i == parseInt(data.step)) progressForTheFirstTime = false;
+                if (i == parseInt(data.step)) {
+                    console.log('STOPPED');
+                    progressForTheFirstTime = false;
+                }
             }, (i - 2) * 1000);
 
         }
