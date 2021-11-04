@@ -13,7 +13,6 @@ export const updateStartupProgress = (data) => dispatch => {
 }
 
 export const fetchProgressStatus = () => dispatch => {
-    console.log('updateStartupProgress', data);
     console.log('progressForTheFirstTime', global.progressForTheFirstTime);
     console.log('progressRunning', global.progressRunning);
 
@@ -40,7 +39,8 @@ export const fetchProgressStatus = () => dispatch => {
                         console.log('STOPPED');
                         global.progressForTheFirstTime = false;
                         global.progressRunning = false;
-                    }
+                        dispatch({ type: 'FETCH_PROGRESS_STATUS', progress: data });
+                    } else dispatch({ type: 'FETCH_PROGRESS_STATUS', progress: json });
                 }, (i - 2) * 200);
             }
         })
