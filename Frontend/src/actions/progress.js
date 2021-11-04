@@ -20,18 +20,18 @@ export const fetchProgressStatus = () => dispatch => {
             dispatch({ type: 'FETCH_PROGRESS_STATUS', progress: stepjson });
             for (let i = 2; i <= parseInt(data.step); i++) {
                 setTimeout(() => {
-                    let j = (i - 2) * 200
+                    let timeToNextDispatch = (i - 2) * 200
                     let json = {};
                     json.step = i;
                     console.log('data.step', data.step);
                     console.log('json.step', json.step);
-                    console.log('timeout ' + i + '/' + j, json.step);
+                    console.log('timeout ' + i + '/' + timeToNextDispatch, json.step);
                     dispatch({ type: 'FETCH_PROGRESS_STATUS', progress: json });
                     if (i == parseInt(data.step)) {
                         console.log('STOPPED');
                         progressForTheFirstTime = false;
                     }
-                }, j);
+                }, timeToNextDispatch);
             }
             //dispatch({ type: 'FETCH_PROGRESS_STATUS', progress: data });
 
