@@ -13,19 +13,17 @@ export const fetchProgressStatus = () => dispatch => {
         .then(response => response.json())
         .then(data => {
             progressRunning = true;
-            let i = 2;
-            let json = {};
-            let j = 0;
-            json.step = i;
+            let stepjson = {}
+            stepjson.step = 2;
             console.log('data.step', data.step);
             console.log('json.step', json.step);
-            dispatch({ type: 'FETCH_PROGRESS_STATUS', progress: json });
-            while (i <= parseInt(data.step)) {
-                i += 1;
-                json.step = i;
+            dispatch({ type: 'FETCH_PROGRESS_STATUS', progress: stepjson });
+            for (let i = 2; i <= parseInt(data.step); i++) {
                 setTimeout(() => {
-                    j = (i - 2) * 1000
-                    console.log('timeout ' + j, json.step);
+                    let j = (i - 2) * 1000
+                    let json = {};
+                    json.step = i;
+                    console.log('timeout ' + i + '/' + j, json.step);
                     dispatch({ type: 'FETCH_PROGRESS_STATUS', progress: json });
                     if (i == parseInt(data.step)) {
                         console.log('STOPPED');
