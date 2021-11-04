@@ -11,7 +11,7 @@ export const fetchProgressStatus = () => dispatch => {
 }
 
 
-export const updateStartupProgress = async (data) => dispatch => {
+export const updateStartupProgress = (data) => async (dispatch) => {
     if (progressForTheFirstTime) {
         let i = 2;
         let json = {};
