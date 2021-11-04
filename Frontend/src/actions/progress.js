@@ -14,22 +14,24 @@ export const fetchProgressStatus = () => dispatch => {
 export const updateStartupProgress = (data) => dispatch => {
 
     if (typeof progressForTheFirstTime !== 'undefined') var progressForTheFirstTime = true;
+    if (typeof progressRunning !== 'undefined') var progressRunning = false;
 
-    if (progressForTheFirstTime && data.step > 2) {
+    if (!progressRunning && progressForTheFirstTime && data.step > 2) {
         let i = 2;
         let json = {};
         json.step = i;
-        progressForTheFirstTime = false;
+        progressRunning = true;
         dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: json });
-        while (i < parseInt(data.step)) {
+        while (i <= parseInt(data.step)) {
             json.step++;
             i++;
             setTimeout(() => {
                 dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: json });
+                if (i == parseInt(data.step)) progressForTheFirstTime = false;
             }, (i - 2) * 500);
 
         }
-    } else {
+    } else if (!progressForTheFirstTime) {
         dispatch({ type: 'UPDATE_STARTUP_PROGRESS', progress: data });
     }
 }
