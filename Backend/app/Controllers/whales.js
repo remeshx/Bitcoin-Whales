@@ -163,7 +163,8 @@ class Whales {
         let queryTxt_addresses_insert_len = [];
         let queryTxt_addresses_update_len = [];
         let queryTxt_transaction_insert_len = [];
-        socketUpdateProgress(socket, step, readHeight, blockCount);
+        if (step == 6) socketUpdateProgress(socket, step, readHeight - 1, blockCount);
+        else socketUpdateRichListStatus(socket);
 
         let write = false;
         while (readHeight <= blockCount) {
@@ -363,7 +364,7 @@ class Whales {
             global.settings['BitcoinNode_blockCount'] = blockCount;
 
 
-            socketUpdateProgress(socket, step, readHeight, blockCount);
+            socketUpdateProgress(socket, step, readHeight - 1, blockCount);
             global.transactions.length = 0;
             global.transactions = [];
             readHeight++;
@@ -437,6 +438,8 @@ class Whales {
 
         if (readHeight >= blockCount) {
             setTimeout(function () { Whales.startup(socket, 7) }, 10000);
+            socketUpdateProgress(socket, 7, readHeight - 1, blockCount);
+            socketUpdateRichListStatus(socket);
             return;
         }
         this.LastRead = Date.now();
@@ -448,12 +451,14 @@ class Whales {
         global.settings['BitcoinNode_CurrentStageTitle'] = 'startup';
         await SettingModel.updateSettingVariable('BitcoinNode', 'CurrentStage', step);
         await SettingModel.updateSettingVariable('BitcoinNode', 'CurrentStageTitle', 'startup');
-        if (step == 6) socketUpdateProgress(socket, 6, readHeight, blockCount);
+        if (step == 6) socketUpdateProgress(socket, 6, readHeight - 1, blockCount);
 
 
 
         console.log('readHeight:', readHeight);
-        socketUpdateProgress(socket, step, readHeight, blockCount);
+        if (step == 6) socketUpdateProgress(socket, step, readHeight - 1, blockCount);
+        else socketUpdateRichListStatus(socket);
+
         //await this.insertBlockData(readHeight);
         await this.insertBlockData_bulk(socket, step, readHeight, blockCount);
 
@@ -464,7 +469,7 @@ class Whales {
         // await this.checkForRichest();
         await this.checkForRichest_new();
 
-        if (step == 6) socketUpdateProgress(socket, 6, readHeight, blockCount);
+        if (step == 6) socketUpdateProgress(socket, 6, readHeight - 1, blockCount);
         else socketUpdateRichListStatus(socket);
 
         this.startup(socket, step);
