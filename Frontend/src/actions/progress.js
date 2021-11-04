@@ -16,13 +16,15 @@ export const fetchProgressStatus = () => dispatch => {
             let stepjson = {}
             stepjson.step = 2;
             console.log('data.step', data.step);
-            console.log('json.step', json.step);
+            console.log('json.step', 2);
             dispatch({ type: 'FETCH_PROGRESS_STATUS', progress: stepjson });
             for (let i = 2; i <= parseInt(data.step); i++) {
                 setTimeout(() => {
                     let j = (i - 2) * 1000
                     let json = {};
                     json.step = i;
+                    console.log('data.step', data.step);
+                    console.log('json.step', json.step);
                     console.log('timeout ' + i + '/' + j, json.step);
                     dispatch({ type: 'FETCH_PROGRESS_STATUS', progress: json });
                     if (i == parseInt(data.step)) {
