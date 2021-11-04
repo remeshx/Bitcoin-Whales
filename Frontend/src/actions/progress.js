@@ -20,7 +20,7 @@ export const fetchProgressStatus = () => dispatch => {
             dispatch({ type: 'FETCH_PROGRESS_STATUS', progress: stepjson });
             for (let i = 2; i <= parseInt(data.step); i++) {
                 setTimeout(() => {
-                    let j = (i - 2) * 1000
+                    let j = (i - 2) * 200
                     let json = {};
                     json.step = i;
                     console.log('data.step', data.step);
