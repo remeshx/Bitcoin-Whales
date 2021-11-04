@@ -66,6 +66,10 @@ SettingModel.loadSetting('BitcoinNode')
         console.log('Start App : ', 'startup');
         Whales.startup(io);
         break;
+      case '7':
+        console.log('Start App : ', 'startup');
+        Whales.startup(io);
+        break;
     }
   }).catch(error => reject(error));
 
