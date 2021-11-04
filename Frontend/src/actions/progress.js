@@ -1,12 +1,12 @@
 import { Blocks } from './types';
 import { URL_PROGRESS_STATUS } from '../../config';
-var progressForTheFirstTime = true;
-
 
 export const updateStartupProgress = (data) => dispatch => {
-
+    console.log('updateStartupProgress', data);
     if (! typeof progressForTheFirstTime !== 'undefined') var progressForTheFirstTime = true;
     if (! typeof progressRunning !== 'undefined') var progressRunning = false;
+    console.log('progressForTheFirstTime', progressForTheFirstTime);
+    console.log('progressRunning', progressRunning);
     if (progressRunning) return false;
 
     if (!progressRunning && progressForTheFirstTime) {
