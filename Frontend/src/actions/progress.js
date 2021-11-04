@@ -12,9 +12,9 @@ export const fetchProgressStatus = () => dispatch => {
 
 
 export const updateStartupProgress = (data) => dispatch => {
-    if (this.progressForTheFirstTime == undefined) this.progressForTheFirstTime = true;
+    if (typeof this.progressForTheFirstTime !== 'undefined') this.progressForTheFirstTime = true;
 
-    if (progressForTheFirstTime && data.step > 2) {
+    if (this.progressForTheFirstTime && data.step > 2) {
         let i = 2;
         let json = {};
         json.step = i;
