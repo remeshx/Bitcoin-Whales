@@ -4,6 +4,7 @@ import { fetchBlocks, updateTime, updateTrxInfo, updateBlkInfo } from '../action
 import { fetchProgressStatus, updateStartupProgress } from '../actions/progress';
 import Whales from './Whales';
 import { updateSocketStatus } from '../actions/socket';
+import { Redirect } from 'react-router';
 
 class Blocks extends Component {
     componentDidMount() {
