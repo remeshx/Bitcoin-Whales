@@ -375,7 +375,7 @@ class Whales {
         console.log('updateing  addresses ...');
         for await (const key of queryTxt_addresses_update_keys) {
             if (!key) continue;
-            sql = `update ${'addresses_' + vAddidx} as a set spend=1,spend_time=b.spendtime from (values ${queryTxt_addresses_update[vAddidx]}) as b(txid,vout,spendtime) where  a.txid=b.txid and a.vout=b.vout;`;
+            sql = `update ${'addresses_' + key} as a set spend=1,spend_time=b.spendtime from (values ${queryTxt_addresses_update[key]}) as b(txid,vout,spendtime) where  a.txid=b.txid and a.vout=b.vout;`;
             await BlockChainModel.query(sql);
         }
 
