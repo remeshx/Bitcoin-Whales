@@ -7,6 +7,12 @@ import Blocks from './src/components/Blocks';
 import socketIOClient from "socket.io-client";
 import appReducer from './src/reducers';
 import { ENDPOINT } from './config';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from "react-router-dom";
 
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
@@ -20,9 +26,18 @@ var progressForTheFirstTime = true;
 
 render(
     <Provider store={store}>
-        <div>
-            <Blocks socket={socket} />
-        </div>
+        <Router>
+            <div>
+                <Switch>
+                    <Route exact path="/">
+                        <Blocks socket={socket} />
+                    </Route>
+                    <Route path="/whales">
+                        <Whales socket={socket} />
+                    </Route>
+                </Switch>
+            </div>
+        </Router>
     </Provider>,
     document.getElementById('root')
 );

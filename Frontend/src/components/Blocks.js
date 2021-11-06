@@ -50,7 +50,7 @@ class Blocks extends Component {
     render() {
         console.log('this.props.progress', this.props.progress);
         if (this.props.progress.currStep > 6)
-            return <Redirect to="/whales.html" />
+            return <Redirect to="/whales" />
         //return (<Whales socket={this.props.socket} />);
 
         //console.log('rebder');
