@@ -5,13 +5,15 @@ import { updateSocketStatus } from '../actions/socket';
 
 class Whales extends Component {
     componentDidMount() {
-    
+
         console.log('componentDidMount');
         this.props.fetchRichListStatus();
 
         console.log(this.props.socket);
         this.props.socket.on("UPDATE_RICH_LIST", data => {
             this.props.updateRichList(data);
+            this.props.updateSocketStatus({ 'socketStatus': 'connected' });
+            console.log('connected');
         });
 
         this.props.socket.on("disconnect", data => {
@@ -26,10 +28,10 @@ class Whales extends Component {
     }
 
     render() {
-        let counter =0;
+        let counter = 0;
         const richTBL = this.props.richlist.map(function (rich) {
             counter++;
-            return (<TblRow key={rich.address} rich={rich} counter={counter}/>);
+            return (<TblRow key={rich.address} rich={rich} counter={counter} />);
         });
 
 
@@ -121,8 +123,8 @@ class TblRow extends React.Component {
                 <td>{this.props.counter}</td>
                 <td>{this.props.rich.address}</td>
                 <td>{this.props.rich.balance}</td>
-                <td>{new Date(this.props.rich.created_at).toLocaleString('en-GB', { timeZone: 'UTC' }) }</td>
-                <td>{new Date(this.props.rich.updated_at).toLocaleString('en-GB', { timeZone: 'UTC' }) }</td>
+                <td>{new Date(this.props.rich.created_at).toLocaleString('en-GB', { timeZone: 'UTC' })}</td>
+                <td>{new Date(this.props.rich.updated_at).toLocaleString('en-GB', { timeZone: 'UTC' })}</td>
             </tr>
         );
 
@@ -135,7 +137,7 @@ const mapStateToProps = state => {
     const richlist = state.richlistReducer.richlist;
     const socketStatus = state.socketReducer.socketStatus;
     const socketStatusCol = state.socketReducer.socketStatusCol;
-    return { blockInfo, richlist, socketStatus,socketStatusCol };
+    return { blockInfo, richlist, socketStatus, socketStatusCol };
 }
 
 const componentConnector = connect(mapStateToProps, { fetchRichListStatus, updateRichList, updateSocketStatus });
