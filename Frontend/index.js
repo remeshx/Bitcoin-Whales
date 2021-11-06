@@ -6,13 +6,13 @@ import { render } from 'react-dom';
 import socketIOClient from "socket.io-client";
 import appReducer from './src/reducers';
 import { ENDPOINT } from './config';
-import * as components from './src/components';
-
+import Blocks from './src/components/Blocks';
+import Whales from './src/components/Whales';
 import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link
+    Link, useRoutes
 } from "react-router-dom";
 
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -25,20 +25,21 @@ console.log('ENDPOINT', ENDPOINT);
 const socket = socketIOClient(ENDPOINT);
 var progressForTheFirstTime = true;
 
+const App = () => {
+    let routes = useRoutes([
+        { path: "/", element: <Blocks socket={socket} /> },
+        { path: "/whales", element: <Whales socket={socket} /> }
+    ]);
+    return routes;
+};
+
 render(
+
     <Provider store={store}>
         <Router>
-            <div>
-                <Switch>
-                    <Route exact path="/">
-                        <Blocks socket={socket} />
-                    </Route>
-                    <Route path="/whales">
-                        <Whales socket={socket} />
-                    </Route>
-                </Switch>
-            </div>
+            <App />
         </Router>
-    </Provider>,
+    </Provider>
+    ,
     document.getElementById('root')
 );
