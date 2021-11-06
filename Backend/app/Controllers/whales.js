@@ -436,7 +436,8 @@ class Whales {
         console.log('blockCount', blockCount);
 
 
-        if (readHeight >= blockCount) {
+        if ((step == 6 && readHeight > (blockCount - 3)) ||
+            (step > 6 && readHeight >= blockCount)) {
             setTimeout(function () { Whales.startup(socket, 7) }, 10000);
             socketUpdateProgress(socket, 7, readHeight - 1, blockCount);
             socketUpdateRichListStatus(socket);
