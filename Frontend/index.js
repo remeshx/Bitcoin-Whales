@@ -3,11 +3,10 @@ import { createStore, compose, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import { render } from 'react-dom';
-import Blocks from './src/components/Blocks';
 import socketIOClient from "socket.io-client";
 import appReducer from './src/reducers';
 import { ENDPOINT } from './config';
-import Whales from './src/components/Whales';
+import * as components from './src/components';
 
 import {
     BrowserRouter as Router,

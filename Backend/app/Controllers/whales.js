@@ -395,11 +395,15 @@ class Whales {
             await BlockChainModel.query(sql);
         }
 
+        console.log('saving blocks ...');
         blockSQL = blockSQL.replace(/(^,)|(,$)/g, "");
-        await BlockChainModel.SaveBulkBlock(blockSQL);
+        if (blockSQL != '') await BlockChainModel.SaveBulkBlock(blockSQL);
+
+        console.log('saving settings ...');
         await SettingModel.updateSettingVariable('BitcoinNode', 'LastBlockHeightRead', readHeight);
         await SettingModel.updateSettingVariable('BitcoinNode', 'trxRead', -1);
         await SettingModel.updateSettingVariable('BitcoinNode', 'totalTrxRead', trxTotalCounter);
+
         //fs.unlinkSync(filepath);
         global.settings['BitcoinNode_LastBlockHeightRead'] = readHeight;
         global.settings['BitcoinNode_trxRead'] = -1;
