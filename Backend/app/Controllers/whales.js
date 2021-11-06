@@ -417,11 +417,12 @@ class Whales {
         }
         return max;
     }
-    static async startup(socket, step = 6) {
+    static async startup(socket, step = 7) {
         /* preloading would take several days to complete during this period we would have couple of blocks that have not been analized.
         startup function is going to load those blocks one by one to reach the last mined block. 
         we could use these startup from the first block . However despite Preloading Class, this method is not optimized for analyzing 
         tousands of block and it may lead to longer preloading step.*/
+
         console.log('startup : ', step);
 
         //Getting the last block we have already Read.
@@ -434,7 +435,7 @@ class Whales {
 
 
         console.log('blockCount', blockCount);
-
+        if (step > 6) socketUpdateProgress(socket, 7, readHeight - 1, blockCount);
 
         if ((step == 6 && readHeight > (blockCount - 3)) ||
             (step > 6 && readHeight >= blockCount)) {
