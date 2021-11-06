@@ -7,6 +7,8 @@ import Blocks from './src/components/Blocks';
 import socketIOClient from "socket.io-client";
 import appReducer from './src/reducers';
 import { ENDPOINT } from './config';
+import Whales from './src/components/Whales';
+
 import {
     BrowserRouter as Router,
     Switch,
