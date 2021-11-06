@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { fetchBlocks, updateTime, updateTrxInfo, updateBlkInfo } from '../actions/blocks';
 import { fetchProgressStatus, updateStartupProgress } from '../actions/progress';
 import Whales from './Whales';
+import { updateSocketStatus } from '../actions/socket';
 
 class Blocks extends Component {
     componentDidMount() {
@@ -19,6 +20,16 @@ class Blocks extends Component {
 
         this.props.socket.on("UPDATE_STARTUP_PROGRESS", data => {
             this.updateStartupProgress(data);
+        });
+
+        this.props.socket.on("disconnect", data => {
+            this.props.updateSocketStatus({ 'socketStatus': 'connecting...' });
+            console.log('disconnect');
+        });
+
+        this.props.socket.on("connect", data => {
+            this.props.updateSocketStatus({ 'socketStatus': 'connected' });
+            console.log('connected');
         });
     }
 
@@ -37,8 +48,10 @@ class Blocks extends Component {
 
 
     render() {
-            console.log('this.props.progress',this.props.progress);
-        if (this.props.progress.currStep>6) return (<Whales socket={this.props.socket} />);
+        console.log('this.props.progress', this.props.progress);
+        if (this.props.progress.currStep > 6)
+            return <Redirect to="/whales.html" />
+        //return (<Whales socket={this.props.socket} />);
 
         //console.log('rebder');
         return (
@@ -165,6 +178,6 @@ const mapStateToProps = state => {
     return { progress };
 }
 
-const componentConnector = connect(mapStateToProps, { fetchBlocks, updateTime, updateTrxInfo, updateBlkInfo, fetchProgressStatus, updateStartupProgress });
+const componentConnector = connect(mapStateToProps, { fetchBlocks, updateTime, updateTrxInfo, updateBlkInfo, fetchProgressStatus, updateStartupProgress, updateSocketStatus });
 
 export default componentConnector(Blocks);
