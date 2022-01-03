@@ -264,7 +264,7 @@ class Whales {
 
                     if (queryTxt_addresses_insert_len[vAddidx] > 500) write = true;
 
-
+                    voutCounter++;
                     // queryDB = queryDB + `INSERT INTO ${'addresses_' + vAddidx} (blockheight,btc_address,created_time,amount,txid,vout) VALUES (${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter});\n`;
 
                     // if (!this.updatedTbls.includes(vAddidx)) {
