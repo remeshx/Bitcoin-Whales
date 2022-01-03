@@ -8,12 +8,7 @@ import appReducer from './src/reducers';
 import { ENDPOINT } from './config';
 import Blocks from './src/components/Blocks';
 import Whales from './src/components/Whales';
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link, useRoutes
-} from "react-router-dom";
+import { BrowserRouter as Router, useRoutes } from "react-router-dom";
 
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
@@ -33,6 +28,7 @@ const App = () => {
     return routes;
 };
 
+
 render(
 
     <Provider store={store}>
@@ -43,3 +39,4 @@ render(
     ,
     document.getElementById('root')
 );
+

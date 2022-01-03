@@ -4,7 +4,9 @@ import { fetchBlocks, updateTime, updateTrxInfo, updateBlkInfo } from '../action
 import { fetchProgressStatus, updateStartupProgress } from '../actions/progress';
 import Whales from './Whales';
 import { updateSocketStatus } from '../actions/socket';
-import { Redirect } from 'react-router';
+//import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+import { Route, Redirect } from 'react-router';
+
 
 class Blocks extends Component {
     componentDidMount() {
@@ -50,8 +52,8 @@ class Blocks extends Component {
 
     render() {
         console.log('this.props.progress', this.props.progress);
-        if (this.props.progress.currStep > 6)
-            return <Redirect to="/whales" />
+        //if (this.props.progress.currStep > 6)
+        return <Redirect to="/whales" />;
         //return (<Whales socket={this.props.socket} />);
 
         //console.log('rebder');

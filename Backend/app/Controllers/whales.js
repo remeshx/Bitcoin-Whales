@@ -299,13 +299,7 @@ class Whales {
 
             //await BlockChainModel.importSQL(sql);
             if (write) {
-                console.log('updateing  addresses ...');
-                for await (const key of queryTxt_addresses_update_keys) {
-                    if (!key) continue;
-                    sql = `update ${'addresses_' + key} as a set spend=1,spend_time=b.spendtime from (values ${queryTxt_addresses_update[key]}) as b(txid,vout,spendtime) where  a.txid=b.txid and a.vout=b.vout;`;
-                    //console.log(sql);
-                    await BlockChainModel.query(sql);
-                }
+
 
                 console.log('inserting transactions ...');
                 for await (const key of queryTxt_transaction_insert_keys) {
@@ -319,6 +313,14 @@ class Whales {
                 for await (const key of queryTxt_addresses_insert_keys) {
                     if (!key) continue;
                     sql = `INSERT INTO ${'addresses_' + key} (blockheight,btc_address,created_time,amount,txid,vout) VALUES ${queryTxt_addresses_insert[key]};`;
+                    //console.log(sql);
+                    await BlockChainModel.query(sql);
+                }
+
+                console.log('updateing  addresses ...');
+                for await (const key of queryTxt_addresses_update_keys) {
+                    if (!key) continue;
+                    sql = `update ${'addresses_' + key} as a set spend=1,spend_time=b.spendtime from (values ${queryTxt_addresses_update[key]}) as b(txid,vout,spendtime) where  a.txid=b.txid and a.vout=b.vout;`;
                     //console.log(sql);
                     await BlockChainModel.query(sql);
                 }
@@ -372,12 +374,7 @@ class Whales {
 
         console.log('blocked read. importing to db ...');
         //write queries to file
-        console.log('updateing  addresses ...');
-        for await (const key of queryTxt_addresses_update_keys) {
-            if (!key) continue;
-            sql = `update ${'addresses_' + key} as a set spend=1,spend_time=b.spendtime from (values ${queryTxt_addresses_update[key]}) as b(txid,vout,spendtime) where  a.txid=b.txid and a.vout=b.vout;`;
-            await BlockChainModel.query(sql);
-        }
+
 
         console.log('inserting transactions ...');
         for await (const key of queryTxt_transaction_insert_keys) {
@@ -392,6 +389,14 @@ class Whales {
             if (!key) continue;
             sql = `INSERT INTO ${'addresses_' + key} (blockheight,btc_address,created_time,amount,txid,vout) VALUES ${queryTxt_addresses_insert[key]};`;
             //console.log(sql);
+            await BlockChainModel.query(sql);
+        }
+
+        console.log('updateing  addresses ...');
+        for await (const key of queryTxt_addresses_update_keys) {
+            if (!key) continue;
+            sql = `update ${'addresses_' + key} as a set spend=1,spend_time=b.spendtime from (values ${queryTxt_addresses_update[key]}) as b(txid,vout,spendtime) where  a.txid=b.txid and a.vout=b.vout;`;
+            console.log(sql);
             await BlockChainModel.query(sql);
         }
 
