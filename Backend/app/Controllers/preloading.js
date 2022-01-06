@@ -276,7 +276,7 @@ class PRELOADING {
                     await SettingModel.updateCurrentFile(i);
                     global.settings['BitcoinNode_LastFileWritten'] = i;
 
-                    await BlockChainModel.dropTable(tblNameIn);
+                    BlockChainModel.dropTable(tblNameIn);
                     console.log('preloading_stage2_ImportFilesToDB ' + i + '/4096');
                 }
             }
@@ -342,6 +342,7 @@ class PRELOADING {
                     sql = '';
                     global.settings['BitcoinNode_LastFileWritten'] = i;
                     await SettingModel.updateCurrentFile(i);
+                    BlockChainModel.dropTable(tblNameOut);
                 }
             }
         }

@@ -22,11 +22,11 @@ export const fetchProgressStatus = () => dispatch => {
         .then(data => {
             global.progressRunning = true;
             let stepjson = {}
-            stepjson.step = 2;
+            stepjson.step = 1;
             console.log('data.step', data.step);
             console.log('json.step', 2);
             dispatch({ type: 'FETCH_PROGRESS_STATUS', progress: stepjson });
-            for (let i = 2; i <= parseInt(data.step); i++) {
+            for (let i = 1; i <= parseInt(data.step); i++) {
                 setTimeout(() => {
                     let j = (i - 2) * 200
                     let json = {};
