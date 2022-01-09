@@ -96,7 +96,7 @@ class Whales extends Component {
                                         It uses following technologies : NodeJS, Express.js, ReactJs, Redux, Socket.io, PostgreSQL <br />
                                         You can find the source on <a href="https://github.com/remeshx/Bitcoin-Whales">https://github.com/remeshx/Bitcoin-Whales</a><br />
 
-                                        If you like it you can donate me with your beutiful Bitcoins at : bc1qyu5ucpt3626z68xqre740lna4nu38t2w4xjuhz<br />
+                                        If you like it you can donate me with your beutiful Bitcoins at : bc1qyu5ucpt3626z68xqre740lna4nu38t2w4xjuhz <br />
                                         If you own one of the above addresses, lucky you :)<br />
                                         <br />
                                         Author : Reza Zavi @ 2020
