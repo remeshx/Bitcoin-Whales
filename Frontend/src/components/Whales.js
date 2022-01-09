@@ -96,10 +96,10 @@ class Whales extends Component {
                                         It uses following technologies : NodeJS, Express.js, ReactJs, Redux, Socket.io, PostgreSQL <br />
                                         You can find the source on <a href="https://github.com/remeshx/Bitcoin-Whales">https://github.com/remeshx/Bitcoin-Whales</a><br />
 
-                                        If you like it you can donate me with your beutiful Bitcoins at : xxx<br />
+                                        If you like it you can donate me with your beutiful Bitcoins at : 17kpjHSbKjcZZQvLMGZwYczcscU5uAdC95<br />
                                         If you own one of the above addresses, lucky you :)<br />
                                         <br />
-                                        Author : Reza Meshkat @ 2020
+                                        Author : Reza Zavi @ 2020
                                     </small>
                                 </p>
                             </div>
@@ -113,7 +113,7 @@ class Whales extends Component {
 
 }
 
-//https://jsfiddle.net/wirtaw/ckcf82ct/
+
 
 class TblRow extends React.Component {
     render() {
