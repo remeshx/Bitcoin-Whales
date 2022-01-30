@@ -50,8 +50,10 @@ CREATE TABLE outputs  (
     vout          INT,
     amount        DOUBLE PRECISION,
     spend       SMALLINT DEFAULT 0,
-    created_time      INT DEFAULT 0 ,
-    spend_time      INT DEFAULT 0
+    created_time    INT DEFAULT 0 ,
+    spend_time      INT DEFAULT 0,
+    block_height    INT DEFAULT 0,
+    transaction_key character(3)
 ) ;
 
 
@@ -125,6 +127,7 @@ CREATE TABLE addresses (
     spend       SMALLINT DEFAULT 0,
     spend_time      INT DEFAULT 0,
     txid        INT,
+    transaction_key character(3),
     vout        SMALLINT
 );
 

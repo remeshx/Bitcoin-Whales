@@ -42827,7 +42827,7 @@ var fetchProgressStatus = function fetchProgressStatus() {
     }).then(function (data) {
       global.progressRunning = true;
       var stepjson = {};
-      stepjson.step = 2;
+      stepjson.step = 1;
       console.log('data.step', data.step);
       console.log('json.step', 2);
       dispatch({
@@ -42863,7 +42863,7 @@ var fetchProgressStatus = function fetchProgressStatus() {
         }, (i - 2) * 200);
       };
 
-      for (var i = 2; i <= parseInt(data.step); i++) {
+      for (var i = 1; i <= parseInt(data.step); i++) {
         _loop(i);
       }
     }).catch(function (error) {
@@ -43080,13 +43080,12 @@ var Whales = /*#__PURE__*/function (_Component) {
         class: "text-muted p-2"
       }, /*#__PURE__*/_react.default.createElement("small", null, "This application has published online and is completely open source.", /*#__PURE__*/_react.default.createElement("br", null), "It uses following technologies : NodeJS, Express.js, ReactJs, Redux, Socket.io, PostgreSQL ", /*#__PURE__*/_react.default.createElement("br", null), "You can find the source on ", /*#__PURE__*/_react.default.createElement("a", {
         href: "https://github.com/remeshx/Bitcoin-Whales"
-      }, "https://github.com/remeshx/Bitcoin-Whales"), /*#__PURE__*/_react.default.createElement("br", null), "If you like it you can donate me with your beutiful Bitcoins at : xxx", /*#__PURE__*/_react.default.createElement("br", null), "If you own one of the above addresses, lucky you :)", /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("br", null), "Author : Reza Meshkat @ 2020")))))));
+      }, "https://github.com/remeshx/Bitcoin-Whales"), /*#__PURE__*/_react.default.createElement("br", null), "If you like it you can donate me with your beutiful Bitcoins at : bc1qyu5ucpt3626z68xqre740lna4nu38t2w4xjuhz ", /*#__PURE__*/_react.default.createElement("br", null), "If you own one of the above addresses, lucky you :)", /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("br", null), "Author : Reza Zavi @ 2020")))))));
     }
   }]);
 
   return Whales;
-}(_react.Component); //https://jsfiddle.net/wirtaw/ckcf82ct/
-
+}(_react.Component);
 
 var TblRow = /*#__PURE__*/function (_React$Component) {
   _inherits(TblRow, _React$Component);
@@ -44684,297 +44683,7 @@ const normalizePathname = pathname => pathname.replace(/\/+$/, "").replace(/^\/*
 const normalizeSearch = search => !search || search === "?" ? "" : search.startsWith("?") ? search : "?" + search;
 
 const normalizeHash = hash => !hash || hash === "#" ? "" : hash.startsWith("#") ? hash : "#" + hash; ///////////////////////////////////////////////////////////////////////////////
-},{"react":"node_modules/react/index.js","history":"node_modules/history/index.js"}],"src/components/Blocks.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _react = _interopRequireWildcard(require("react"));
-
-var _reactRedux = require("react-redux");
-
-var _blocks = require("../actions/blocks");
-
-var _progress = require("../actions/progress");
-
-var _Whales = _interopRequireDefault(require("./Whales"));
-
-var _socket = require("../actions/socket");
-
-var _reactRouter = require("react-router");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-var Blocks = /*#__PURE__*/function (_Component) {
-  _inherits(Blocks, _Component);
-
-  var _super = _createSuper(Blocks);
-
-  function Blocks() {
-    _classCallCheck(this, Blocks);
-
-    return _super.apply(this, arguments);
-  }
-
-  _createClass(Blocks, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      var _this = this;
-
-      console.log('componentDidMount');
-      this.props.fetchProgressStatus();
-      this.props.socket.on("UPDATE_BLK", function (data) {
-        _this.updateState(data);
-      });
-      this.props.socket.on("UPDATE_TRX", function (data) {
-        _this.updateTrxState(data);
-      });
-      this.props.socket.on("UPDATE_STARTUP_PROGRESS", function (data) {
-        _this.updateStartupProgress(data);
-      });
-      this.props.socket.on("disconnect", function (data) {
-        _this.props.updateSocketStatus({
-          'socketStatus': 'connecting...'
-        });
-
-        console.log('disconnect');
-      });
-      this.props.socket.on("connect", function (data) {
-        _this.props.updateSocketStatus({
-          'socketStatus': 'connected'
-        });
-
-        console.log('connected');
-      });
-    }
-  }, {
-    key: "updateState",
-    value: function updateState(data) {
-      this.props.updateBlkInfo(data);
-    }
-  }, {
-    key: "updateTrxState",
-    value: function updateTrxState(data) {
-      this.props.updateTrxInfo(data);
-    }
-  }, {
-    key: "updateStartupProgress",
-    value: function updateStartupProgress(data) {
-      this.props.updateStartupProgress(data);
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      console.log('this.props.progress', this.props.progress); //if (this.props.progress.currStep > 6)
-
-      return /*#__PURE__*/_react.default.createElement(_reactRouter.Redirect, {
-        to: "/whales"
-      }); //return (<Whales socket={this.props.socket} />);
-      //console.log('rebder');
-
-      return /*#__PURE__*/_react.default.createElement("div", {
-        class: "layout-wrapper layout-1 layout-without-sidenav"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "layout-inner"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "layout-container"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "layout-content"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "container flex-grow-1 container-p-y"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "col-xl-12 col-md-12 px-0"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "card ui-timeline mb-4"
-      }, /*#__PURE__*/_react.default.createElement("h5", {
-        class: "card-header"
-      }, "Loading For The First Time ..."), /*#__PURE__*/_react.default.createElement("div", {
-        class: "card-body"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "timelines-box"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "row pt-3 pb-4"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "col-auto text-right update-meta"
-      }, /*#__PURE__*/_react.default.createElement("p", {
-        class: "text-muted mb-0 d-inline"
-      }, "STEP 1"), /*#__PURE__*/_react.default.createElement("i", {
-        className: "ion ".concat(this.props.progress.step1_icon_class, " update-icon")
-      })), /*#__PURE__*/_react.default.createElement("div", {
-        class: "col"
-      }, /*#__PURE__*/_react.default.createElement("h6", {
-        class: "mb-1"
-      }, "Analyzing Bitcoin Blockchain"), /*#__PURE__*/_react.default.createElement("p", {
-        class: "text-muted mb-0"
-      }, this.props.progress.step1_status), /*#__PURE__*/_react.default.createElement("div", {
-        class: "progress"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "progress-bar bg-warning",
-        style: {
-          width: "".concat(this.props.progress.step1_progress, "%")
-        }
-      })))), /*#__PURE__*/_react.default.createElement("div", {
-        class: "row pb-4"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "col-auto text-right update-meta"
-      }, /*#__PURE__*/_react.default.createElement("p", {
-        class: "text-muted mb-0 d-inline"
-      }, "STEP 2"), /*#__PURE__*/_react.default.createElement("i", {
-        className: "ion ".concat(this.props.progress.step2_icon_class, " update-icon")
-      })), /*#__PURE__*/_react.default.createElement("div", {
-        class: "col"
-      }, /*#__PURE__*/_react.default.createElement("h6", {
-        class: "mb-1"
-      }, "Writing Transactions To Database"), /*#__PURE__*/_react.default.createElement("p", {
-        class: "text-muted mb-0"
-      }, this.props.progress.step2_status), /*#__PURE__*/_react.default.createElement("div", {
-        class: "progress"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "progress-bar bg-warning",
-        style: {
-          width: "".concat(this.props.progress.step2_progress, "%")
-        }
-      })))), /*#__PURE__*/_react.default.createElement("div", {
-        class: "row pb-4"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "col-auto text-right update-meta"
-      }, /*#__PURE__*/_react.default.createElement("p", {
-        class: "text-muted mb-0 d-inline"
-      }, "STEP 3"), /*#__PURE__*/_react.default.createElement("i", {
-        className: "ion ".concat(this.props.progress.step3_icon_class, " update-icon")
-      })), /*#__PURE__*/_react.default.createElement("div", {
-        class: "col"
-      }, /*#__PURE__*/_react.default.createElement("h6", {
-        class: "mb-1"
-      }, "Finding Spent Transactions"), /*#__PURE__*/_react.default.createElement("p", {
-        class: "text-muted mb-0"
-      }, this.props.progress.step3_status), /*#__PURE__*/_react.default.createElement("div", {
-        class: "progress"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "progress-bar bg-warning",
-        style: {
-          width: "".concat(this.props.progress.step3_progress, "%")
-        }
-      })))), /*#__PURE__*/_react.default.createElement("div", {
-        class: "row pb-4"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "col-auto text-right update-meta"
-      }, /*#__PURE__*/_react.default.createElement("p", {
-        class: "text-muted mb-0 d-inline"
-      }, "STEP 4"), /*#__PURE__*/_react.default.createElement("i", {
-        className: "ion ".concat(this.props.progress.step4_icon_class, " update-icon")
-      })), /*#__PURE__*/_react.default.createElement("div", {
-        class: "col"
-      }, /*#__PURE__*/_react.default.createElement("h6", {
-        class: "mb-1"
-      }, "Generating Address Tables"), /*#__PURE__*/_react.default.createElement("p", {
-        class: "text-muted mb-0"
-      }, this.props.progress.step4_status), /*#__PURE__*/_react.default.createElement("div", {
-        class: "progress"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "progress-bar bg-warning",
-        style: {
-          width: "".concat(this.props.progress.step4_progress, "%")
-        }
-      })))), /*#__PURE__*/_react.default.createElement("div", {
-        class: "row pb-4"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "col-auto text-right update-meta"
-      }, /*#__PURE__*/_react.default.createElement("p", {
-        class: "text-muted mb-0 d-inline"
-      }, "STEP 5"), /*#__PURE__*/_react.default.createElement("i", {
-        className: "ion ".concat(this.props.progress.step5_icon_class, " update-icon")
-      })), /*#__PURE__*/_react.default.createElement("div", {
-        class: "col"
-      }, /*#__PURE__*/_react.default.createElement("h6", {
-        class: "mb-1"
-      }, "Finding whales"), /*#__PURE__*/_react.default.createElement("p", {
-        class: "text-muted mb-0"
-      }, this.props.progress.step5_status), /*#__PURE__*/_react.default.createElement("div", {
-        class: "progress"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "progress-bar bg-warning",
-        style: {
-          width: "".concat(this.props.progress.step5_progress, "%")
-        }
-      })))), /*#__PURE__*/_react.default.createElement("div", {
-        class: "row p-b-0"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "col-auto text-right update-meta"
-      }, /*#__PURE__*/_react.default.createElement("p", {
-        class: "text-muted mb-0 d-inline"
-      }, "STEP 6"), /*#__PURE__*/_react.default.createElement("i", {
-        className: "ion ".concat(this.props.progress.step6_icon_class, " update-icon")
-      })), /*#__PURE__*/_react.default.createElement("div", {
-        class: "col"
-      }, /*#__PURE__*/_react.default.createElement("h6", {
-        class: "mb-1"
-      }, "Finalizing - Getting most recent blocks"), /*#__PURE__*/_react.default.createElement("p", {
-        class: "text-muted mb-0"
-      }, this.props.progress.step6_status), /*#__PURE__*/_react.default.createElement("div", {
-        class: "progress"
-      }, /*#__PURE__*/_react.default.createElement("div", {
-        class: "progress-bar bg-warning",
-        style: {
-          width: "".concat(this.props.progress.step6_progress, "%")
-        }
-      })))))))))))));
-    }
-  }]);
-
-  return Blocks;
-}(_react.Component);
-
-var mapStateToProps = function mapStateToProps(state) {
-  var progress = state.blocksReducer.progress;
-  return {
-    progress: progress
-  };
-};
-
-var componentConnector = (0, _reactRedux.connect)(mapStateToProps, {
-  fetchBlocks: _blocks.fetchBlocks,
-  updateTime: _blocks.updateTime,
-  updateTrxInfo: _blocks.updateTrxInfo,
-  updateBlkInfo: _blocks.updateBlkInfo,
-  fetchProgressStatus: _progress.fetchProgressStatus,
-  updateStartupProgress: _progress.updateStartupProgress,
-  updateSocketStatus: _socket.updateSocketStatus
-});
-
-var _default = componentConnector(Blocks);
-
-exports.default = _default;
-},{"react":"node_modules/react/index.js","react-redux":"node_modules/react-redux/es/index.js","../actions/blocks":"src/actions/blocks.js","../actions/progress":"src/actions/progress.js","./Whales":"src/components/Whales.js","../actions/socket":"src/actions/socket.js","react-router":"node_modules/react-router/index.js"}],"node_modules/react-router-dom/index.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","history":"node_modules/history/index.js"}],"node_modules/react-router-dom/index.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -45481,7 +45190,296 @@ function createSearchParams(init) {
     return memo.concat(Array.isArray(value) ? value.map(v => [key, v]) : [[key, value]]);
   }, []));
 }
-},{"react":"node_modules/react/index.js","history":"node_modules/history/index.js","react-router":"node_modules/react-router/index.js"}],"index.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","history":"node_modules/history/index.js","react-router":"node_modules/react-router/index.js"}],"src/components/Blocks.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireWildcard(require("react"));
+
+var _reactRedux = require("react-redux");
+
+var _blocks = require("../actions/blocks");
+
+var _progress = require("../actions/progress");
+
+var _Whales = _interopRequireDefault(require("./Whales"));
+
+var _socket = require("../actions/socket");
+
+var _reactRouterDom = require("react-router-dom");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var Blocks = /*#__PURE__*/function (_Component) {
+  _inherits(Blocks, _Component);
+
+  var _super = _createSuper(Blocks);
+
+  function Blocks() {
+    _classCallCheck(this, Blocks);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(Blocks, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this = this;
+
+      console.log('componentDidMount');
+      this.props.fetchProgressStatus();
+      this.props.socket.on("UPDATE_BLK", function (data) {
+        _this.updateState(data);
+      });
+      this.props.socket.on("UPDATE_TRX", function (data) {
+        _this.updateTrxState(data);
+      });
+      this.props.socket.on("UPDATE_STARTUP_PROGRESS", function (data) {
+        _this.updateStartupProgress(data);
+      });
+      this.props.socket.on("disconnect", function (data) {
+        _this.props.updateSocketStatus({
+          'socketStatus': 'connecting...'
+        });
+
+        console.log('disconnect');
+      });
+      this.props.socket.on("connect", function (data) {
+        _this.props.updateSocketStatus({
+          'socketStatus': 'connected'
+        });
+
+        console.log('connected');
+      });
+    }
+  }, {
+    key: "updateState",
+    value: function updateState(data) {
+      this.props.updateBlkInfo(data);
+    }
+  }, {
+    key: "updateTrxState",
+    value: function updateTrxState(data) {
+      this.props.updateTrxInfo(data);
+    }
+  }, {
+    key: "updateStartupProgress",
+    value: function updateStartupProgress(data) {
+      this.props.updateStartupProgress(data);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      console.log('this.props.progress', this.props.progress);
+      if (this.props.progress.currStep > 6) return /*#__PURE__*/_react.default.createElement(_reactRouterDom.Navigate, {
+        to: "/whales"
+      }); //return (<Whales socket={this.props.socket} />);
+      //console.log('rebder');
+
+      return /*#__PURE__*/_react.default.createElement("div", {
+        class: "layout-wrapper layout-1 layout-without-sidenav"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "layout-inner"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "layout-container"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "layout-content"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "container flex-grow-1 container-p-y"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "col-xl-12 col-md-12 px-0"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "card ui-timeline mb-4"
+      }, /*#__PURE__*/_react.default.createElement("h5", {
+        class: "card-header"
+      }, "Loading For The First Time ..."), /*#__PURE__*/_react.default.createElement("div", {
+        class: "card-body"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "timelines-box"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "row pt-3 pb-4"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "col-auto text-right update-meta"
+      }, /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0 d-inline"
+      }, "STEP 1"), /*#__PURE__*/_react.default.createElement("i", {
+        className: "ion ".concat(this.props.progress.step1_icon_class, " update-icon")
+      })), /*#__PURE__*/_react.default.createElement("div", {
+        class: "col"
+      }, /*#__PURE__*/_react.default.createElement("h6", {
+        class: "mb-1"
+      }, "Analyzing Bitcoin Blockchain"), /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0"
+      }, this.props.progress.step1_status), /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress-bar bg-warning",
+        style: {
+          width: "".concat(this.props.progress.step1_progress, "%")
+        }
+      })))), /*#__PURE__*/_react.default.createElement("div", {
+        class: "row pb-4"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "col-auto text-right update-meta"
+      }, /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0 d-inline"
+      }, "STEP 2"), /*#__PURE__*/_react.default.createElement("i", {
+        className: "ion ".concat(this.props.progress.step2_icon_class, " update-icon")
+      })), /*#__PURE__*/_react.default.createElement("div", {
+        class: "col"
+      }, /*#__PURE__*/_react.default.createElement("h6", {
+        class: "mb-1"
+      }, "Writing Transactions To Database"), /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0"
+      }, this.props.progress.step2_status), /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress-bar bg-warning",
+        style: {
+          width: "".concat(this.props.progress.step2_progress, "%")
+        }
+      })))), /*#__PURE__*/_react.default.createElement("div", {
+        class: "row pb-4"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "col-auto text-right update-meta"
+      }, /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0 d-inline"
+      }, "STEP 3"), /*#__PURE__*/_react.default.createElement("i", {
+        className: "ion ".concat(this.props.progress.step3_icon_class, " update-icon")
+      })), /*#__PURE__*/_react.default.createElement("div", {
+        class: "col"
+      }, /*#__PURE__*/_react.default.createElement("h6", {
+        class: "mb-1"
+      }, "Finding Spent Transactions"), /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0"
+      }, this.props.progress.step3_status), /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress-bar bg-warning",
+        style: {
+          width: "".concat(this.props.progress.step3_progress, "%")
+        }
+      })))), /*#__PURE__*/_react.default.createElement("div", {
+        class: "row pb-4"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "col-auto text-right update-meta"
+      }, /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0 d-inline"
+      }, "STEP 4"), /*#__PURE__*/_react.default.createElement("i", {
+        className: "ion ".concat(this.props.progress.step4_icon_class, " update-icon")
+      })), /*#__PURE__*/_react.default.createElement("div", {
+        class: "col"
+      }, /*#__PURE__*/_react.default.createElement("h6", {
+        class: "mb-1"
+      }, "Generating Address Tables"), /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0"
+      }, this.props.progress.step4_status), /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress-bar bg-warning",
+        style: {
+          width: "".concat(this.props.progress.step4_progress, "%")
+        }
+      })))), /*#__PURE__*/_react.default.createElement("div", {
+        class: "row pb-4"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "col-auto text-right update-meta"
+      }, /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0 d-inline"
+      }, "STEP 5"), /*#__PURE__*/_react.default.createElement("i", {
+        className: "ion ".concat(this.props.progress.step5_icon_class, " update-icon")
+      })), /*#__PURE__*/_react.default.createElement("div", {
+        class: "col"
+      }, /*#__PURE__*/_react.default.createElement("h6", {
+        class: "mb-1"
+      }, "Finding whales"), /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0"
+      }, this.props.progress.step5_status), /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress-bar bg-warning",
+        style: {
+          width: "".concat(this.props.progress.step5_progress, "%")
+        }
+      })))), /*#__PURE__*/_react.default.createElement("div", {
+        class: "row p-b-0"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "col-auto text-right update-meta"
+      }, /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0 d-inline"
+      }, "STEP 6"), /*#__PURE__*/_react.default.createElement("i", {
+        className: "ion ".concat(this.props.progress.step6_icon_class, " update-icon")
+      })), /*#__PURE__*/_react.default.createElement("div", {
+        class: "col"
+      }, /*#__PURE__*/_react.default.createElement("h6", {
+        class: "mb-1"
+      }, "Finalizing - Getting most recent blocks"), /*#__PURE__*/_react.default.createElement("p", {
+        class: "text-muted mb-0"
+      }, this.props.progress.step6_status), /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        class: "progress-bar bg-warning",
+        style: {
+          width: "".concat(this.props.progress.step6_progress, "%")
+        }
+      })))))))))))));
+    }
+  }]);
+
+  return Blocks;
+}(_react.Component);
+
+var mapStateToProps = function mapStateToProps(state) {
+  var progress = state.blocksReducer.progress;
+  return {
+    progress: progress
+  };
+};
+
+var componentConnector = (0, _reactRedux.connect)(mapStateToProps, {
+  fetchBlocks: _blocks.fetchBlocks,
+  updateTime: _blocks.updateTime,
+  updateTrxInfo: _blocks.updateTrxInfo,
+  updateBlkInfo: _blocks.updateBlkInfo,
+  fetchProgressStatus: _progress.fetchProgressStatus,
+  updateStartupProgress: _progress.updateStartupProgress,
+  updateSocketStatus: _socket.updateSocketStatus
+});
+
+var _default = componentConnector(Blocks);
+
+exports.default = _default;
+},{"react":"node_modules/react/index.js","react-redux":"node_modules/react-redux/es/index.js","../actions/blocks":"src/actions/blocks.js","../actions/progress":"src/actions/progress.js","./Whales":"src/components/Whales.js","../actions/socket":"src/actions/socket.js","react-router-dom":"node_modules/react-router-dom/index.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -45560,7 +45558,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "2063" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "2621" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

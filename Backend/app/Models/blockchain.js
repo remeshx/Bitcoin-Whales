@@ -228,7 +228,7 @@ class BlockChainModel {
         return new Promise((resolve, reject) => {
 
             db.query(
-                `COPY ${table}(blockheight ,btc_address, created_time,spend_time, amount, spend, txid, vout)  FROM '${file}'
+                `COPY ${table}(blockheight ,btc_address, created_time,spend_time, amount, spend, txid, vout, transaction_key)  FROM '${file}'
                 DELIMITER ','  CSV QUOTE '"';
                 `,
                 [],
@@ -314,7 +314,7 @@ class BlockChainModel {
     static importOutputFile(file, table) {
         return new Promise((resolve, reject) => {
             db.query(
-                `COPY ${table}(txid,outaddress,vout,amount,created_time) FROM '${file}'
+                `COPY ${table}(txid,outaddress,vout,amount,created_time,block_height,transaction_key) FROM '${file}'
                 DELIMITER ','  CSV QUOTE '"';
                 `,
                 [],

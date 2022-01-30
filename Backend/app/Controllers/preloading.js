@@ -169,7 +169,7 @@ class PRELOADING {
                         address = await Blockchain.getAddressFromVOUT(vout, readHeight);
                     else address == 'errorAddress';
 
-                    sql = `${trxTotalCounter},${address},${voutCounter},${vout.value},${block.result.time}` + "\n";
+                    sql = `${trxTotalCounter},${address},${voutCounter},${vout.value},${block.result.time},${block.result.height},${txidx_}` + "\n";
 
                     if (typeof voutQuery[txidx] !== 'undefined' && voutQuery[txidx] !== null) {
                         voutQuery[txidx] = voutQuery[txidx] + sql;
@@ -194,6 +194,7 @@ class PRELOADING {
         await BlockChainModel.SaveBulkBlock(blksql);
         await writeAllTransaction(this.fileStream, vinQuery, voutQuery, txQuery, vinQueryKeys, voutQueryKeys, txQueryKeys);
         await SettingModel.updateCurrentBlock(readHeight);
+        await SettingModel.updateTotalTrxRead(trxTotalCounter);
         await SettingModel.updateTrxRead(-1);
         await SettingModel.updateSettingVariable('BitcoinNode', 'CurrentStage', '2');
         await SettingModel.updateSettingVariable('BitcoinNode', 'CurrentStageTitle', 'preloading_stage2_ImportFilesToDB');
@@ -325,7 +326,7 @@ class PRELOADING {
                     for await (const transaction of transactions) {
                         addkeyCHAR = transaction.outaddress.trim().slice(-2);// partitioned by two last character of address
                         addKey = addkeyCHAR.charCodeAt(0) + '' + addkeyCHAR.charCodeAt(1);
-                        sql = `0,${transaction.outaddress.trim()},${transaction.created_time},${transaction.spend_time},${transaction.amount},${transaction.spend},${transaction.txid},${transaction.vout}` + "\n";
+                        sql = `${transaction.block_height},${transaction.outaddress.trim()},${transaction.created_time},${transaction.spend_time},${transaction.amount},${transaction.spend},${transaction.txid},${transaction.vout},${transaction.transaction_key}` + "\n";
                         if (typeof addQuery[addKey] !== 'undefined' && addQuery[addKey] !== null) {
                             addQuery[addKey] = addQuery[addKey] + sql;
                         } else {

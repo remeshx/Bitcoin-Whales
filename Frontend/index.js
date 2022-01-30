@@ -30,12 +30,11 @@ const App = () => {
 
 
 render(
-
     <Provider store={store}>
         <Router>
             <App />
         </Router>
-    </Provider>
+    </Provider >
     ,
     document.getElementById('root')
 );

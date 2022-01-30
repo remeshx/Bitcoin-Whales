@@ -244,6 +244,7 @@ class Whales {
                     };
                 }
                 voutCounter = 0;
+                txidx = tx.txid.substring(0, 3);
                 for await (const vout of tx.vout) {
                     if (vout.value > 0)
                         address = await Blockchain.getAddressFromVOUT(vout, readHeight);
@@ -252,7 +253,7 @@ class Whales {
                     vAddidx = vAddidx_.charCodeAt(0) + '' + vAddidx_.charCodeAt(1);
 
                     //insert output as new address transaction
-                    sql = `(${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter})`;
+                    sql = `(${readHeight},'${address}',${block.result.time},${vout.value},${trxTotalCounter},${voutCounter},${txidx})`;
                     if (typeof queryTxt_addresses_insert[vAddidx] !== 'undefined' && queryTxt_addresses_insert[vAddidx] !== null) {
                         queryTxt_addresses_insert[vAddidx] = queryTxt_addresses_insert[vAddidx] + ',' + sql;
                         queryTxt_addresses_insert_len[vAddidx] += 1;
@@ -275,7 +276,7 @@ class Whales {
                     //     this.updatedAddrs.push(address);
                     // }
                 }
-                txidx = tx.txid.substring(0, 3);
+
 
                 sql = `(${trxTotalCounter},${readHeight},'${tx.txid}',${txcounter})`;
                 if (typeof queryTxt_transaction_insert[txidx] !== 'undefined' && queryTxt_transaction_insert[txidx] !== null) {
@@ -312,7 +313,7 @@ class Whales {
                 console.log('inserting addresses ...');
                 for await (const key of queryTxt_addresses_insert_keys) {
                     if (!key) continue;
-                    sql = `INSERT INTO ${'addresses_' + key} (blockheight,btc_address,created_time,amount,txid,vout) VALUES ${queryTxt_addresses_insert[key]};`;
+                    sql = `INSERT INTO ${'addresses_' + key} (blockheight,btc_address,created_time,amount,txid,vout,transaction_key) VALUES ${queryTxt_addresses_insert[key]};`;
                     //console.log(sql);
                     await BlockChainModel.query(sql);
                 }
